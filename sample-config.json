@@ -1,0 +1,9 @@
+{
+    "BUCKET_NAME": "",
+    "CONFIG": {
+        "accessKeyId": "",
+        "secretAccessKey": "",
+        "region": "",
+        "signatureVersion": ""
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "samromur-chat",
+  "version": "0.0.1",
+  "description": "voice-chat recording software",
+  "license": "MIT",
+  "scripts": {
+    "build": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run build\" \"cd frontend && npm run build\"",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "dev": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run dev\" \"cd frontend && npm run start\"",
+    "postinstall": "concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
+    "start": "cd backend && npm run start"
+  },
+  "dependencies": {
+    "concurrently": "^5.3.0"
+  }
+}

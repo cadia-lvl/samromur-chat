@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "isolatedModules": true,
+    "rootDir": "./src",
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
