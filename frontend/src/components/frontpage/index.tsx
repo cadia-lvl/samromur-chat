@@ -58,8 +58,9 @@ class FrontPage extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
+        // autogenerate a chatroom name from the timestamp
         this.state = {
-            userUrl: '',
+            userUrl: (+new Date()).toString(30),
         }
     }
 
@@ -81,6 +82,7 @@ class FrontPage extends React.Component<Props, State> {
                     <JoinContainer>
                         <UrlInput
                             label={'Opna spjall'}
+                            value={this.state.userUrl}
                             placeholder={'Spjallkóði'}
                             onChange={this.onUrlChange}
                         />
