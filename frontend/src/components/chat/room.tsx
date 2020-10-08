@@ -48,7 +48,7 @@ const UserList = styled.div`
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    border 1px solid #CCCCCC;
+    border: 1px solid #CCCCCC;
 `;
 
 
@@ -103,6 +103,17 @@ const Indicator = styled.div<{ connected: boolean }>`
     width: 0.5rem;
     border-radius: 50%;
     background-color: ${({ connected }) => connected ? '#60C197' : 'gray'};
+`;
+
+const ShareButton = styled.div`
+    align-self: center;
+    display: flex;
+    width: 100%;
+    justify-content:center;
+    background-color: #60C197;
+    color: white;
+    cursor:pointer;
+    font-size: 2rem;
 `;
 
 interface ChatroomProps {
@@ -237,6 +248,15 @@ class Chatroom extends React.Component<Props, State> {
         onUpload(recording);
     }
 
+    copyToClipBoard = async () => {
+        try {
+            await navigator.clipboard.writeText(location.href);
+            console.log('Page URL copied to clipboard');
+          } catch (err) {
+            console.error('Failed to copy: ', err);
+          }
+    }
+
     render() {
         const {
             clients,
@@ -266,6 +286,7 @@ class Chatroom extends React.Component<Props, State> {
                         </ListItem>
                     )}
                 </UserList>
+                <ShareButton onClick={this.copyToClipBoard}>Copy link to clipboard</ShareButton>
                 <Recordings
                     chat={this.chat}
                     recording={recording}
