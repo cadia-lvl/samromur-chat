@@ -12,6 +12,8 @@ import Chat, { ChatState, RecordingState, VoiceState } from '../../controllers/c
 import MicIcon from '../ui/icons/mic';
 import Controls from './controls';
 import Recordings from './recordings';
+import {ToastContainer, toast, Slide} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ChatroomContainer = styled.div`
     position: relative;
@@ -107,14 +109,38 @@ const Indicator = styled.div<{ connected: boolean }>`
 
 const ShareButton = styled.div`
     align-self: center;
-    display: flex;
-    width: 100%;
-    justify-content:center;
     background-color: #60C197;
     color: white;
-    cursor:pointer;
-    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+    width: 100%;
+
+    cursor: pointer;    
+
+    & span {
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
+
+    :active {
+        transform: translateY(2px);
+    }
+
+    @media (max-width: 1024px) {
+        grid-column: 1;
+        max-width: 100%;
+    }
 `;
+// align-self: center;
+    // display: flex;
+    // width: 100%;
+    // justify-content: center;
+    // background-color: #60C197;
+    // color: white;
+    // cursor: pointer;
+    // font-size: 1rem;
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
@@ -251,10 +277,13 @@ class Chatroom extends React.Component<Props, State> {
     copyToClipBoard = async () => {
         try {
             await navigator.clipboard.writeText(location.href);
-            console.log('Page URL copied to clipboard');
-          } catch (err) {
-            console.error('Failed to copy: ', err);
-          }
+            toast('Tengill afritaður, sendu hann til vinar þíns til að bjóða honum í spjallið.', {
+                position: "bottom-center",
+                hideProgressBar: true,
+                draggable: false,
+                });
+        } catch (err) {
+        }
     }
 
     render() {
@@ -274,6 +303,7 @@ class Chatroom extends React.Component<Props, State> {
                     active={recordingState === RecordingState.RECORDING_REQUESTED}>
                     {countdown}
                 </CounterContainer>
+                <ShareButton onClick={this.copyToClipBoard}><span>Afrita hlekk</span></ShareButton>
                 <UserList>
                     <ListHeader>
                         <HeaderItem><span>Viðmælandi</span><span>Spjallkóði: <span>{roomId}</span></span></HeaderItem>
@@ -286,7 +316,6 @@ class Chatroom extends React.Component<Props, State> {
                         </ListItem>
                     )}
                 </UserList>
-                <ShareButton onClick={this.copyToClipBoard}>Copy link to clipboard</ShareButton>
                 <Recordings
                     chat={this.chat}
                     recording={recording}
@@ -304,6 +333,24 @@ class Chatroom extends React.Component<Props, State> {
                     autoPlay
                     controls
                     ref={this.audioRef}
+                />
+                {/* <ToastContainer
+                    position="bottom-center"
+                    autoClose={5000}
+                    hideProgressBar
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover={false}
+                    transition={Slide}
+                    /> */}
+                <ToastContainer
+                    position="bottom-center"
+                    hideProgressBar
+                    pauseOnHover={false}
+                    transition={Slide}
                 />
             </ChatroomContainer>
         );
