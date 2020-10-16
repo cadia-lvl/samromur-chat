@@ -133,14 +133,28 @@ const ShareButton = styled.div`
         max-width: 100%;
     }
 `;
-// align-self: center;
-    // display: flex;
-    // width: 100%;
-    // justify-content: center;
-    // background-color: #60C197;
-    // color: white;
-    // cursor: pointer;
-    // font-size: 1rem;
+
+const StyledToastContainer = styled(ToastContainer).attrs({
+    className: 'toast-container',
+    toastClassName: 'toast',
+    bodyClassName: 'body',
+    progressClassName: 'progress',
+  })`
+    /* .toast-container */ 
+     /* .toast is passed to toastClassName */
+    .toast {
+      background-color: #60C197;
+      color: white;
+    }
+  
+  
+    /* .body is passed to bodyClassName */
+    .body {}
+  
+    /* .progress is passed to progressClassName */
+    .progress {}
+  `;
+
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
@@ -277,10 +291,11 @@ class Chatroom extends React.Component<Props, State> {
     copyToClipBoard = async () => {
         try {
             await navigator.clipboard.writeText(location.href);
-            toast('Tengill afritaður, sendu hann til vinar þíns til að bjóða honum í spjallið.', {
+            toast('Tengill afritaður.', {
                 position: "bottom-center",
                 hideProgressBar: true,
                 draggable: false,
+                toastId: 'toast' // prevent duplicates
                 });
         } catch (err) {
         }
@@ -303,7 +318,7 @@ class Chatroom extends React.Component<Props, State> {
                     active={recordingState === RecordingState.RECORDING_REQUESTED}>
                     {countdown}
                 </CounterContainer>
-                <ShareButton onClick={this.copyToClipBoard}><span>Afrita hlekk</span></ShareButton>
+                <ShareButton onClick={this.copyToClipBoard}><span>Smelltu til að afrita hlekkinn og deildu með vini</span></ShareButton>
                 <UserList>
                     <ListHeader>
                         <HeaderItem><span>Viðmælandi</span><span>Spjallkóði: <span>{roomId}</span></span></HeaderItem>
@@ -346,7 +361,7 @@ class Chatroom extends React.Component<Props, State> {
                     pauseOnHover={false}
                     transition={Slide}
                     /> */}
-                <ToastContainer
+                <StyledToastContainer
                     position="bottom-center"
                     hideProgressBar
                     pauseOnHover={false}
