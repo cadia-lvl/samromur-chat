@@ -116,7 +116,7 @@ const ShareButton = styled.div`
     user-select: none;
     width: 100%;
 
-    cursor: pointer;    
+    cursor: pointer;
 
     & span {
         font-weight: 600;
@@ -134,26 +134,19 @@ const ShareButton = styled.div`
     }
 `;
 
+// Overwrite ToastContainer to use our global styles
 const StyledToastContainer = styled(ToastContainer).attrs({
     className: 'toast-container',
     toastClassName: 'toast',
     bodyClassName: 'body',
     progressClassName: 'progress',
-  })`
-    /* .toast-container */ 
-     /* .toast is passed to toastClassName */
+})`
     .toast {
-      background-color: #60C197;
-      color: white;
+        background-color: #60C197;
+        color: white;
+        text-align: center;
     }
-  
-  
-    /* .body is passed to bodyClassName */
-    .body {}
-  
-    /* .progress is passed to progressClassName */
-    .progress {}
-  `;
+`;
 
 
 interface ChatroomProps {
@@ -289,15 +282,18 @@ class Chatroom extends React.Component<Props, State> {
     }
 
     copyToClipBoard = async () => {
+        const toastId = 'toast-copied';
         try {
-            await navigator.clipboard.writeText(location.href);
+            toast.dismiss(toastId);
+            await navigator.clipboard.writeText(window.location.href);
             toast('Tengill afritaður.', {
-                position: "bottom-center",
-                hideProgressBar: true,
                 draggable: false,
-                toastId: 'toast' // prevent duplicates
+                toastId // prevent duplicates
                 });
         } catch (err) {
+            toast('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
+                toastId: 'toast-error'
+            })
         }
     }
 
@@ -349,18 +345,6 @@ class Chatroom extends React.Component<Props, State> {
                     controls
                     ref={this.audioRef}
                 />
-                {/* <ToastContainer
-                    position="bottom-center"
-                    autoClose={5000}
-                    hideProgressBar
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover={false}
-                    transition={Slide}
-                    /> */}
                 <StyledToastContainer
                     position="bottom-center"
                     hideProgressBar
