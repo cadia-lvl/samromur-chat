@@ -12,6 +12,8 @@ import Chat, { ChatState, RecordingState, VoiceState } from '../../controllers/c
 import MicIcon from '../ui/icons/mic';
 import Controls from './controls';
 import Recordings from './recordings';
+import {ToastContainer, toast, Slide} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ChatroomContainer = styled.div`
     position: relative;
@@ -48,7 +50,7 @@ const UserList = styled.div`
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    border 1px solid #CCCCCC;
+    border: 1px solid #CCCCCC;
 `;
 
 
@@ -104,6 +106,48 @@ const Indicator = styled.div<{ connected: boolean }>`
     border-radius: 50%;
     background-color: ${({ connected }) => connected ? '#60C197' : 'gray'};
 `;
+
+const ShareButton = styled.div`
+    align-self: center;
+    background-color: #60C197;
+    color: white;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+    width: 100%;
+
+    cursor: pointer;
+
+    & span {
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
+
+    :active {
+        transform: translateY(2px);
+    }
+
+    @media (max-width: 1024px) {
+        grid-column: 1;
+        max-width: 100%;
+    }
+`;
+
+// Overwrite ToastContainer to use our global styles
+const StyledToastContainer = styled(ToastContainer).attrs({
+    className: 'toast-container',
+    toastClassName: 'toast',
+    bodyClassName: 'body',
+    progressClassName: 'progress',
+})`
+    .toast {
+        background-color: #60C197;
+        color: white;
+        text-align: center;
+    }
+`;
+
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
@@ -237,6 +281,22 @@ class Chatroom extends React.Component<Props, State> {
         onUpload(recording);
     }
 
+    copyToClipBoard = async () => {
+        const toastId = 'toast-copied';
+        try {
+            toast.dismiss(toastId);
+            await navigator.clipboard.writeText(window.location.href);
+            toast('Tengill afritaður.', {
+                draggable: false,
+                toastId // prevent duplicates
+                });
+        } catch (err) {
+            toast('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
+                toastId: 'toast-error'
+            })
+        }
+    }
+
     render() {
         const {
             clients,
@@ -254,6 +314,7 @@ class Chatroom extends React.Component<Props, State> {
                     active={recordingState === RecordingState.RECORDING_REQUESTED}>
                     {countdown}
                 </CounterContainer>
+                <ShareButton onClick={this.copyToClipBoard}><span>Smelltu til að afrita hlekkinn og deildu með vini</span></ShareButton>
                 <UserList>
                     <ListHeader>
                         <HeaderItem><span>Viðmælandi</span><span>Spjallkóði: <span>{roomId}</span></span></HeaderItem>
@@ -283,6 +344,12 @@ class Chatroom extends React.Component<Props, State> {
                     autoPlay
                     controls
                     ref={this.audioRef}
+                />
+                <StyledToastContainer
+                    position="bottom-center"
+                    hideProgressBar
+                    pauseOnHover={false}
+                    transition={Slide}
                 />
             </ChatroomContainer>
         );
