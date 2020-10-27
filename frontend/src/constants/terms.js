@@ -10,7 +10,7 @@ export const terms = [
                     "paragraphs": [ 
                         ['Þú tekur þátt með því að taka upp spjall í gegnum vefsíðuna ',
                         [{link: 'https://spjall.samromur.is/',
-                         text:'www.spjall.samromur.is'}],
+                         text:'spjall.samromur.is'}],
                         '. Gott er að lengd spjallsins sé á bilinu 15 til 30 mínútur. Spjallið verður ritað niður að samtali loknu. Markmið gagnasöfnunarinnar er að fá gögn um eðlilegt íslenskt talmál og því er mikilvægt að þátttakendur tali með eðlilegum hætti og reyna að forðast að notkun enskra orða.'],
                         ['Sem þátttakandi samþykkir þú að öll þín framlög (raddupptaka, og eftir atvikum lýðfræðilegar upplýsingar) falli undir ',
                          [{link: 'https://creativecommons.org/licenses/by/4.0/',
