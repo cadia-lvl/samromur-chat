@@ -151,6 +151,8 @@ export default class DemographicForm extends React.Component<Props, State> {
 
     render() {
         const { age, agreed, gender, username } = this.state;
+        const terms = '/skilmalar';
+        const privacypolicy = '/personuvernd';
         return (
             <DemographicContainer>
                 <UsernameInput
@@ -171,12 +173,12 @@ export default class DemographicForm extends React.Component<Props, State> {
                 />
                 <Information title={'Hvers vegna skiptir þetta máli?'}>
                     <p>
-                        Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá skilmála og persónuverndaryfirlýsingu verkefnisins.
+                        Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.
                     </p>
                 </Information>
                 <AgreeContainer onClick={this.handleAgree}>
                     <Checkbox checked={agreed} onChange={this.handleAgree} />
-                    <span>Ég staðfesti að hafa kynnt mér skilmála og persónuverndaryfirlýsingu verkefnisins.</span>
+                    <span>Ég staðfesti að hafa kynnt mér <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.</span>
                 </AgreeContainer>
                 <SubmitButton onClick={this.onSubmit} disabled={!agreed || !age.name || !gender.name || !username}><span>Áfram</span></SubmitButton>
             </DemographicContainer>
