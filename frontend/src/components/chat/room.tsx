@@ -12,6 +12,7 @@ import Chat, { ChatState, RecordingState, VoiceState } from '../../controllers/c
 import MicIcon from '../ui/icons/mic';
 import Controls from './controls';
 import Recordings from './recordings';
+import TalkingPoints from './talkingpoints';
 import {ToastContainer, toast, Slide} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -344,6 +345,10 @@ class Chatroom extends React.Component<Props, State> {
                     autoPlay
                     controls
                     ref={this.audioRef}
+                />
+                <TalkingPoints
+                    recording={recording}
+                    recordingState={recordingState}
                 />
                 <StyledToastContainer
                     position="bottom-center"
