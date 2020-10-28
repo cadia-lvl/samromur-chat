@@ -100,20 +100,22 @@ export default class TalkingPoint extends React.Component<Props, State> {
             console.log(talkingNumber);
             return ["Vantar þér eitthvað til að spjalla um?", talkingpoints[talkingNumber]];
         }
-        //return ["",""];
         return ["", ""];
     }
 
     render() {
         const { seconds } = this.state;
         const talkingpoint  = this.displayTalkingPoint(seconds);
+        const display = talkingpoint[0] ? true : false;
 
         return (
             <TalkingPointContainer>
+            { display && (
                 <TalkingPointInput
                     label={ talkingpoint[0] }
                     value={ talkingpoint[1] }
                 />
+           )}
             </TalkingPointContainer>
         );
     }
