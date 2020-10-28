@@ -35,7 +35,15 @@ The *build* command builds both backend and frontend.
 The *start* command runs the backend in production mode, serving the pre-built frontend on localhost:3030.
 ```
 npm run build
-npm run start
+npm run start # this might not last through restarts or ssh sessions
+```
+
+```
+pm2 stop spjall.samromur
+git pull
+npm run build
+pm2 start spjall.samromur  # for new intance: pm2 start npm --start
+
 ```
 
 ## License
