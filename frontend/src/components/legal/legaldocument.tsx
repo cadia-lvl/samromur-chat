@@ -60,10 +60,10 @@ class LegalDoc extends React.Component<Props> {
     DisplayArticles(articles) {
         return articles.map ((article) => {
             return (
-                <>
+                <div>
                     <h3> { article.heading } </h3>
                     <Paragraphs text= { article.paragraphs } />
-                </>
+                </div>
             )
         })
     }
