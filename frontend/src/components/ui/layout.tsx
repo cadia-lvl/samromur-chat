@@ -42,7 +42,7 @@ export const Layout: React.FunctionComponent<Props> = ({ children }) => {
         <LayoutContainer>
             <Padding>
                 <Header>
-                    <Title>Samrómur <span>spjall</span></Title>
+                    <Title><a href="/">Samrómur <span>spjall</span></a></Title>
                 </Header>
                 {children}
             </Padding>
