@@ -25,7 +25,6 @@ const TalkingPointInput = styled(TextInput)`
 `;
 
 interface Props {
-    chat: Chat;
     recording: AudioInfo;
     recordingState: RecordingState,
 }
