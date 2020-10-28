@@ -115,7 +115,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
                     label={ talkingpoint[0] }
                     value={ talkingpoint[1] }
                 />
-           )}
+            )}
             </TalkingPointContainer>
         );
     }
