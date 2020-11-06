@@ -42,7 +42,7 @@ npm run start # this might not last through restarts or ssh sessions
 pm2 stop spjall.samromur
 git pull
 npm run build
-pm2 start spjall.samromur  # for new intance: pm2 start npm --start
+pm2 restart spjall.samromur  # for new intance: pm2 start npm -- start
 
 ```
 
