@@ -6,6 +6,7 @@ import { AudioInfo } from '../../types/audio';
 import TextInput from '../ui/input/text-input';
 
 import { talkingpoints } from '../../constants/talkingpoints';
+import { shuffleArray } from '../../utilities/utils';
 
 const TalkingPointContainer = styled.div`
     width: 100%;
@@ -26,7 +27,7 @@ const TalkingPointInput = styled(TextInput)`
 
 interface Props {
     recording: AudioInfo;
-    recordingState: RecordingState,
+    recordingState: RecordingState;
 }
 
 interface State {
@@ -37,6 +38,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
     private interval: any;
     private maxSeconds: number;
     private minSeconds: number;
+    private talkingPoints: Array<string>;
 
     constructor(props: Props) {
         super(props);
@@ -46,6 +48,8 @@ export default class TalkingPoint extends React.Component<Props, State> {
         }
         this.maxSeconds = 2100;
         this.minSeconds = 600;
+        this.talkingPoints = talkingpoints;
+        shuffleArray(this.talkingPoints);
     }
 
     componentDidUpdate = (prevProps: Props) => {
@@ -75,46 +79,44 @@ export default class TalkingPoint extends React.Component<Props, State> {
     }
 
     displayTalkingPoint = (seconds: number): Array<string> => {
-        // TODO: make the talking points random so that not everyone talks
-        // about the same things in the same order, also need a longer list so
+        // TODO: Add a longer list of talking points
         // might want to put them in the database
-        // also don't want to reuse talking points so will need to keep a list
-        // of talking points which have already been used
-        // make sure the same one
-        // doesn't come up twice in a row
         // TODO: replace the share link with the talking points
 
-        // TODO: change from 15 to 2 mins(120) after the demo
-        const intervalLength = 15;
+        const intervalLength = 120;
         // Make sure to stick with the same talking point throughout the interval
         // Get the NextTalkingPoint with
-        // Math.floor(seconds/talkingpoints.length)
-        // ex:  121seconds/5talkingpoints = floor(24.20) = 24
+        // Math.floor(seconds/intervalLength)
+        // ex:  121seconds/5intervalLength = floor(24.20) = 24
         // Make sure to always stay within the length of the talking points
         // by looping through them when you've reached the last talking point
         // with NextTalkingPoint % talkingpoints.length
         // ex: 24thtalkingpoint % 5talkingpoints = 4th talking point
-        let talkingNumber = Math.floor(seconds / talkingpoints.length) % talkingpoints.length;
-        if (seconds > intervalLength) {
-            console.log(talkingNumber);
-            return ["Vantar þér eitthvað til að spjalla um?", talkingpoints[talkingNumber]];
+        if (seconds > 0) {
+            let talkingNumber =
+                Math.floor(seconds / intervalLength) %
+                this.talkingPoints.length;
+            return [
+                "Vantar þér eitthvað til að spjalla um?",
+                this.talkingPoints[talkingNumber],
+            ];
         }
         return ["", ""];
-    }
+    };
 
     render() {
         const { seconds } = this.state;
-        const talkingpoint  = this.displayTalkingPoint(seconds);
+        const talkingpoint = this.displayTalkingPoint(seconds);
         const display = talkingpoint[0] ? true : false;
 
         return (
             <TalkingPointContainer>
-            { display && (
-                <TalkingPointInput
-                    label={ talkingpoint[0] }
-                    value={ talkingpoint[1] }
-                />
-            )}
+                {display && (
+                    <TalkingPointInput
+                        label={talkingpoint[0]}
+                        value={talkingpoint[1]}
+                    />
+                )}
             </TalkingPointContainer>
         );
     }
