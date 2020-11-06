@@ -13,10 +13,10 @@ export const talkingpoints = [
     "Hvert myndir þú fara ef þú gætir farið hvert sem er?",
     "Hefur þú lesið einhverjar skemmtilegar greinar undanfarið?",
     "Hversu oft ferð þú út að hreyfa þig?",
-    "Hver er uppáhalds árstíðin þín og afhverju?",
+    "Hver er uppáhalds árstíðin þín og af hverju?",
     "Hvernig heldur þú að heimurinn verði eftir 100 ár?",
     "Hvar sérð þú þig eftir 5 ár?",
     "Trúir þú á álfa, tröll eða drauga?",
-    "Hver er uppáhalds liturinn þinn og afhverju?",
+    "Hver er uppáhalds liturinn þinn og af hverju?",
     "Hvaða pláneta er mest þú í sólkerfinu okkar?",
 ]
