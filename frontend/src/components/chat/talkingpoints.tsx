@@ -79,13 +79,8 @@ export default class TalkingPoint extends React.Component<Props, State> {
     }
 
     displayTalkingPoint = (seconds: number): Array<string> => {
-        // TODO: make the talking points random so that not everyone talks
-        // about the same things in the same order, also need a longer list so
+        // TODO: Add a longer list of talking points
         // might want to put them in the database
-        // also don't want to reuse talking points so will need to keep a list
-        // of talking points which have already been used
-        // make sure the same one
-        // doesn't come up twice in a row
         // TODO: replace the share link with the talking points
 
         const intervalLength = 120;
