@@ -209,20 +209,16 @@ export default class Controls extends React.Component<Props, State> {
                 </ButtonsContainer>
                 <SubmitButtons second={confirm}>
                     <SubmitButtonsContainer>
-                        <Button onClick={this.handleConfirm}>
-                            Byrja aftur
-                    </Button>
+                        <Button onClick={this.handleConfirm}>Byrja aftur</Button>
                         <Button onClick={onSubmit} green>
                             Senda inn
-                    </Button>
+                        </Button>
                     </SubmitButtonsContainer>
                     <SubmitButtonsContainer>
-                        <Button onClick={this.handleConfirm}>
-                            Til baka
-                    </Button>
+                        <Button onClick={this.handleConfirm}>Til baka</Button>
                         <Button red onClick={this.handleRemove}>
                             Eyða upptöku
-                    </Button>
+                        </Button>
                     </SubmitButtonsContainer>
                 </SubmitButtons>
             </ControlsContainer>

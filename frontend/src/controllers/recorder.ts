@@ -49,6 +49,8 @@ export default class Recorder {
     }
 
     private start = (): Promise<void> => {
+        this.processorNode.connect(this.audioContext.destination);
+        this.sourceNode.connect(this.processorNode);
         if (!this.isReady()) {
             console.error('Cannot record audio before microhphone is ready.');
             return Promise.reject();
@@ -82,6 +84,7 @@ export default class Recorder {
 
         return new Promise((resolve, reject) => {
             this.processorNode.disconnect();
+            this.sourceNode.disconnect();
             this.encoder.onmessage = async (event) => {
                 const { data: { blob } } = event;
                 const url = URL.createObjectURL(blob);
