@@ -26,7 +26,12 @@ class WavEncoder {
         for (let i = 0; i < string.length; i++) {
             view.setUint8(offset + i, string.charCodeAt(i));
         }
-    }
+    };
+
+    reset = () => {
+        this.numSamples = 0;
+        this.dataViews = [];
+    };
 
     // Prepend wav header
     finish = (): Promise<Blob> => {
@@ -57,6 +62,7 @@ export const ctx: Worker = self as any;
 
 const finish = async () => {
     const blob = await encoder.finish();
+    encoder.reset();
     ctx.postMessage({
         command: 'finish',
         blob
