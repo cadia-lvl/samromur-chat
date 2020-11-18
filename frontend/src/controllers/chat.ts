@@ -195,9 +195,14 @@ export default class Chat {
      * Then resets the unsentMessages array.
      */
     private sendUnsentMessages = () => {
-        this.unsentMessages.forEach(message => this.sendMessage(message));
+        let delay = 250;
+        this.unsentMessages.forEach((message) => {
+            setTimeout(this.sendMessage(message), delay);
+            console.log(`Sending unsent message after: ${delay} milliseconds.`);
+            delay += 250;
+        });
         this.unsentMessages = [];
-    }
+    };
 
     /**
      * Reconnect will start a process to reconnect. 
