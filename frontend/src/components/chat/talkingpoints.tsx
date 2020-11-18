@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import Chat, { RecordingState } from '../../controllers/chat';
+import { RecordingState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
 import TextInput from '../ui/input/text-input';
 
@@ -114,7 +114,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
                 {display && (
                     <TalkingPointInput
                         label={talkingpoint[0]}
-                        value={talkingpoint[1]}
+                        defaultValue={talkingpoint[1]}
                     />
                 )}
             </TalkingPointContainer>

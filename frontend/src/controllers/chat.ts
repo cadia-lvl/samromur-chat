@@ -27,6 +27,10 @@ export enum RecordingState {
     RECORDING_REQUESTED = 'RECORDING_REQUESTED',
 }
 
+type Payload = {
+    [key: string]: any;
+}
+
 export default class Chat {
     private incomingOffer!: RTCSessionDescriptionInit;
     private microphone!: MediaStream;
@@ -52,6 +56,10 @@ export default class Chat {
     private voiceState: VoiceState;
     private clients: UserClient[];
     private sessionId: string;
+    private reconnecting: boolean;
+    private timeout: number;
+    private timeoutIncrement: number;
+    private unsentMessages: Payload[];
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
@@ -64,6 +72,10 @@ export default class Chat {
         this.recordingState = RecordingState.NOT_RECORDING;
         this.voiceState = VoiceState.VOICE_DISCONNECTED;
         this.sessionId = '';
+        this.reconnecting = false;
+        this.timeoutIncrement = 500;
+        this.timeout = this.timeoutIncrement;
+        this.unsentMessages = [];
 
         this.clients = [userClient];
 
@@ -105,6 +117,9 @@ export default class Chat {
             // Open RTC Connection
             this.rtcConnection = await this.openRTC();
 
+            // Start with voice transmitted
+            await this.unMute();
+
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -118,11 +133,15 @@ export default class Chat {
                 resolve(socket);
             }
             socket.onerror = (e) => {
-                console.error('error?');
+                console.error('WebSocket error.');
                 reject(e);
             }
             socket.onclose = () => {
                 this.setChatState(ChatState.DISCONNECTED);
+                // Try to reconnect if closed   
+                if (!this.reconnecting) {
+                    this.reconnect();
+                }
             };
             socket.onmessage = (event) => {
                 try {
@@ -164,10 +183,91 @@ export default class Chat {
         }
     }
 
+    /**
+     * Pings the WebSocket server to ensure connection
+     */
+    private startPingPong() {
+        if (!this.reconnecting) {
+            const ping = {type: 'ping', message: ''};
+            this.sendMessage(ping);
+        }
+    }
+
+    /**
+     * The response from the ping message.
+     * Also starts the next ping
+     */
+    private handlePong() {
+        setTimeout(() => {this.startPingPong()}, 5000);
+    }
+
+    /**
+     * Checks if the websocket is open and ready for messaging
+     */
+    private isWebSocketOpen = ()  => {
+        return this.socket.readyState === this.socket.OPEN;
+    }
+
+    /**
+     * Sends all the messages that the client tried to send while not connected to the server
+     * Then resets the unsentMessages array.
+     */
+    private sendUnsentMessages = () => {
+        this.unsentMessages.forEach(message => this.sendMessage(message));
+        this.unsentMessages = [];
+    }
+
+    /**
+     * Reconnect will start a process to reconnect. 
+     * The process will attempt to reconnect to the WebSocket server
+     * every timeout milliseconds
+     */
+    private reconnect = async () => {
+        // If not reconnecting, set to reconnecting and reset timeout
+        if (!this.reconnecting) {
+            this.reconnecting = true;
+            this.timeout = this.timeoutIncrement;
+        }
+        console.warn('Connection with WebSocket is lost. Attempting to reconnect...');
+        try {
+            this.socket = await this.openSocket(this.socketUrl);
+        }
+        catch (error) {
+            console.error('Error reconnecting to the server.');
+        }
+        this.reconnecting = !this.isWebSocketOpen();
+        if (this.reconnecting) {
+            this.timeout = Math.min(10000, this.timeout + this.timeoutIncrement)
+            setTimeout(async () => {await this.reconnect()}, this.timeout);
+        }
+        // Succefully reconnected
+        // Send all the stored messages
+        if (!this.reconnecting) {
+            this.sendUnsentMessages();
+            console.info('Successfully reconnected to the server.');
+            return Promise.resolve('Successfully reconnected to the server.');
+        }
+    }
+
+    /**
+     * Sends a message over the WebSocket connection.
+     * If the connection is closed, the function starts a the reconnect process
+     * and stores any unsent messages in the unsentMessages array.
+     * @param payload the message to send
+     */
     private sendMessage = (payload: { [key: string]: any }): Promise<void> => {
         try {
-            this.socket.send(JSON.stringify(payload));
-            return Promise.resolve();
+            if (this.isWebSocketOpen()) {
+                this.socket.send(JSON.stringify(payload));
+                return Promise.resolve();
+            }
+            if (!this.reconnecting) {
+                // Lost websocket connection, attempt to reconnect.
+                this.reconnect();
+            }
+            // store the message as unsent
+            this.unsentMessages.push(payload);
+            return Promise.reject('Unable to send message over the WebSocket connection.');
         } catch (error) {
             console.error('Error sending message, ', error);
             return Promise.reject();
@@ -212,6 +312,9 @@ export default class Chat {
             case 'error':
                 console.error('Error: ', message.message);
                 break;
+            case 'pong':
+                this.handlePong();
+                break;
             default:
                 console.error('Misunderstood, ', message);
         }
@@ -235,7 +338,10 @@ export default class Chat {
         const user: UserClient = {
             ...message
         }
-        this.clients.push(user);
+        // Don't add duplicates.
+        if (!this.clients.find((client: UserClient) => client.id === user.id)) {
+            this.clients.push(user);
+        }
         this.onClientsChanged(this.clients);
     }
 
