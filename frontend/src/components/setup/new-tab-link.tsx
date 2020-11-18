@@ -2,7 +2,7 @@ import * as React from 'react';
 
 type Props = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
-const SafeTabLink: React.FC<Props> = (props: Props) => {
+const NewTabLink: React.FC<Props> = (props: Props) => {
     return (
         <a href={props.href} target="_blank" rel="noopener noreferrer">
             {props.children}
@@ -10,4 +10,4 @@ const SafeTabLink: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default SafeTabLink;
+export default NewTabLink;

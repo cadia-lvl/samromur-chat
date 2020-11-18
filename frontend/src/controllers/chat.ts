@@ -184,24 +184,6 @@ export default class Chat {
     }
 
     /**
-     * Pings the WebSocket server to ensure connection
-     */
-    private startPingPong() {
-        if (!this.reconnecting) {
-            const ping = {type: 'ping', message: ''};
-            this.sendMessage(ping);
-        }
-    }
-
-    /**
-     * The response from the ping message.
-     * Also starts the next ping
-     */
-    private handlePong() {
-        setTimeout(() => {this.startPingPong()}, 5000);
-    }
-
-    /**
      * Checks if the websocket is open and ready for messaging
      */
     private isWebSocketOpen = ()  => {
@@ -311,9 +293,6 @@ export default class Chat {
                 break;
             case 'error':
                 console.error('Error: ', message.message);
-                break;
-            case 'pong':
-                this.handlePong();
                 break;
             default:
                 console.error('Misunderstood, ', message);
