@@ -8,6 +8,7 @@ import Info from './information';
 import DropdownButton from '../ui/input/dropdown';
 import Checkbox from '../ui/input/checkbox';
 import TextInput from '../ui/input/text-input';
+import NewTabLink from './new-tab-link';
 
 const DemographicContainer = styled.div`
     display: grid;
@@ -173,12 +174,12 @@ export default class DemographicForm extends React.Component<Props, State> {
                 />
                 <Information title={'Hvers vegna skiptir þetta máli?'}>
                     <p>
-                        Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.
+                        Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá <NewTabLink href={terms}>skilmála</NewTabLink> og <NewTabLink href={privacypolicy}>persónuverndaryfirlýsingu</NewTabLink> verkefnisins.
                     </p>
                 </Information>
                 <AgreeContainer onClick={this.handleAgree}>
                     <Checkbox checked={agreed} onChange={this.handleAgree} />
-                    <span>Ég staðfesti að hafa kynnt mér <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.</span>
+                    <span>Ég staðfesti að hafa kynnt mér <NewTabLink href={terms}>skilmála</NewTabLink> og <NewTabLink href={privacypolicy}>persónuverndaryfirlýsingu</NewTabLink> verkefnisins.</span>
                 </AgreeContainer>
                 <SubmitButton onClick={this.onSubmit} disabled={!agreed || !age.name || !gender.name || !username}><span>Áfram</span></SubmitButton>
             </DemographicContainer>
