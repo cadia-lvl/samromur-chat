@@ -120,6 +120,9 @@ export default class Chat {
             // Start with voice transmitted
             await this.unMute();
 
+            // start websocket ping pong to keep the connection alive
+            this.startPingPong();
+
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -184,6 +187,23 @@ export default class Chat {
     }
 
     /**
+     * Sends ping to the server which should respond with pong 
+     * This ping ponging keeps the websocket connection open between server and client.
+     */
+    private startPingPong() {
+        const payload = { type: 'ping', message: ''}
+        this.sendMessage(payload);
+    }
+
+    /**
+     * Handles the pong return from the server, restarts the ping
+     * after a delay of 30 seconds.
+     */
+    private handlePong() {
+        setTimeout(() => this.startPingPong(), 30 * 1000);
+    }
+
+    /**
      * Checks if the websocket is open and ready for messaging
      */
     private isWebSocketOpen = ()  => {
@@ -191,14 +211,14 @@ export default class Chat {
     }
 
     /**
-     * Sends all the messages that the client tried to send while not connected to the server
-     * Then resets the unsentMessages array.
+     * Sends all the messages that the client tried to send while not connected to the server.
      */
     private sendUnsentMessages = () => {
+
         let delay = 250;
-        this.unsentMessages.forEach((message) => {
-            setTimeout(this.sendMessage(message), delay);
-            console.log(`Sending unsent message after: ${delay} milliseconds.`);
+        this.unsentMessages.forEach((message: Payload) => {
+            setTimeout(() => this.sendMessage(message), delay);
+            console.log(`Sending unsent message after: ${delay} milliseconds.`, message);
             delay += 250;
         });
         this.unsentMessages = [];
@@ -218,21 +238,23 @@ export default class Chat {
         console.warn('Connection with WebSocket is lost. Attempting to reconnect...');
         try {
             this.socket = await this.openSocket(this.socketUrl);
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error reconnecting to the server.');
         }
         this.reconnecting = !this.isWebSocketOpen();
         if (this.reconnecting) {
-            this.timeout = Math.min(10000, this.timeout + this.timeoutIncrement)
-            setTimeout(async () => {await this.reconnect()}, this.timeout);
+            this.timeout = Math.min(10000, this.timeout + this.timeoutIncrement);
+            setTimeout(async () => {
+                await this.reconnect();
+            }, this.timeout);
         }
         // Succefully reconnected
-        // Send all the stored messages
+        // Send all the stored messages and client name
         if (!this.reconnecting) {
+            this.setUsername(this.userClient.username);
             this.sendUnsentMessages();
             console.info('Successfully reconnected to the server.');
-            return Promise.resolve('Successfully reconnected to the server.');
+            return Promise.resolve('Successfully reconnected to the server.')
         }
     }
 
@@ -299,6 +321,9 @@ export default class Chat {
             case 'error':
                 console.error('Error: ', message.message);
                 break;
+            case 'pong':
+                this.handlePong();
+                break;
             default:
                 console.error('Misunderstood, ', message);
         }
@@ -322,12 +347,12 @@ export default class Chat {
         const user: UserClient = {
             ...message
         }
-        // Don't add duplicates.
-        if (!this.clients.find((client: UserClient) => client.id === user.id)) {
+        // If the client is not in the clients list add it and trigger onClientsChanged.
+        if (!this.clients.some((client: UserClient) => client.id === user.id)) {
             this.clients.push(user);
+            this.onClientsChanged(this.clients);
         }
-        this.onClientsChanged(this.clients);
-    }
+    };
 
     private handleClientDisconnected = (id: string) => {
         const newClients = this.clients.filter((client: UserClient) => client.id !== id);
