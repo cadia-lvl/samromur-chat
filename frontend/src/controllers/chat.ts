@@ -254,7 +254,7 @@ export default class Chat {
             this.setUsername(this.userClient.username);
             this.sendUnsentMessages();
             console.info('Successfully reconnected to the server.');
-            return Promise.resolve('Successfully reconnected to the server.')
+            return Promise.resolve('Successfully reconnected to the server.');
         }
     }
 
