@@ -97,7 +97,7 @@ class FrontPage extends React.Component<Props, State> {
                         </SubmitButton>
                     </JoinContainer>
                     <WelcomeTextContainer>
-                        <h3>Kæri þátttakandi,</h3>
+                        <h3>Kæri þátttakandi</h3>
                         <p>
                             Þátttaka þín í þessu verkefni felst í því að eiga samtal við annan þátttakenda í 10 til 30
                             mínútur. Samtölin munu í kjölfarið vera rituð niður. Afurð þessa verkefnis er opið og
@@ -108,23 +108,26 @@ class FrontPage extends React.Component<Props, State> {
                         <h4>Um hvað má spjalla?</h4>
                         <p>
                             Umræðuefnið má vera allt milli himins og jarðar en hafa ber í huga að samtalið og skrifleg
-                            útgáfa þess verður opin öllum. Vegna þess biðjum við um að engar persónugreinanlegar upplýsingar
-                            verði hluti af samtalinu. Dæmi um slíkar upplýsingar er nafn, kennitala eða heimilisfang þitt og
+                            útgáfa þess verður opin öllum. Vegna þess biðjum við um að þátttakendur gæti varðúðar þegar rætt eru um
+                            persónugreinanlegar upplýsingar. Dæmi um slíkar upplýsingar er nafn, kennitala eða heimilisfang þitt og/eða
                             annara. Ef slíkar upplýsingar slæðast með má hafa samband við okkur á netfangið samromur@ru.is
                             og við fjarlægjum þær áður en gögnin verða birt. Stöku slettur úr öðrum tungumálum eru í lagi og
                             það sama á við um lengri þagnir, hikorð og önnur hljóð svo sem ræskingar eða hósta. Það sem
                             skiptir mestu er að talað sé með eðlilegum hætti en þetta er jú allt hluti af eðlilegu talmáli.
+                            Það kann að vera, fyrir suma, áhugavert verkefni að ákveða að setjast niður til spjalls í fyrirfram tilgreindan
+                            tíma. Eitt ráð við því er að rita niður nokkra umræðupunkta fyrirfram sem hægt er að grípa til ef þörf krefur.
+                            En fyrst og fremst má reyna njóta af þeirri núvitund sem fæst af góðu spjalli.   
                         </p>
                         <h4>Hvernig fer spjallið fram?</h4>
                         <p>
-                            Á vefsíðunni spjall.samromur.is geta þátttakendur búið til spjallsvæði sem þeir geta deilt með
-                            öðrum þátttakendum. Við þátttöku má notast við síma, tölvu eða spjaldtölvu, svo lengi sem það er
-                            skikkanlegur hljóðnemi á tækinu. Að svo stöddu þarf að nota Chrome vafrann. Til þess að tryggja
-                            góð hljóðgæði er mælt er með því að þátttakendur noti heyrnartól með hljóðnema. Ef þátttakendur
-                            taka þátt í sama herberginu er mikilvægt að tryggja að nægileg fjarlægð sé á milli þátttakenda
-                            svo framlag hvers þátttakenda haldist hreint af öðru tali. 
+                            Annar þátttakenda býr til „herbergi“ með því að smella á „Opna“ hér að ofan og fyllir næst inn umbeðnar
+                            upplýsingar. Því næst getur sá sent hlekk að herberginu hinn þátttakendann. Við þátttöku má notast við síma, tölvu eða 
+                            spjaldtölvu, svo lengi sem það er skikkanlegur hljóðnemi á tækinu. Að svo stöddu þarf að nota Chrome 
+                            vafrann. Til þess að tryggja góð hljóðgæði er mælt er með því að þátttakendur noti heyrnartól með hljóðnema.
+                            Ef þátttakendur eru á sama stað þegar tekið er upp er mikilvægt að tryggja að nægileg fjarlægð sé á milli þátttakenda
+                            svo framlag hvors þátttakenda haldist hreint af öðru tali. 
                         </p>
-                        <NewTabLink href="https://www.youtube.com/watch?v=pwi1fD0A6L4&feature=youtu.be">Stutt demo</NewTabLink>
+                        <NewTabLink href="https://www.youtube.com/watch?v=pwi1fD0A6L4&feature=youtu.be">Sjá hér stutt kynningarmyndband um ferlið</NewTabLink>
                     </WelcomeTextContainer>
                 </FrontPageContainer>
             </Layout>
