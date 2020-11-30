@@ -99,7 +99,7 @@ class FrontPage extends React.Component<Props, State> {
                     <WelcomeTextContainer>
                         <h3>Kæri þátttakandi,</h3>
                         <p>
-                            Þátttaka þín í þessu verkefni felst í því að eiga samtal við annan þátttakenda í 10 til 30
+                            Þátttaka þín í þessu verkefni felst í því að eiga samtal við annan þátttakenda í 15 til 30
                             mínútur. Samtölin munu í kjölfarið vera rituð niður. Afurð þessa verkefnis er opið og
                             aðgengilegt gagnasafn af samræðum á íslensku. Slík gögn koma til nota við þróun máltæknilausna
                             og eru mikilvægur þáttur í að vernda íslenskuna á stafrænum tímum. Þátttakendur verða ekki
