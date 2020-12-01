@@ -252,7 +252,7 @@ class Chatroom extends React.Component<Props, State> {
 
     constructSocketUrl = (): string => {
         // Remove trailing slash
-        const pathname = window.location.href.replace(/\/$/, "");
+        const pathname = location.protocol + '//' + window.location.host + window.location.pathname;
 
         // Destructure pathname
         const parts = pathname.split('/');
