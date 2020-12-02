@@ -6,8 +6,9 @@ import {
 } from "react-router-dom";
 
 import TextInput from '../ui/input/text-input';
-
 import Layout from '../ui/layout';
+import UnsupportedBrowser from '../ui/unsupported-browser';
+import { isChromium } from '../../utilities/utils';
 
 const FrontPageContainer = styled.div`
     display: flex;
@@ -76,24 +77,31 @@ class FrontPage extends React.Component<Props, State> {
     }
 
     render() {
-        return (
-            <Layout>
-                <FrontPageContainer>
-                    <JoinContainer>
-                        <UrlInput
-                            label={'Opna spjall'}
-                            value={this.state.userUrl}
-                            placeholder={'Spjallkóði'}
-                            onChange={this.onUrlChange}
-                        />
-                        <SubmitButton onClick={this.handleJoin}>
-                            <span>Opna</span>
-                        </SubmitButton>
-                    </JoinContainer>
+        if (isChromium()) {
+            return (
+                <Layout>
+                    <FrontPageContainer>
+                        <JoinContainer>
+                            <UrlInput
+                                label={'Opna spjall'}
+                                value={this.state.userUrl}
+                                placeholder={'Spjallkóði'}
+                                onChange={this.onUrlChange}
+                            />
+                            <SubmitButton onClick={this.handleJoin}>
+                                <span>Opna</span>
+                            </SubmitButton>
+                        </JoinContainer>
 
-                </FrontPageContainer>
-            </Layout>
-        );
+                    </FrontPageContainer>
+                </Layout>
+            );
+        } else {
+            return (
+                <UnsupportedBrowser>
+                </UnsupportedBrowser>
+            )
+        }
     }
 }
 
