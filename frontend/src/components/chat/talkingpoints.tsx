@@ -114,7 +114,8 @@ export default class TalkingPoint extends React.Component<Props, State> {
                 {display && (
                     <TalkingPointInput
                         label={talkingpoint[0]}
-                        defaultValue={talkingpoint[1]}
+                        value={talkingpoint[1]}
+                        readOnly
                     />
                 )}
             </TalkingPointContainer>
