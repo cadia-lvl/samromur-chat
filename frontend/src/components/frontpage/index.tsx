@@ -98,8 +98,9 @@ class FrontPage extends React.Component<Props, State> {
             );
         } else {
             return (
-                <UnsupportedBrowser>
-                </UnsupportedBrowser>
+                <Layout>
+                    <UnsupportedBrowser />
+                </Layout>
             )
         }
     }

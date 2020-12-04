@@ -189,8 +189,7 @@ export default class DemographicForm extends React.Component<Props, State> {
             );
         } else {
             return (
-                <UnsupportedBrowser>
-                </UnsupportedBrowser>
+                <UnsupportedBrowser />
             )
         }
     }

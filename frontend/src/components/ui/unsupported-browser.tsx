@@ -16,12 +16,10 @@ export default class UnsupportedBrowser extends React.Component {
 
     render() {
         return (
-                <Layout>
-                    <UnsupportedBrowserContainer>
-                            <h1>{unsupportedText.unsupportedBrowserHeading}</h1>
-                            <p>{unsupportedText.unsupportedBrowserContent}</p>
-                    </UnsupportedBrowserContainer>
-                </Layout>
+                <UnsupportedBrowserContainer>
+                        <h1>{unsupportedText.unsupportedBrowserHeading}</h1>
+                        <p>{unsupportedText.unsupportedBrowserContent}</p>
+                </UnsupportedBrowserContainer>
         );
     }
 }
