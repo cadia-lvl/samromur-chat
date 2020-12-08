@@ -99,7 +99,7 @@ class FrontPage extends React.Component<Props, State> {
                                 30 mínútur. Samtölin munu í kjölfarið vera rituð niður. Afurð þessa verkefnis er opið og
                                 aðgengilegt gagnasafn af samræðum á íslensku. Slík gögn koma til nota við þróun
                                 máltæknilausna og eru mikilvægur þáttur í að vernda íslenskuna á stafrænum tímum.
-                                Þátttakendur verða ekki nafngreindir en kyn, aldur, og móðurmál þátttakenda mun fylgja
+                                Þátttakendur verða ekki nafngreindir en kyn og aldur þátttakenda mun fylgja
                                 með í gagnasafninu.
                             </p>
                             <h4>Um hvað má spjalla?</h4>
@@ -116,9 +116,9 @@ class FrontPage extends React.Component<Props, State> {
                             <h4>Hvernig fer spjallið fram?</h4>
                             <p>
                                 Á vefsíðunni spjall.samromur.is geta þátttakendur búið til spjallsvæði sem þeir geta
-                                deilt með öðrum þátttakendum. Við þátttöku má notast við síma, tölvu eða spjaldtölvu,
-                                svo lengi sem það er skikkanlegur hljóðnemi á tækinu. Að svo stöddu þarf að nota Chrome
-                                vafrann. Til þess að tryggja góð hljóðgæði er mælt er með því að þátttakendur noti
+                                deilt með öðrum þátttakendum. Við þátttöku má notast við síma, tölvu eða spjaldtölvu
+                                frá öðrum framleiðendum en Apple einnig þarf að nota Chrome vafrann. 
+                                Til þess að tryggja góð hljóðgæði er mælt er með því að þátttakendur noti
                                 heyrnartól með hljóðnema. Ef þátttakendur taka þátt í sama herberginu er mikilvægt að
                                 tryggja að nægileg fjarlægð sé á milli þátttakenda svo framlag hvers þátttakenda haldist
                                 hreint af öðru tali.
