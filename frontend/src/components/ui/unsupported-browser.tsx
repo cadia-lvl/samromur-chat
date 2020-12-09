@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import Layout from '../ui/layout';
 import { unsupportedText } from '../../constants/is-is';
 
 const UnsupportedBrowserContainer = styled.div`
