@@ -4,13 +4,13 @@ import { S3 } from 'aws-sdk';
 export type AmazonS3 = {
     BUCKET_NAME: string;
     CONFIG: S3.Types.ClientConfiguration;
-}
+};
 
 export type Config = AmazonS3;
 
 const defaults: Config = {
     BUCKET_NAME: '',
-    CONFIG: {}
+    CONFIG: {},
 };
 
 let loadedConfig: Config;
@@ -30,7 +30,7 @@ export const getConfig = (): Config => {
     loadedConfig = { ...defaults, ...config };
 
     return loadedConfig;
-}
+};
 
 export const verifyConfig = (): boolean => {
     const config = getConfig();
@@ -39,4 +39,4 @@ export const verifyConfig = (): boolean => {
     } else {
         return true;
     }
-}
+};

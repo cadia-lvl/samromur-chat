@@ -1,10 +1,10 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const Icon = styled.svg.attrs({
     version: '1.1',
     xmlns: 'http://www.w3.org/2000/svg',
     xmlnsXlink: 'http://www.w3.org/1999/xlink',
-})``
+})``;
 
 export interface IconProps {
     height?: number;
@@ -19,8 +19,8 @@ export interface IconProps {
 }
 
 // To-do: large to medium and medium to small etc on small screens
-export default styled(Icon) <IconProps>`
-    height: ${({ height }) => height ? height : '20px'};
-    width: ${({ width }) => width ? width : '20px'};
-    fill: ${({ fill }) => !!fill ? fill : 'gray'};
+export default styled(Icon)<IconProps>`
+    height: ${({ height }) => (height ? height : '20px')};
+    width: ${({ width }) => (width ? width : '20px')};
+    fill: ${({ fill }) => (!!fill ? fill : 'gray')};
 `;

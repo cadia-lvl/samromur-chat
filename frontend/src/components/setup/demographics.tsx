@@ -19,7 +19,6 @@ const DemographicContainer = styled.div`
         width: 100%;
         grid-template-columns: 1fr;
     }
-
 `;
 
 const UsernameInput = styled(TextInput)`
@@ -49,11 +48,11 @@ const SubmitButton = styled.div<SubmitButtonProps>`
     align-items: center;
 
     border-radius: 0.1rem;
-    
-    background-color: ${({ disabled }) => disabled ? 'gray' : '#60C197'};
+
+    background-color: ${({ disabled }) => (disabled ? 'gray' : '#60C197')};
     color: white;
 
-    cursor: ${({ disabled }) => disabled ? 'initial' : 'pointer'};
+    cursor: ${({ disabled }) => (disabled ? 'initial' : 'pointer')};
     & :active {
         transform: ${({ disabled }) => `translateY(${disabled ? 0 : 2}px)`};
     }
@@ -103,7 +102,6 @@ interface State {
     username: string;
 }
 
-
 export default class DemographicForm extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -118,28 +116,32 @@ export default class DemographicForm extends React.Component<Props, State> {
                 id: '',
                 name: '',
             },
-            username: ''
-        }
+            username: '',
+        };
     }
 
     handleAgree = () => {
         this.setState({ agreed: !this.state.agreed });
-    }
+    };
 
     onUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const username = e.currentTarget.value;
         this.setState({ username });
-    }
+    };
 
     onAgeSelect = (value: string) => {
-        const age = ages.find((val: Demographic) => val.name === value) as Demographic;
+        const age = ages.find(
+            (val: Demographic) => val.name === value
+        ) as Demographic;
         this.setState({ age });
-    }
+    };
 
     onGenderSelect = (value: string) => {
-        const gender = genders.find((val: Demographic) => val.name === value) as Demographic;
+        const gender = genders.find(
+            (val: Demographic) => val.name === value
+        ) as Demographic;
         this.setState({ gender });
-    }
+    };
 
     onSubmit = () => {
         const { age, agreed, gender, username } = this.state;
@@ -147,7 +149,7 @@ export default class DemographicForm extends React.Component<Props, State> {
             return;
         }
         this.props.onSubmit(age.id, gender.id, username);
-    }
+    };
 
     render() {
         const { age, agreed, gender, username } = this.state;
@@ -173,14 +175,39 @@ export default class DemographicForm extends React.Component<Props, State> {
                 />
                 <Information title={'Hvers vegna skiptir þetta máli?'}>
                     <p>
-                        Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.
+                        Ofantaldar upplýsingar eru notaðar til að meta hversu
+                        lýðfræðilega dreift gagnasafnið er. Því dreifðara og
+                        fjölbreyttara sem það er, því betra. Sjá{' '}
+                        <a href={terms} target="_blank">
+                            skilmála
+                        </a>{' '}
+                        og{' '}
+                        <a href={privacypolicy} target="_blank">
+                            persónuverndaryfirlýsingu
+                        </a>{' '}
+                        verkefnisins.
                     </p>
                 </Information>
                 <AgreeContainer onClick={this.handleAgree}>
                     <Checkbox checked={agreed} onChange={this.handleAgree} />
-                    <span>Ég staðfesti að hafa kynnt mér <a href={terms} target="_blank">skilmála</a> og <a href={privacypolicy} target="_blank">persónuverndaryfirlýsingu</a> verkefnisins.</span>
+                    <span>
+                        Ég staðfesti að hafa kynnt mér{' '}
+                        <a href={terms} target="_blank">
+                            skilmála
+                        </a>{' '}
+                        og{' '}
+                        <a href={privacypolicy} target="_blank">
+                            persónuverndaryfirlýsingu
+                        </a>{' '}
+                        verkefnisins.
+                    </span>
                 </AgreeContainer>
-                <SubmitButton onClick={this.onSubmit} disabled={!agreed || !age.name || !gender.name || !username}><span>Áfram</span></SubmitButton>
+                <SubmitButton
+                    onClick={this.onSubmit}
+                    disabled={!agreed || !age.name || !gender.name || !username}
+                >
+                    <span>Áfram</span>
+                </SubmitButton>
             </DemographicContainer>
         );
     }

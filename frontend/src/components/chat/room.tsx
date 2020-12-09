@@ -1,19 +1,20 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {
-    withRouter,
-    RouteComponentProps,
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import { AudioInfo } from '../../types/audio';
 import { UserClient } from '../../types/user';
 
-import Chat, { ChatState, RecordingState, VoiceState } from '../../controllers/chat';
+import Chat, {
+    ChatState,
+    RecordingState,
+    VoiceState,
+} from '../../controllers/chat';
 import MicIcon from '../ui/icons/mic';
 import Controls from './controls';
 import Recordings from './recordings';
 import TalkingPoints from './talkingpoints';
-import {ToastContainer, toast, Slide} from 'react-toastify';
+import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ChatroomContainer = styled.div`
@@ -41,8 +42,7 @@ const CounterContainer = styled.div<{ active: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    transform:
-        scale(${({ active }) => active ? 1 : 0});
+    transform: scale(${({ active }) => (active ? 1 : 0)});
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
@@ -51,15 +51,14 @@ const UserList = styled.div`
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    border: 1px solid #CCCCCC;
+    border: 1px solid #cccccc;
 `;
-
 
 const ListItem = styled.div<{ i?: number }>`
     width: 100%;
     display: grid;
     grid-template-columns: auto 3rem;
-    background-color: ${({ i }) => i % 2 === 0 ? '#EBEBEB' : 'white'};
+    background-color: ${({ i }) => (i % 2 === 0 ? '#EBEBEB' : 'white')};
 
     gap: 1rem;
 
@@ -105,12 +104,12 @@ const Indicator = styled.div<{ connected: boolean }>`
     height: 0.5rem;
     width: 0.5rem;
     border-radius: 50%;
-    background-color: ${({ connected }) => connected ? '#60C197' : 'gray'};
+    background-color: ${({ connected }) => (connected ? '#60C197' : 'gray')};
 `;
 
 const ShareButton = styled.div`
     align-self: center;
-    background-color: #60C197;
+    background-color: #60c197;
     color: white;
     display: flex;
     justify-content: center;
@@ -143,12 +142,11 @@ const StyledToastContainer = styled(ToastContainer).attrs({
     progressClassName: 'progress',
 })`
     .toast {
-        background-color: #60C197;
+        background-color: #60c197;
         color: white;
         text-align: center;
     }
 `;
-
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
@@ -168,7 +166,7 @@ interface RouteProp {
     roomId: string;
 }
 
-type Props = ChatroomProps & RouteComponentProps<RouteProp>
+type Props = ChatroomProps & RouteComponentProps<RouteProp>;
 
 class Chatroom extends React.Component<Props, State> {
     private audioRef: React.RefObject<HTMLAudioElement>;
@@ -186,7 +184,7 @@ class Chatroom extends React.Component<Props, State> {
             voiceState: VoiceState.VOICE_DISCONNECTED,
             clients: [userClient],
             recording: undefined,
-        }
+        };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
     }
@@ -195,32 +193,39 @@ class Chatroom extends React.Component<Props, State> {
         const url = this.constructSocketUrl();
         const { userClient } = this.props;
         this.chat = new Chat(url, userClient);
-        this.chat.onClientsChanged = (clients: UserClient[]) => this.setState({ clients })
+        this.chat.onClientsChanged = (clients: UserClient[]) =>
+            this.setState({ clients });
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
-        this.chat.onVoiceStateChanged = (voiceState) => this.setState({ voiceState });
+        this.chat.onVoiceStateChanged = (voiceState) =>
+            this.setState({ voiceState });
 
         this.chat.onAudioTrack = (stream: MediaStream) => {
             const { current: audio } = this.audioRef;
             if (audio) {
                 audio.srcObject = stream;
             }
-        }
+        };
 
         this.chat.onRecordingStopped = (recording: AudioInfo) => {
             this.setState({ recording });
-        }
-    }
+        };
+    };
 
     removeRecording = () => {
         this.setState({ recording: undefined });
-    }
+    };
 
     isCountingDown = () => this.interval && this.timeout;
 
     startCountdown = () => {
         if (!this.isCountingDown()) {
             this.interval = setInterval(() => {
-                this.setState({ countdown: this.state.countdown === 1 ? 1 : this.state.countdown - 1 });
+                this.setState({
+                    countdown:
+                        this.state.countdown === 1
+                            ? 1
+                            : this.state.countdown - 1,
+                });
             }, 1000);
 
             this.timeout = setTimeout(() => {
@@ -228,7 +233,7 @@ class Chatroom extends React.Component<Props, State> {
                 this.removeCountdown();
             }, 3000);
         }
-    }
+    };
 
     removeCountdown = () => {
         clearInterval(this.interval);
@@ -236,7 +241,7 @@ class Chatroom extends React.Component<Props, State> {
         this.interval = undefined;
         this.timeout = undefined;
         setTimeout(() => this.setState({ countdown: 3 }), 300);
-    }
+    };
 
     handleRecordingStateChanged = (recordingState: RecordingState) => {
         this.setState({ recordingState });
@@ -248,11 +253,11 @@ class Chatroom extends React.Component<Props, State> {
         } else {
             this.removeCountdown();
         }
-    }
+    };
 
     constructSocketUrl = (): string => {
         // Remove trailing slash
-        const pathname = window.location.href.replace(/\/$/, "");
+        const pathname = window.location.href.replace(/\/$/, '');
 
         // Destructure pathname
         const parts = pathname.split('/');
@@ -270,17 +275,19 @@ class Chatroom extends React.Component<Props, State> {
         const endpoint = url.replace('http', 'ws');
 
         // Get client id
-        const { userClient: { id } } = this.props;
+        const {
+            userClient: { id },
+        } = this.props;
 
         // Concat client id
         return endpoint.concat(`/${id}`);
-    }
+    };
 
     onSubmit = () => {
         const { recording } = this.state;
         const { onUpload } = this.props;
         onUpload(recording);
-    }
+    };
 
     copyToClipBoard = async () => {
         const toastId = 'toast-copied';
@@ -289,14 +296,14 @@ class Chatroom extends React.Component<Props, State> {
             await navigator.clipboard.writeText(window.location.href);
             toast('Tengill afritaður.', {
                 draggable: false,
-                toastId // prevent duplicates
-                });
+                toastId, // prevent duplicates
+            });
         } catch (err) {
             toast('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
-                toastId: 'toast-error'
-            })
+                toastId: 'toast-error',
+            });
         }
-    }
+    };
 
     render() {
         const {
@@ -304,29 +311,45 @@ class Chatroom extends React.Component<Props, State> {
             countdown,
             recordingState,
             recording,
-            voiceState
+            voiceState,
         } = this.state;
 
-        const { match: { params: { roomId } } } = this.props;
+        const {
+            match: {
+                params: { roomId },
+            },
+        } = this.props;
 
         return (
             <ChatroomContainer>
                 <CounterContainer
-                    active={recordingState === RecordingState.RECORDING_REQUESTED}>
+                    active={
+                        recordingState === RecordingState.RECORDING_REQUESTED
+                    }
+                >
                     {countdown}
                 </CounterContainer>
-                <ShareButton onClick={this.copyToClipBoard}><span>Smelltu til að afrita hlekkinn og deildu með vini</span></ShareButton>
+                <ShareButton onClick={this.copyToClipBoard}>
+                    <span>
+                        Smelltu til að afrita hlekkinn og deildu með vini
+                    </span>
+                </ShareButton>
                 <UserList>
                     <ListHeader>
-                        <HeaderItem><span>Viðmælandi</span><span>Spjallkóði: <span>{roomId}</span></span></HeaderItem>
+                        <HeaderItem>
+                            <span>Viðmælandi</span>
+                            <span>
+                                Spjallkóði: <span>{roomId}</span>
+                            </span>
+                        </HeaderItem>
                         <MicIcon height={30} width={30} />
                     </ListHeader>
-                    {clients.map((client: UserClient, i: number) =>
+                    {clients.map((client: UserClient, i: number) => (
                         <ListItem i={i} key={i}>
                             <span>{client.username}</span>
                             <Indicator connected={client.voice} />
                         </ListItem>
-                    )}
+                    ))}
                 </UserList>
                 <Recordings
                     chat={this.chat}
@@ -341,11 +364,7 @@ class Chatroom extends React.Component<Props, State> {
                     recordingState={recordingState}
                     voiceState={voiceState}
                 />
-                <Audio
-                    autoPlay
-                    controls
-                    ref={this.audioRef}
-                />
+                <Audio autoPlay controls ref={this.audioRef} />
                 <TalkingPoints
                     recording={recording}
                     recordingState={recordingState}

@@ -1,6 +1,6 @@
 export enum DemographicError {
     NO_AGE = 'NO_AGE',
-    NO_GENDER = 'NO_GENDER'
+    NO_GENDER = 'NO_GENDER',
 }
 
 export interface Demographic {

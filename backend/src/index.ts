@@ -23,7 +23,9 @@ if (isProduction) {
     server.use(express.static('public'));
 
     // Also serve /:id for dynamic chat room slugs
-    server.get('/:id', (_, res: Response) => res.sendFile(join(__dirname, '../public/index.html')));
+    server.get('/:id', (_, res: Response) =>
+        res.sendFile(join(__dirname, '../public/index.html'))
+    );
 }
 
 // Define port
@@ -31,5 +33,9 @@ const port = 3030;
 
 // Start
 server.listen(port, () => {
-    console.log(`Started @ localhost:${port} in ${isProduction ? 'production' : 'development'} mode`);
+    console.log(
+        `Started @ localhost:${port} in ${
+            isProduction ? 'production' : 'development'
+        } mode`
+    );
 });

@@ -1,7 +1,4 @@
-import {
-    AudioInfo,
-    AudioError,
-} from '../types/audio';
+import { AudioInfo, AudioError } from '../types/audio';
 
 import WavEncoder from '../worker';
 
@@ -21,7 +18,6 @@ export default class Recorder {
     constructor({ sampleRate }: RecorderConfig) {
         this.sampleRate = sampleRate;
         this.encoder = new WavEncoder();
-
     }
 
     private isReady = (): boolean => !!this.microphone;
@@ -32,10 +28,12 @@ export default class Recorder {
                 audio: true,
                 channelCount: 1,
                 sampleRate: this.sampleRate,
-            }
+            };
 
             if (navigator.mediaDevices?.getUserMedia) {
-                navigator.mediaDevices.getUserMedia(options).then(resolve, reject);
+                navigator.mediaDevices
+                    .getUserMedia(options)
+                    .then(resolve, reject);
             } else if (navigator.getUserMedia) {
                 navigator.getUserMedia(options, resolve, reject);
             } else if (navigator.webkitGetUserMedia) {
@@ -46,7 +44,7 @@ export default class Recorder {
                 reject(AudioError.NO_SUPPORT);
             }
         });
-    }
+    };
 
     private start = (): Promise<void> => {
         this.processorNode.connect(this.audioContext.destination);
@@ -59,12 +57,12 @@ export default class Recorder {
         this.processorNode.onaudioprocess = (ev: AudioProcessingEvent) => {
             this.encoder.postMessage({
                 command: 'encode',
-                buffer: ev.inputBuffer.getChannelData(0)
+                buffer: ev.inputBuffer.getChannelData(0),
             });
-        }
+        };
 
         return Promise.resolve();
-    }
+    };
 
     private getBlobDuration = async (url: string): Promise<number> => {
         return new Promise((resolve) => {
@@ -74,7 +72,7 @@ export default class Recorder {
                 resolve(tempVideoEl.duration as number);
             });
         });
-    }
+    };
 
     private stop = (): Promise<AudioInfo> => {
         if (!this.isReady()) {
@@ -86,7 +84,9 @@ export default class Recorder {
             this.processorNode.disconnect();
             this.sourceNode.disconnect();
             this.encoder.onmessage = async (event) => {
-                const { data: { blob } } = event;
+                const {
+                    data: { blob },
+                } = event;
                 const url = URL.createObjectURL(blob);
                 const duration = await this.getBlobDuration(url);
                 resolve({
@@ -95,12 +95,12 @@ export default class Recorder {
                     url,
                     sampleRate: this.sampleRate,
                 });
-            }
+            };
             this.encoder.postMessage({
                 command: 'finish',
-            })
+            });
         });
-    }
+    };
 
     // Check all the browser prefixes for microhpone support.
     isMicrophoneSupported = (): boolean => {
@@ -110,7 +110,7 @@ export default class Recorder {
             navigator.webkitGetUserMedia ||
             navigator.mozGetUserMedia
         );
-    }
+    };
 
     init = async (): Promise<MediaStream> => {
         if (this.isReady()) {
@@ -123,21 +123,26 @@ export default class Recorder {
         const rtcStream = this.microphone.clone();
 
         this.audioContext = new AudioContext({ sampleRate: this.sampleRate });
-        this.sourceNode = this.audioContext.createMediaStreamSource(recordingStream);
-        this.processorNode = this.sourceNode.context.createScriptProcessor(2048, 1, 1);
+        this.sourceNode = this.audioContext.createMediaStreamSource(
+            recordingStream
+        );
+        this.processorNode = this.sourceNode.context.createScriptProcessor(
+            2048,
+            1,
+            1
+        );
         this.processorNode.connect(this.audioContext.destination);
         this.sourceNode.connect(this.processorNode);
 
-
         return Promise.resolve(rtcStream);
-    }
+    };
 
     startRecording = async (): Promise<void> => {
         if (!this.isMicrophoneSupported) {
             return Promise.reject();
         }
         return this.start();
-    }
+    };
 
     stopRecording = async (): Promise<AudioInfo> => this.stop();
 
@@ -149,5 +154,5 @@ export default class Recorder {
         }
 
         this.microphone = undefined;
-    }
+    };
 }

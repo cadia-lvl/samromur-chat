@@ -55,7 +55,7 @@ export default class Chat {
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
-            sampleRate: 16000
+            sampleRate: 16000,
         });
         this.socketUrl = socketUrl;
         this.userClient = userClient;
@@ -69,32 +69,30 @@ export default class Chat {
 
         // Note these are public google STUN servers
         this.rtcConfiguration = {
-            "iceServers": [
+            iceServers: [
                 {
-                    "urls": [
-                        "stun:stun4.l.google.com:19302"
-                    ]
-                }
-            ]
+                    urls: ['stun:stun4.l.google.com:19302'],
+                },
+            ],
         };
         this.init();
     }
 
-    private setCallState = (state: CallState) => this.callState = state;
+    private setCallState = (state: CallState) => (this.callState = state);
 
     private setChatState = (state: ChatState) => {
         this.chatState = state;
-    }
+    };
 
     private setRecordingState = (state: RecordingState) => {
         this.recordingState = state;
         this.onRecordingStateChanged(state);
-    }
+    };
 
     private setVoiceState = (state: VoiceState) => {
         this.voiceState = state;
         this.onVoiceStateChanged(state);
-    }
+    };
 
     private init = async () => {
         try {
@@ -104,11 +102,10 @@ export default class Chat {
 
             // Open RTC Connection
             this.rtcConnection = await this.openRTC();
-
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
-    }
+    };
 
     private openSocket = (url: string): Promise<WebSocket> => {
         return new Promise((resolve, reject) => {
@@ -116,11 +113,11 @@ export default class Chat {
             socket.onopen = () => {
                 this.setChatState(ChatState.CONNECTED);
                 resolve(socket);
-            }
+            };
             socket.onerror = (e) => {
                 console.error('error?');
                 reject(e);
-            }
+            };
             socket.onclose = () => {
                 this.setChatState(ChatState.DISCONNECTED);
             };
@@ -131,30 +128,32 @@ export default class Chat {
                 } catch (e) {
                     console.error('Error parsing json: ', e);
                 }
-            }
+            };
         });
-    }
+    };
 
     private openRTC = async (): Promise<webkitRTCPeerConnection> => {
         try {
-            const connection = new webkitRTCPeerConnection(this.rtcConfiguration);
-            // When a remote user adds stream to the peer connection, we display it 
+            const connection = new webkitRTCPeerConnection(
+                this.rtcConfiguration
+            );
+            // When a remote user adds stream to the peer connection, we display it
             connection.ontrack = (event: RTCTrackEvent) => {
                 const remoteAudio = event.streams[0];
                 this.onAudioTrack(remoteAudio);
             };
 
-            // Setup ice handling 
+            // Setup ice handling
             connection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
                 if (event.candidate) {
                     this.sendMessage({
-                        type: "candidate",
-                        candidate: event.candidate
+                        type: 'candidate',
+                        candidate: event.candidate,
                     });
                 }
             };
 
-            // Setup stream listening 
+            // Setup stream listening
             this.microphone.getTracks().forEach((track: MediaStreamTrack) => {
                 connection.addTrack(track, this.microphone);
             });
@@ -162,7 +161,7 @@ export default class Chat {
         } catch (error) {
             return Promise.reject(error);
         }
-    }
+    };
 
     private sendMessage = (payload: { [key: string]: any }): Promise<void> => {
         try {
@@ -172,7 +171,7 @@ export default class Chat {
             console.error('Error sending message, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     private onMessage = (message: any) => {
         switch (message.type) {
@@ -215,35 +214,44 @@ export default class Chat {
             default:
                 console.error('Misunderstood, ', message);
         }
-    }
+    };
 
     private handleSessionId = (id: string) => {
-        // _client_b is appended for the user recieving recording 
+        // _client_b is appended for the user recieving recording
         this.sessionId = id + '_client_b';
-    }
+    };
 
-    private updateClient = async (id: string, update: { [type: string]: any }): Promise<UserClient[]> => {
+    private updateClient = async (
+        id: string,
+        update: { [type: string]: any }
+    ): Promise<UserClient[]> => {
         // Wait for array update before updating the state
-        const newClients: UserClient[] = await Promise.all(this.clients.map((client) =>
-            client.id === id ? Promise.resolve({ ...client, ...update }) : Promise.resolve(client)
-        ));
+        const newClients: UserClient[] = await Promise.all(
+            this.clients.map((client) =>
+                client.id === id
+                    ? Promise.resolve({ ...client, ...update })
+                    : Promise.resolve(client)
+            )
+        );
 
         return Promise.resolve(newClients);
-    }
+    };
 
     private handleNewClient = (message: any) => {
         const user: UserClient = {
-            ...message
-        }
+            ...message,
+        };
         this.clients.push(user);
         this.onClientsChanged(this.clients);
-    }
+    };
 
     private handleClientDisconnected = (id: string) => {
-        const newClients = this.clients.filter((client: UserClient) => client.id !== id);
+        const newClients = this.clients.filter(
+            (client: UserClient) => client.id !== id
+        );
         this.clients = newClients;
         this.onClientsChanged(this.clients);
-    }
+    };
 
     private handleClientChanged = async (message: any) => {
         let update: { [key: string]: any } = {};
@@ -260,17 +268,17 @@ export default class Chat {
         }
         this.clients = await this.updateClient(message.id, update);
         this.onClientsChanged(this.clients);
-    }
+    };
 
     private setUsername = async (username: string): Promise<void> => {
         return this.sendMessage({ type: 'set_username', value: username });
-    }
+    };
 
     private handleIncomingCall = async (message: any) => {
         this.incomingOffer = message.offer;
         this.setCallState(CallState.INCOMING_CALL);
         await this.answer();
-    }
+    };
 
     private handleIncomingAnswer = async (message: any) => {
         try {
@@ -280,7 +288,7 @@ export default class Chat {
             // To-do error handling?
             console.error('Error handling incoming answer, ', error);
         }
-    }
+    };
 
     private handleIncomingCandidate = async (message: any) => {
         const candidate = new RTCIceCandidate(message.candidate);
@@ -289,8 +297,7 @@ export default class Chat {
         } catch (error) {
             console.error('Error handling ice candidate');
         }
-
-    }
+    };
 
     private handleStartRecording = async () => {
         try {
@@ -299,7 +306,7 @@ export default class Chat {
             // To-do error handling?
             console.error('Error handling start recording, ', error);
         }
-    }
+    };
 
     private handleStopRecording = async () => {
         try {
@@ -313,34 +320,52 @@ export default class Chat {
             // To-do error handling?
             console.error('Error handling stop recording, ', error);
         }
-    }
+    };
 
     private handleCancelRecording = async () => {
         this.setRecordingState(RecordingState.NOT_RECORDING);
-    }
+    };
 
     private handleHangUp = async () => {
         this.rtcConnection.close();
         this.rtcConnection = await this.openRTC();
         this.setCallState(CallState.HUNG_UP);
-    }
+    };
 
     public unMute = async () => {
         this.setVoiceState(VoiceState.VOICE_CONNECTED);
-        const unmuted = this.clients.find((client: UserClient) => client.voice === true);
+        const unmuted = this.clients.find(
+            (client: UserClient) => client.voice === true
+        );
         if (unmuted) {
             this.call();
         }
-        this.handleClientChanged({ id: this.userClient.id, parameter: 'set_voice', value: true })
-        this.sendMessage({ id: this.userClient.id, type: 'set_voice', value: true });
-    }
+        this.handleClientChanged({
+            id: this.userClient.id,
+            parameter: 'set_voice',
+            value: true,
+        });
+        this.sendMessage({
+            id: this.userClient.id,
+            type: 'set_voice',
+            value: true,
+        });
+    };
 
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
         this.hangUp();
-        this.handleClientChanged({ id: this.userClient.id, parameter: 'set_voice', value: false })
-        this.sendMessage({ id: this.userClient.id, type: 'set_voice', value: false });
-    }
+        this.handleClientChanged({
+            id: this.userClient.id,
+            parameter: 'set_voice',
+            value: false,
+        });
+        this.sendMessage({
+            id: this.userClient.id,
+            type: 'set_voice',
+            value: false,
+        });
+    };
 
     private call = async (): Promise<void> => {
         try {
@@ -353,7 +378,7 @@ export default class Chat {
             console.error('Error calling, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     private answer = async (): Promise<void> => {
         try {
@@ -372,19 +397,23 @@ export default class Chat {
             console.error('Error answering, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     public hangUp = async (): Promise<void> => {
         this.rtcConnection.close();
         this.rtcConnection = await this.openRTC();
         //this.setCallState(CallState.HUNG_UP);
         return this.sendMessage({ type: 'hang_up' });
-    }
+    };
 
     // Todo
     public sendAgreement = async (value: boolean): Promise<void> => {
-        this.sendMessage({ id: this.userClient.id, type: 'set_agreement', value });
-    }
+        this.sendMessage({
+            id: this.userClient.id,
+            type: 'set_agreement',
+            value,
+        });
+    };
 
     public startRecording = async (): Promise<void> => {
         try {
@@ -396,7 +425,7 @@ export default class Chat {
             console.error('Error starting recording, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     public requestRecording = async (): Promise<void> => {
         try {
@@ -407,7 +436,7 @@ export default class Chat {
             const sessionId = uuid();
             this.sendMessage({ type: 'set_session_id', id: sessionId });
 
-            // _client_a is appended for the user initiating recording 
+            // _client_a is appended for the user initiating recording
             this.sessionId = sessionId + '_client_a';
 
             return Promise.resolve();
@@ -415,7 +444,7 @@ export default class Chat {
             console.error('Error requesting recording, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     public stopRecording = async (): Promise<void> => {
         try {
@@ -432,7 +461,7 @@ export default class Chat {
             console.error('Error stopping recording, ', error);
             return Promise.reject();
         }
-    }
+    };
 
     public cancelRecording = async (): Promise<void> => {
         try {
@@ -443,5 +472,5 @@ export default class Chat {
             console.error('Error cancelling recording, ', error);
             return Promise.reject();
         }
-    }
+    };
 }

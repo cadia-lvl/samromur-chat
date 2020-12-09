@@ -9,7 +9,7 @@ const createRestRouter = (isProduction: boolean) => {
 
     var storage = multer.diskStorage({
         destination: (req, file, cb) => {
-            cb(null, '../uploads/')
+            cb(null, '../uploads/');
         },
         filename: (req, file, cb) => {
             const id = decodeURIComponent(req.headers.id as string);
@@ -18,13 +18,15 @@ const createRestRouter = (isProduction: boolean) => {
             } else if (file.fieldname == 'metadata') {
                 cb(null, id + '.json');
             }
-        }
+        },
     });
 
-    var upload = multer({ storage: storage }).fields([{ name: 'audio' }, { name: 'metadata' }]);
+    var upload = multer({ storage: storage }).fields([
+        { name: 'audio' },
+        { name: 'metadata' },
+    ]);
 
     restRouter.post('/:id', upload, (req, res) => {
-
         // If in production
         if (bucket) {
             bucket.uploadClip(req);
@@ -52,9 +54,9 @@ const createRestRouter = (isProduction: boolean) => {
         } else {
             return res.status(500).send('Not running in production mode');
         }
-    })
+    });
 
     return restRouter;
-}
+};
 
 export default createRestRouter;

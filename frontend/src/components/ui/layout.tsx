@@ -2,17 +2,16 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 const LayoutContainer = styled.div`
-	width: 100vw;
-	height: 100vh;
-	//background-color: #f9f9f9;
-	
+    width: 100vw;
+    height: 100vh;
+    //background-color: #f9f9f9;
 `;
 
 const Padding = styled.div`
     display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     padding: 1rem;
 `;
 
@@ -37,17 +36,20 @@ interface RouteParams {
 }
 
 export const Layout: React.FunctionComponent<Props> = ({ children }) => {
-
     return (
         <LayoutContainer>
             <Padding>
                 <Header>
-                    <Title><a href="/">Samrómur <span>spjall</span></a></Title>
+                    <Title>
+                        <a href="/">
+                            Samrómur <span>spjall</span>
+                        </a>
+                    </Title>
                 </Header>
                 {children}
             </Padding>
         </LayoutContainer>
     );
-}
+};
 
 export default Layout;

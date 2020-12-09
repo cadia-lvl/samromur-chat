@@ -38,7 +38,8 @@ const StopwatchContainer = styled.div`
 
 const Audio = styled.audio`
     width: 100%;
-    & :active, :focus {
+    & :active,
+    :focus {
         outline: none;
     }
 `;
@@ -54,7 +55,7 @@ const SwipeSwap = styled(Swipe)`
 interface Props {
     chat: Chat;
     recording: AudioInfo;
-    recordingState: RecordingState,
+    recordingState: RecordingState;
 }
 
 interface State {
@@ -71,7 +72,7 @@ export default class Recording extends React.Component<Props, State> {
 
         this.state = {
             seconds: 0,
-        }
+        };
         this.maxSeconds = 2100;
         this.minSeconds = 600;
     }
@@ -90,19 +91,21 @@ export default class Recording extends React.Component<Props, State> {
         if (prevProps.recording && !recording) {
             this.setState({ seconds: 0 });
         }
-    }
+    };
 
     startStopwatch = () => {
         this.interval = setInterval(() => {
             this.setState({ seconds: this.state.seconds + 1 });
         }, 1000);
-    }
+    };
 
     stopStopwatch = () => {
         clearInterval(this.interval);
-    }
+    };
 
-    splitSeconds = (seconds: number): { m1: string, m2: string, s1: string, s2: string } => {
+    splitSeconds = (
+        seconds: number
+    ): { m1: string; m2: string; s1: string; s2: string } => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds - minutes * 60;
         let m1: string, m2: string, s1: string, s2: string;
@@ -119,7 +122,7 @@ export default class Recording extends React.Component<Props, State> {
             m2 = minutes.toString();
         }
         return { m1, m2, s1, s2 };
-    }
+    };
 
     render() {
         const { recording } = this.props;
@@ -135,12 +138,13 @@ export default class Recording extends React.Component<Props, State> {
                     <span>{s1}</span>
                     <span>{s2}</span>
                 </StopwatchContainer>
-                <SwipeSwap second={!!recording} >
-                    <ProgressBar min={this.minSeconds} max={this.maxSeconds} val={seconds} />
-                    <Audio
-                        controls
-                        src={!!recording ? recording.url : ''}
+                <SwipeSwap second={!!recording}>
+                    <ProgressBar
+                        min={this.minSeconds}
+                        max={this.maxSeconds}
+                        val={seconds}
                     />
+                    <Audio controls src={!!recording ? recording.url : ''} />
                 </SwipeSwap>
             </RecordingsContainer>
         );

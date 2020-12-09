@@ -26,21 +26,17 @@ const Label = styled.p`
 export const LabeledInput: FunctionComponent<any> = (props) => {
     return (
         <LabeledInputContainer>
-            <Label>
-                {props.label}
-            </Label>
+            <Label>{props.label}</Label>
             {props.children}
         </LabeledInputContainer>
     );
-}
+};
 
 export const TextInputWithLabel: FunctionComponent<any> = (props) => {
     return (
         <LabeledInputContainer>
-            <Label>
-                {props.label}
-            </Label>
+            <Label>{props.label}</Label>
             <TextInput {...props} />
         </LabeledInputContainer>
     );
-}
+};

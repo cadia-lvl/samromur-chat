@@ -38,7 +38,7 @@ export default class Chatrooms {
      */
     fromRequest = (req: Request): RequestData => ({
         clientId: req.params.client,
-        roomId: req.params.room
+        roomId: req.params.room,
     });
 
     /**
@@ -48,8 +48,8 @@ export default class Chatrooms {
         const { clientId, roomId } = this.fromRequest(req);
         const user: UserClient = {
             id: clientId,
-            ws
-        }
+            ws,
+        };
         if (this.chatrooms[roomId]) {
             if (this.chatrooms[roomId][clientId]) {
                 return false;
@@ -64,7 +64,7 @@ export default class Chatrooms {
             this.chatrooms[roomId][clientId] = user;
             return true;
         }
-    }
+    };
 
     /**
      * Set client username
@@ -75,7 +75,8 @@ export default class Chatrooms {
             if (this.chatrooms[roomId][clientId]) {
                 switch (payload.type) {
                     case 'set_username':
-                        this.chatrooms[roomId][clientId].username = payload.value;
+                        this.chatrooms[roomId][clientId].username =
+                            payload.value;
                         break;
                     case 'set_agreement':
                         this.chatrooms[roomId][clientId].agreed = payload.value;
@@ -91,7 +92,7 @@ export default class Chatrooms {
         } else {
             return false;
         }
-    }
+    };
 
     /**
      * Return websockets of all clients in chat room
@@ -104,7 +105,7 @@ export default class Chatrooms {
         } else {
             return [];
         }
-    }
+    };
 
     /**
      * Return websockets of the other other client
@@ -113,11 +114,13 @@ export default class Chatrooms {
         const { roomId } = this.fromRequest(req);
         const room = this.chatrooms[roomId];
         if (room) {
-            return Object.values(room).find((client: UserClient) => ws != client.ws);
+            return Object.values(room).find(
+                (client: UserClient) => ws != client.ws
+            );
         } else {
             return;
         }
-    }
+    };
 
     /**
      * Disconnect from a chatroom
@@ -131,5 +134,5 @@ export default class Chatrooms {
                 return client;
             }
         }
-    }
+    };
 }

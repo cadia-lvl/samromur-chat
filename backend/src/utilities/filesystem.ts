@@ -1,6 +1,10 @@
 import fs from 'fs';
 
-export const saveDemographics = async (age: string, gender: string, id: string) => {
+export const saveDemographics = async (
+    age: string,
+    gender: string,
+    id: string
+) => {
     return new Promise((resolve, reject) => {
         const obj = JSON.stringify({
             age,
@@ -13,6 +17,6 @@ export const saveDemographics = async (age: string, gender: string, id: string) 
             } else {
                 resolve();
             }
-        })
+        });
     });
-}
+};

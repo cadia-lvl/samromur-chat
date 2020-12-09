@@ -1,9 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {
-    withRouter,
-    RouteComponentProps
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Layout from '../ui/layout';
 
@@ -27,66 +24,65 @@ interface LegalDocProps {
 
 class ParagraphsWithLinks extends React.Component<ParagraphProps> {
     ParseParagraph() {
-        return this.props.text.map ((phrase) => {
+        return this.props.text.map((phrase) => {
             if (Array.isArray(phrase)) {
                 return phrase.map((phrase) => {
-                    return ( <a href={phrase.link}>{phrase.text}</a>);})
+                    return <a href={phrase.link}>{phrase.text}</a>;
+                });
             } else {
                 return phrase;
             }
-        })
+        });
     }
     render() {
-        return (<p> { this.ParseParagraph() }</p>)
+        return <p> {this.ParseParagraph()}</p>;
     }
 }
 
 class Paragraphs extends React.Component<ParagraphProps> {
     ParseParagraphs() {
-        return this.props.text.map ((paragraph) => {
+        return this.props.text.map((paragraph) => {
             if (Array.isArray(paragraph)) {
-                return ( <ParagraphsWithLinks text={ paragraph }/> );
+                return <ParagraphsWithLinks text={paragraph} />;
             } else {
-                return (<p>{paragraph}</p>);
+                return <p>{paragraph}</p>;
             }
-        })
+        });
     }
     render() {
-        return (<div> { this.ParseParagraphs() }</div>)
+        return <div> {this.ParseParagraphs()}</div>;
     }
 }
 
 class LegalDoc extends React.Component<Props> {
     DisplayArticles(articles) {
-        return articles.map ((article) => {
+        return articles.map((article) => {
             return (
                 <div>
-                    <h3> { article.heading } </h3>
-                    <Paragraphs text= { article.paragraphs } />
+                    <h3> {article.heading} </h3>
+                    <Paragraphs text={article.paragraphs} />
                 </div>
-            )
-        })
+            );
+        });
     }
 
     DisplayDocument() {
-        return this.props.contents.map( (data) => {
+        return this.props.contents.map((data) => {
             return (
                 <div>
-                    <h2> { data.title } </h2>
-                    <p> { data.date } </p>
-                    <Paragraphs text= { data.description } />
-                    { this.DisplayArticles(data.articles) }
+                    <h2> {data.title} </h2>
+                    <p> {data.date} </p>
+                    <Paragraphs text={data.description} />
+                    {this.DisplayArticles(data.articles)}
                 </div>
-            )
-        })
+            );
+        });
     }
 
     render() {
         return (
             <Layout>
-                <TextContainer>
-                    {this.DisplayDocument() }
-                </TextContainer>
+                <TextContainer>{this.DisplayDocument()}</TextContainer>
             </Layout>
         );
     }

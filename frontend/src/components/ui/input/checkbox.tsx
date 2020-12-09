@@ -14,7 +14,7 @@ const CheckboxContainer = styled.div<CheckProps>`
     justify-content: center;
     align-items: center;
     padding: 0.2rem;
-    border: 2px solid ${({ active }) => active ? 'black' : '#e2e2e2'};
+    border: 2px solid ${({ active }) => (active ? 'black' : '#e2e2e2')};
 
     & :hover {
         border: 2px solid black;
@@ -26,13 +26,14 @@ const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
     -webkit-appearance: none;
     -moz-appearance: none;
 
-    & :active, :focus {
+    & :active,
+    :focus {
         outline: none;
     }
-`
+`;
 
-const CheckMark = styled(CheckMarkIcon) <CheckProps>`
-    display: ${({ active }) => active ? 'initial' : 'none'};
+const CheckMark = styled(CheckMarkIcon)<CheckProps>`
+    display: ${({ active }) => (active ? 'initial' : 'none')};
 `;
 
 interface Props {
@@ -40,14 +41,16 @@ interface Props {
     onChange: () => void;
 }
 
-export const Checkbox: React.FunctionComponent<Props> = ({ checked, onChange }) => {
-
+export const Checkbox: React.FunctionComponent<Props> = ({
+    checked,
+    onChange,
+}) => {
     return (
         <CheckboxContainer active={checked} onClick={onChange}>
             <CheckboxInput />
             <CheckMark active={checked} />
         </CheckboxContainer>
     );
-}
+};
 
 export default Checkbox;

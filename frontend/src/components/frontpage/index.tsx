@@ -1,9 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {
-    withRouter,
-    RouteComponentProps
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import TextInput from '../ui/input/text-input';
 
@@ -23,9 +20,9 @@ const SubmitButton = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #60C197;
+    background-color: #60c197;
     color: white;
-    cursor:pointer;
+    cursor: pointer;
     font-size: 2rem;
 
     :active {
@@ -43,10 +40,7 @@ const JoinContainer = styled.div`
     gap: 1rem;
 `;
 
-
-const UrlInput = styled(TextInput)`
-
-`;
+const UrlInput = styled(TextInput)``;
 
 type Props = RouteComponentProps;
 
@@ -61,19 +55,19 @@ class FrontPage extends React.Component<Props, State> {
         // autogenerate a chatroom name from the timestamp
         this.state = {
             userUrl: (+new Date()).toString(30),
-        }
+        };
     }
 
     onUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const userUrl = e.currentTarget.value;
         this.setState({ userUrl });
-    }
+    };
 
     handleJoin = () => {
         const { history } = this.props;
         const { userUrl } = this.state;
         history.push(`/${userUrl}`);
-    }
+    };
 
     render() {
         return (
@@ -90,7 +84,6 @@ class FrontPage extends React.Component<Props, State> {
                             <span>Opna</span>
                         </SubmitButton>
                     </JoinContainer>
-
                 </FrontPageContainer>
             </Layout>
         );

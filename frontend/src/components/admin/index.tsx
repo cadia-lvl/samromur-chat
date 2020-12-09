@@ -1,9 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {
-    withRouter,
-    RouteComponentProps
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Layout from '../ui/layout';
 import Session from './session';
@@ -29,7 +26,7 @@ const SessionsContainer = styled.div`
 type Props = RouteComponentProps;
 
 interface State {
-    sessions: SessionMetadata[],
+    sessions: SessionMetadata[];
 }
 
 class AdminPage extends React.Component<Props, State> {
@@ -38,13 +35,13 @@ class AdminPage extends React.Component<Props, State> {
 
         this.state = {
             sessions: [],
-        }
+        };
     }
 
     componentDidMount = async () => {
         const sessions = await api.getSessions();
         this.setState({ sessions });
-    }
+    };
 
     render() {
         const { sessions } = this.state;
@@ -53,7 +50,7 @@ class AdminPage extends React.Component<Props, State> {
                 <AdminPageContainer>
                     <SessionsContainer>
                         {sessions.map((session: SessionMetadata, i: number) => {
-                            return <Session key={i} session={session} />
+                            return <Session key={i} session={session} />;
                         })}
                     </SessionsContainer>
                 </AdminPageContainer>
