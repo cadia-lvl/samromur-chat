@@ -1,5 +1,5 @@
 export const unsupportedText = {
-    unsupportedBrowserHeading: 'Á nei.',
+    unsupportedBrowserHeading: 'Ó, nei!',
     unsupportedBrowserContent:
-        'Þú att ekki Chrome eða Edge. Þú þarf að nota Chrome eða Edge.',
+        'Þú þarft að nota Chrome eða Edge til að taka upp samtal.',
 };
