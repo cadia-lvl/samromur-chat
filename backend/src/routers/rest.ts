@@ -2,6 +2,7 @@ import { express } from '../express/server';
 import multer from 'multer';
 
 import Bucket from '../database/bucket';
+import { getLocalSessions } from '../utilities/filesystem';
 
 const createRestRouter = (isProduction: boolean) => {
     const bucket = isProduction ? new Bucket() : undefined;
@@ -44,7 +45,17 @@ const createRestRouter = (isProduction: boolean) => {
                 return res.status(500).send(error);
             }
         } else {
-            return res.status(500).send('Not running in production mode');
+            try {
+                const sessions = getLocalSessions();
+                return res.status(200).json(sessions);
+            } catch (error) {
+                return res
+                    .status(500)
+                    .send(
+                        'Not running in production mode. ' +
+                            'No local sessions found'
+                    );
+            }
         }
     });
 
