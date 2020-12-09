@@ -95,7 +95,7 @@ export const downloadLocalSession = async (
         .filter((value) => value.includes(id))
         .filter((value) => value.endsWith('.json') || value.endsWith('.wav'));
 
-    if (!Contents) {
+    if (Contents === undefined || Contents.length == 0) {
         return res.status(500).send('Invalid_id');
     }
     const archive = archiver('zip', {
