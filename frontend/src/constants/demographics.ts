@@ -9,11 +9,11 @@ export const ages: Array<Demographic> = [
     { id: 'sextugt', name: '60-69' },
     { id: 'sjotugt', name: '70-79' },
     { id: 'attraett', name: '80-89' },
-    { id: 'niraett', name: '90+' }
+    { id: 'niraett', name: '90+' },
 ];
 
 export const genders: Array<Demographic> = [
     { id: 'karl', name: 'Karl' },
     { id: 'kona', name: 'Kona' },
-    { id: 'annad', name: 'Annað' }
+    { id: 'annad', name: 'Annað' },
 ];

@@ -13,7 +13,7 @@ export const downloadSession = async (id: string): Promise<any> => {
     const url = pathname.replace('mamma', 'api/sessions');
 
     window.location.href = url + '/' + id;
-}
+};
 
 export const getSessions = async (): Promise<SessionMetadata[]> => {
     let pathname = window.location.href;
@@ -25,16 +25,20 @@ export const getSessions = async (): Promise<SessionMetadata[]> => {
     return axios({
         method: 'GET',
         url: url,
-    }).then((response: AxiosResponse) => {
-        return response.data;
-    }).catch((error: AxiosError) => {
-        console.error(error.message);
-        return Promise.reject(error.code);
-    });
-}
+    })
+        .then((response: AxiosResponse) => {
+            return response.data;
+        })
+        .catch((error: AxiosError) => {
+            console.error(error.message);
+            return Promise.reject(error.code);
+        });
+};
 
-export const uploadClip = async (clip: AudioInfo, demographics: UserDemographics): Promise<void> => {
-
+export const uploadClip = async (
+    clip: AudioInfo,
+    demographics: UserDemographics
+): Promise<void> => {
     let pathname = window.location.href;
     if (pathname.includes('localhost')) {
         pathname = pathname.replace('3000', '3030');
@@ -44,13 +48,12 @@ export const uploadClip = async (clip: AudioInfo, demographics: UserDemographics
     parts.splice(parts.length - 1, 0, 'api');
     let url = parts.join('/');
 
-
     const { blob } = clip;
     if (!blob) {
         return Promise.reject();
     }
 
-    const id = clip.id || uuid() // Generate new id as fallback
+    const id = clip.id || uuid(); // Generate new id as fallback
 
     const jsonString = JSON.stringify({
         age: demographics.age,
@@ -61,7 +64,7 @@ export const uploadClip = async (clip: AudioInfo, demographics: UserDemographics
     });
 
     const metadata = new Blob([jsonString], {
-        type: 'text/plain'
+        type: 'text/plain',
     });
 
     let formData: FormData = new FormData();
@@ -76,10 +79,12 @@ export const uploadClip = async (clip: AudioInfo, demographics: UserDemographics
             id,
         },
         data: formData,
-    }).then((response: AxiosResponse) => {
-        return response.data;
-    }).catch((error: AxiosError) => {
-        console.error(error.message);
-        return Promise.reject(error.code);
-    });
-}
+    })
+        .then((response: AxiosResponse) => {
+            return response.data;
+        })
+        .catch((error: AxiosError) => {
+            console.error(error.message);
+            return Promise.reject(error.code);
+        });
+};

@@ -13,7 +13,7 @@ declare global {
     }
 
     interface Blob {
-        arrayBuffer: () => Promise<ArrayBuffer>
+        arrayBuffer: () => Promise<ArrayBuffer>;
     }
 
     interface Worker {
@@ -22,4 +22,4 @@ declare global {
     }
 }
 
-export { };
+export {};

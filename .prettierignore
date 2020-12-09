@@ -1,0 +1,12 @@
+frontend/build
+frontend/config
+frontend/node_modules
+frontend/public
+frontend/scripts
+backend/build
+backend/node_modules
+backend/public
+node_modules
+uploads
+.github
+*.yaml

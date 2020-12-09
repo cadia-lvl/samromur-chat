@@ -25,7 +25,7 @@ interface ReadMoreProps {
     active: boolean;
 }
 
-const ReadMoreContainer = styled(ShowMore) <ReadMoreProps>`
+const ReadMoreContainer = styled(ShowMore)<ReadMoreProps>`
     & > * {
         padding-left: 1rem;
         margin: 0;
@@ -33,10 +33,10 @@ const ReadMoreContainer = styled(ShowMore) <ReadMoreProps>`
     }
 `;
 
-const Arrow = styled(DropdownArrowIcon) <ReadMoreProps>`
+const Arrow = styled(DropdownArrowIcon)<ReadMoreProps>`
     margin-left: 1rem;
     transform-origin: bottom-right;
-    transform: rotate(${({ active }) => active ? '180deg' : '0deg'});
+    transform: rotate(${({ active }) => (active ? '180deg' : '0deg')});
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
@@ -47,24 +47,35 @@ interface Props {
     title: string;
 }
 
-
-export const Information: React.FC<Props> = ({ children, className, ref, title }) => {
+export const Information: React.FC<Props> = ({
+    children,
+    className,
+    ref,
+    title,
+}) => {
     const [readMore, setReadMore] = React.useState(false);
 
     const handleClick = () => {
         setReadMore(!readMore);
-    }
+    };
     return (
         <InformationContainer className={className} ref={ref}>
             <TitleContainer onClick={handleClick}>
                 <h5>{title}</h5>
-                <Arrow height={15} width={15} active={readMore} fill={'#0099ff'} />
+                <Arrow
+                    height={15}
+                    width={15}
+                    active={readMore}
+                    fill={'#0099ff'}
+                />
             </TitleContainer>
-            <ReadMoreContainer active={readMore}>
-                {children}
-            </ReadMoreContainer>
+            <ReadMoreContainer active={readMore}>{children}</ReadMoreContainer>
         </InformationContainer>
     );
-}
+};
 
-export default React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => <Information {...props} ref={ref as any} />);
+export default React.forwardRef(
+    (props: Props, ref: React.Ref<HTMLDivElement>) => (
+        <Information {...props} ref={ref as any} />
+    )
+);

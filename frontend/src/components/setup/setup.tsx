@@ -2,10 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
-import {
-    withRouter,
-    RouteComponentProps,
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Layout from '../ui/layout';
 import Chatroom from '../chat/room';
@@ -13,7 +10,6 @@ import DemographicForm from './demographics';
 import { UserClient, UserDemographics } from '../../types/user';
 import { AudioInfo } from '../../types/audio';
 import * as api from '../../services/api';
-
 
 const SetupContainer = styled.div`
     width: 100%;
@@ -28,7 +24,7 @@ const SetupContainer = styled.div`
 
 interface State {
     demographics?: UserDemographics;
-    recording?: AudioInfo,
+    recording?: AudioInfo;
     uploading: boolean;
     uploaded: boolean;
     uploadError: boolean;
@@ -48,7 +44,7 @@ class Setup extends React.Component<Props, State> {
             uploaded: false,
             uploadError: false,
             userClient: undefined,
-        }
+        };
     }
 
     onSubmitDemographics = (age: string, gender: string, username: string) => {
@@ -59,9 +55,9 @@ class Setup extends React.Component<Props, State> {
             id,
             username,
             voice: false,
-        }
+        };
         this.setState({ userClient });
-    }
+    };
 
     onUpload = async (recording: AudioInfo) => {
         const { demographics } = this.state;
@@ -69,7 +65,7 @@ class Setup extends React.Component<Props, State> {
         // Push to thanks page
         const { history } = this.props;
         history.push('/takk');
-    }
+    };
 
     render() {
         const { demographics, userClient } = this.state;
@@ -77,13 +73,14 @@ class Setup extends React.Component<Props, State> {
         return (
             <Layout>
                 <SetupContainer>
-                    {
-                        !isReady
-                            ?
-                            <DemographicForm onSubmit={this.onSubmitDemographics} />
-                            :
-                            <Chatroom onUpload={this.onUpload} userClient={userClient} />
-                    }
+                    {!isReady ? (
+                        <DemographicForm onSubmit={this.onSubmitDemographics} />
+                    ) : (
+                        <Chatroom
+                            onUpload={this.onUpload}
+                            userClient={userClient}
+                        />
+                    )}
                 </SetupContainer>
             </Layout>
         );

@@ -9,7 +9,7 @@ export function shuffleArray(array: any[]) {
     }
 }
 
-export function isChromium(){
+export function isChromium() {
     // TODO:  Use feature detection when possible.
 
     // Check if is chrome
@@ -17,6 +17,6 @@ export function isChromium(){
 
     // Thank you https://stackoverflow.com/a/9851769
     // Edge (based on chromium) detection
-    let isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") !== -1);
+    let isEdgeChromium = isChrome && navigator.userAgent.indexOf('Edg') !== -1;
     return isChrome || isEdgeChromium;
 }

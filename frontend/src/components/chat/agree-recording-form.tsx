@@ -13,13 +13,15 @@ const AgreeContainer = styled.div`
     }
 `;
 
-
 interface Props {
     agreed: boolean;
     handleAgree: () => void;
 }
 
-export const AgreeRecordingForm: React.FunctionComponent<Props> = ({ agreed, handleAgree }) => (
+export const AgreeRecordingForm: React.FunctionComponent<Props> = ({
+    agreed,
+    handleAgree,
+}) => (
     <AgreeContainer>
         <span>Ég er klár í að byrja að taka upp</span>
         <Checkbox checked={agreed} onChange={handleAgree} />

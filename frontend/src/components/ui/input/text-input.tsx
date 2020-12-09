@@ -9,8 +9,9 @@ const InputContainer = styled.div<InputProps>`
     width: 100%;
     position: relative;
     display: inline-block;
-    border: 2px solid ${({ active }) => active ? 'black' : '#e2e2e2'};
-    & :active, :focus {
+    border: 2px solid ${({ active }) => (active ? 'black' : '#e2e2e2')};
+    & :active,
+    :focus {
         outline: none;
     }
 `;
@@ -27,7 +28,8 @@ const TextInputContainer = styled.input`
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
 
-    & :active, :focus {
+    & :active,
+    :focus {
         outline: none;
     }
 
@@ -57,7 +59,6 @@ interface State {
     active: boolean;
 }
 
-
 type Props = TextInputProps & React.InputHTMLAttributes<HTMLInputElement>;
 
 class TextInput extends React.Component<Props, State> {
@@ -67,47 +68,40 @@ class TextInput extends React.Component<Props, State> {
 
         this.state = {
             active: false,
-        }
+        };
     }
 
     componentDidMount = () => {
         this.ref.current?.addEventListener('focusout', this.onFocusOut);
-    }
+    };
 
     componentWillUnmount = () => {
         this.ref.current?.removeEventListener('focusout', this.onFocusOut);
-    }
+    };
 
     onFocusOut = (event: FocusEvent) => {
         this.setState({ active: false });
-    }
+    };
 
     onFocus = () => {
         this.setState({ active: true });
-    }
+    };
 
     render() {
-        const {
-            className,
-            label
-        } = this.props;
+        const { className, label } = this.props;
 
-        const {
-            active
-        } = this.state;
+        const { active } = this.state;
 
         return (
-            <InputContainer
-                active={active}
-                className={className}
-
-            >
+            <InputContainer active={active} className={className}>
                 <Label>{label}</Label>
                 <Padding>
                     <TextInputContainer
                         ref={this.ref}
                         onFocus={this.onFocus}
-                        {...this.props as React.InputHTMLAttributes<HTMLInputElement>}
+                        {...(this.props as React.InputHTMLAttributes<
+                            HTMLInputElement
+                        >)}
                     />
                 </Padding>
             </InputContainer>
@@ -115,4 +109,8 @@ class TextInput extends React.Component<Props, State> {
     }
 }
 
-export default React.forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => <TextInput {...props} ref={ref as any} />);
+export default React.forwardRef(
+    (props: Props, ref: React.Ref<HTMLDivElement>) => (
+        <TextInput {...props} ref={ref as any} />
+    )
+);

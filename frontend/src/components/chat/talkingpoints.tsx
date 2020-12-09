@@ -45,7 +45,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
 
         this.state = {
             seconds: 0,
-        }
+        };
         this.maxSeconds = 2100;
         this.minSeconds = 600;
         this.talkingPoints = talkingpoints;
@@ -66,17 +66,17 @@ export default class TalkingPoint extends React.Component<Props, State> {
         if (prevProps.recording && !recording) {
             this.setState({ seconds: 0 });
         }
-    }
+    };
 
     startStopwatch = () => {
         this.interval = setInterval(() => {
             this.setState({ seconds: this.state.seconds + 1 });
         }, 1000);
-    }
+    };
 
     stopStopwatch = () => {
         clearInterval(this.interval);
-    }
+    };
 
     displayTalkingPoint = (seconds: number): Array<string> => {
         // TODO: Add a longer list of talking points
@@ -97,11 +97,11 @@ export default class TalkingPoint extends React.Component<Props, State> {
                 Math.floor(seconds / intervalLength) %
                 this.talkingPoints.length;
             return [
-                "Vantar þér eitthvað til að spjalla um?",
+                'Vantar þér eitthvað til að spjalla um?',
                 this.talkingPoints[talkingNumber],
             ];
         }
-        return ["", ""];
+        return ['', ''];
     };
 
     render() {

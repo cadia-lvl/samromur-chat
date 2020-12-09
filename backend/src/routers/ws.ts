@@ -7,7 +7,8 @@ import Chatrooms, { Payload, UserClient } from '../chatrooms';
 const chatrooms = new Chatrooms();
 
 // Send message to a client
-const sendMessage = (ws: WebSocket, payload: Payload) => ws.send(JSON.stringify(payload));
+const sendMessage = (ws: WebSocket, payload: Payload) =>
+    ws.send(JSON.stringify(payload));
 
 // Send message to the other client in room
 const sendOther = (ws: WebSocket, req: Request, message: Payload) => {
@@ -15,7 +16,7 @@ const sendOther = (ws: WebSocket, req: Request, message: Payload) => {
     if (other) {
         sendMessage(other.ws, message);
     }
-}
+};
 
 // Define router
 export const wsRouter = express.Router();
@@ -37,7 +38,13 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
         // Send him info about the other client
         const other = chatrooms.getOther(ws, req);
         if (other) {
-            const payload = { type: 'client_connected', id: other.id, username: other.username, voice: other.voice, agreed: other.agreed };
+            const payload = {
+                type: 'client_connected',
+                id: other.id,
+                username: other.username,
+                voice: other.voice,
+                agreed: other.agreed,
+            };
             sendMessage(ws, payload);
         }
     }
@@ -47,9 +54,12 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
         if (disconnectedClient) {
             const room = chatrooms.getRoom(req);
             room.forEach((client: UserClient) => {
-                const payload = { type: 'client_disconnected', id: disconnectedClient.id }
+                const payload = {
+                    type: 'client_disconnected',
+                    id: disconnectedClient.id,
+                };
                 sendMessage(client.ws, payload);
-            })
+            });
         }
     });
 
@@ -72,17 +82,20 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                             id: clientId,
                             ...message,
                             type: 'client_changed',
-                            parameter: message.type
-                        }
+                            parameter: message.type,
+                        };
                         sendOther(ws, req, payload);
                     } else {
                         // Send back error message to client
-                        const payload = { type: 'error', message: 'set_failed' };
+                        const payload = {
+                            type: 'error',
+                            message: 'set_failed',
+                        };
                         sendMessage(ws, payload);
                     }
                     break;
                 case 'ping':
-                    const payload = { type: 'pong', message: ''}
+                    const payload = { type: 'pong', message: '' };
                     sendMessage(ws, payload);
                     break;
                 default:

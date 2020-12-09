@@ -31,7 +31,9 @@ const MainButtonContainer = styled.div<{ isActive: boolean }>`
         transform: translateY(2px);
     }
 
-    ${({ isActive }) => isActive && `
+    ${({ isActive }) =>
+        isActive &&
+        `
         & > div {
             opacity: 1;
         }
@@ -62,25 +64,26 @@ const Glow = styled.div<{ red?: boolean }>`
     width: 6.2rem;
     height: 6.2rem;
     opacity: 0.2;
-    background: linear-gradient(to left, ${({ red }) => red ? '#FF99A1, #FF4F5E' : '#60C197, #A7DDC5'});
+    background: linear-gradient(
+        to left,
+        ${({ red }) => (red ? '#FF99A1, #FF4F5E' : '#60C197, #A7DDC5')}
+    );
     border-radius: 50%;
     filter: blur(6px);
     transition: opacity 0.2s linear;
 `;
 
 const RecordIcon = styled.div<{ active?: boolean }>`
-    border-radius: ${({ active }) => active ? '0%' : '50%'};
-    transform:
-        scale(${({ active }) => active ? 0.9 : 1});
-    transition:
-        border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius: ${({ active }) => (active ? '0%' : '50%')};
+    transform: scale(${({ active }) => (active ? 0.9 : 1)});
+    transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background-color: #ff4f5e;
     height: 35px;
     width: 35px;
-    box-shadow: 0 0 3px 2px rgba(0,0,0,.08);
-    -moz-box-shadow: 0 0 3px 2px rgba(0,0,0,.08);
-    -webkit-box-shadow: 0 0 3px 2px rgba(0,0,0,.08);
+    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.08);
+    -moz-box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.08);
+    -webkit-box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.08);
 `;
 
 const SubmitButtons = styled(Swipe)`
@@ -102,7 +105,8 @@ const Button = styled.div<ButtonProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${({ green, red }) => green ? '#60C197' : red ? '#ff4f5e' : '#0099ff'};
+    background-color: ${({ green, red }) =>
+        green ? '#60C197' : red ? '#ff4f5e' : '#0099ff'};
     color: white;
     font-size 1.2rem;
     font-weight: 600;
@@ -118,9 +122,9 @@ interface Props {
     chat: Chat;
     onRemove: () => void;
     onSubmit: () => void;
-    recording: AudioInfo,
-    recordingState: RecordingState,
-    voiceState: VoiceState,
+    recording: AudioInfo;
+    recordingState: RecordingState;
+    voiceState: VoiceState;
 }
 
 interface State {
@@ -134,7 +138,7 @@ export default class Controls extends React.Component<Props, State> {
 
         this.state = {
             confirm: false,
-        }
+        };
     }
 
     handleVoice = () => {
@@ -147,7 +151,7 @@ export default class Controls extends React.Component<Props, State> {
         } else {
             chat.unMute();
         }
-    }
+    };
 
     handleRecord = () => {
         const { chat, recordingState } = this.props;
@@ -161,24 +165,19 @@ export default class Controls extends React.Component<Props, State> {
         } else {
             chat.requestRecording();
         }
-    }
+    };
 
     handleConfirm = () => {
         this.setState({ confirm: !this.state.confirm });
-    }
+    };
 
     handleRemove = () => {
         this.props.onRemove();
         this.setState({ confirm: false });
-    }
+    };
 
     render() {
-        const {
-            onSubmit,
-            recording,
-            recordingState,
-            voiceState,
-        } = this.props;
+        const { onSubmit, recording, recordingState, voiceState } = this.props;
 
         const { confirm } = this.state;
 
@@ -191,10 +190,7 @@ export default class Controls extends React.Component<Props, State> {
                     >
                         <Glow />
                         <MainButton>
-                            <MicIcon
-                                height={40}
-                                width={40}
-                            />
+                            <MicIcon height={40} width={40} />
                         </MainButton>
                     </MainButtonContainer>
                     <MainButtonContainer
@@ -203,13 +199,19 @@ export default class Controls extends React.Component<Props, State> {
                     >
                         <Glow red />
                         <MainButton>
-                            <RecordIcon active={recordingState === RecordingState.RECORDING} />
+                            <RecordIcon
+                                active={
+                                    recordingState === RecordingState.RECORDING
+                                }
+                            />
                         </MainButton>
                     </MainButtonContainer>
                 </ButtonsContainer>
                 <SubmitButtons second={confirm}>
                     <SubmitButtonsContainer>
-                        <Button onClick={this.handleConfirm}>Byrja aftur</Button>
+                        <Button onClick={this.handleConfirm}>
+                            Byrja aftur
+                        </Button>
                         <Button onClick={onSubmit} green>
                             Senda inn
                         </Button>

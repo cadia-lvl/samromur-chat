@@ -9,7 +9,6 @@ const SessionContainer = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    
 `;
 
 const TitleContainer = styled.div`
@@ -60,21 +59,24 @@ interface Props {
     session: SessionMetadata;
 }
 
-export const Session: React.FunctionComponent<Props> = ({ session, session: { client_a, client_b } }) => {
+export const Session: React.FunctionComponent<Props> = ({
+    session,
+    session: { client_a, client_b },
+}) => {
     const getAge = (value: string): string => {
         const age = ages.find((val) => val.id === value);
         return age ? age.name : value;
-    }
+    };
 
     const getGender = (value: string): string => {
         const gender = genders.find((val) => val.id === value);
         return gender ? gender.name : value;
-    }
+    };
 
     const handleClick = () => {
         const id = session.session_id;
         api.downloadSession(id).catch((error) => console.error(error));
-    }
+    };
 
     return (
         <SessionContainer>
@@ -97,7 +99,7 @@ export const Session: React.FunctionComponent<Props> = ({ session, session: { cl
             </Clients>
             <Button onClick={handleClick}>Sækja</Button>
         </SessionContainer>
-    )
-}
+    );
+};
 
 export default Session;

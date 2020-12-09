@@ -1,13 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {
-    withRouter,
-    RouteComponentProps
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Layout from '../ui/layout';
-
 
 const ThanksContainer = styled.div`
     width: 100%;
@@ -25,7 +21,7 @@ const Button = styled.div`
     cursor: pointer;
     font-size: 1.8rem;
     font-weight: 600;
-    background-color: #60C197;
+    background-color: #60c197;
     color: white;
 
     :active {
@@ -33,9 +29,7 @@ const Button = styled.div`
     }
 `;
 
-interface State {
-
-}
+interface State {}
 
 type Props = RouteComponentProps;
 
@@ -43,15 +37,13 @@ class Thanks extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        this.state = {
-
-        }
+        this.state = {};
     }
 
     handleClick = () => {
         const { history } = this.props;
         history.push('/');
-    }
+    };
 
     render() {
         return (
