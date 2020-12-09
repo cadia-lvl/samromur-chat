@@ -172,27 +172,52 @@ export default class DemographicForm extends React.Component<Props, State> {
                         selected={age.name}
                     />
                     <DropdownButton
-                        content={genders.map((gender: Demographic) => gender.name)}
+                        content={genders.map(
+                            (gender: Demographic) => gender.name
+                        )}
                         label={'Kyn'}
                         onSelect={this.onGenderSelect}
                         selected={gender.name}
                     />
                     <Information title={'Hvers vegna skiptir þetta máli?'}>
                         <p>
-                            Ofantaldar upplýsingar eru notaðar til að meta hversu lýðfræðilega dreift gagnasafnið er. Því dreifðara og fjölbreyttara sem það er, því betra. Sjá <NewTabLink href={terms}>skilmála</NewTabLink> og <NewTabLink href={privacypolicy}>persónuverndaryfirlýsingu</NewTabLink> verkefnisins.
+                            Ofantaldar upplýsingar eru notaðar til að meta
+                            hversu lýðfræðilega dreift gagnasafnið er. Því
+                            dreifðara og fjölbreyttara sem það er, því betra.
+                            Sjá <NewTabLink href={terms}>skilmála</NewTabLink>{' '}
+                            og{' '}
+                            <NewTabLink href={privacypolicy}>
+                                persónuverndaryfirlýsingu
+                            </NewTabLink>{' '}
+                            verkefnisins.
                         </p>
                     </Information>
                     <AgreeContainer onClick={this.handleAgree}>
-                        <Checkbox checked={agreed} onChange={this.handleAgree} />
-                        <span>Ég staðfesti að hafa kynnt mér <NewTabLink href={terms}>skilmála</NewTabLink> og <NewTabLink href={privacypolicy}>persónuverndaryfirlýsingu</NewTabLink> verkefnisins.</span>
+                        <Checkbox
+                            checked={agreed}
+                            onChange={this.handleAgree}
+                        />
+                        <span>
+                            Ég staðfesti að hafa kynnt mér{' '}
+                            <NewTabLink href={terms}>skilmála</NewTabLink> og{' '}
+                            <NewTabLink href={privacypolicy}>
+                                persónuverndaryfirlýsingu
+                            </NewTabLink>{' '}
+                            verkefnisins.
+                        </span>
                     </AgreeContainer>
-                    <SubmitButton onClick={this.onSubmit} disabled={!agreed || !age.name || !gender.name || !username}><span>Áfram</span></SubmitButton>
+                    <SubmitButton
+                        onClick={this.onSubmit}
+                        disabled={
+                            !agreed || !age.name || !gender.name || !username
+                        }
+                    >
+                        <span>Áfram</span>
+                    </SubmitButton>
                 </DemographicContainer>
             );
         } else {
-            return (
-                <UnsupportedBrowser />
-            )
+            return <UnsupportedBrowser />;
         }
     }
 }

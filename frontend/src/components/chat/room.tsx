@@ -257,10 +257,19 @@ class Chatroom extends React.Component<Props, State> {
 
     constructSocketUrl = (): string => {
         // Get room id
-        const { match: { params: { roomId } } } = this.props;
+        const {
+            match: {
+                params: { roomId },
+            },
+        } = this.props;
 
         // Build href
-        const href = window.location.protocol + '//' + window.location.host + '/' + roomId;
+        const href =
+            window.location.protocol +
+            '//' +
+            window.location.host +
+            '/' +
+            roomId;
 
         // Destructure pathname
         const parts = href.split('/');

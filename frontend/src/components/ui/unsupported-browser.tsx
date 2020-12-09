@@ -13,13 +13,12 @@ const UnsupportedBrowserContainer = styled.div`
 `;
 
 export default class UnsupportedBrowser extends React.Component {
-
     render() {
         return (
-                <UnsupportedBrowserContainer>
-                        <h1>{unsupportedText.unsupportedBrowserHeading}</h1>
-                        <p>{unsupportedText.unsupportedBrowserContent}</p>
-                </UnsupportedBrowserContainer>
+            <UnsupportedBrowserContainer>
+                <h1>{unsupportedText.unsupportedBrowserHeading}</h1>
+                <p>{unsupportedText.unsupportedBrowserContent}</p>
+            </UnsupportedBrowserContainer>
         );
     }
 }
