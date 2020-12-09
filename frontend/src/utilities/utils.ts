@@ -28,10 +28,10 @@ export function splitSeconds(
     const remainingSeconds = seconds - minutes * 60;
     let m1: string, m2: string, s1: string, s2: string;
     if (remainingSeconds > 9) {
-        [s1, s2] = remainingSeconds.toString();
+        [s1, s2] = remainingSeconds.toFixed(0).toString();
     } else {
         s1 = '0';
-        s2 = remainingSeconds.toString();
+        s2 = remainingSeconds.toFixed(0).toString();
     }
     if (minutes > 9) {
         [m1, m2] = minutes.toString();
