@@ -81,6 +81,10 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                         sendMessage(ws, payload);
                     }
                     break;
+                case 'ping':
+                    const payload = { type: 'pong', message: ''}
+                    sendMessage(ws, payload);
+                    break;
                 default:
                     sendOther(ws, req, message);
             }
