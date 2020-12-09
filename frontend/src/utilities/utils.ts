@@ -20,3 +20,24 @@ export function isChromium() {
     let isEdgeChromium = isChrome && navigator.userAgent.indexOf('Edg') !== -1;
     return isChrome || isEdgeChromium;
 }
+
+export function splitSeconds(
+    seconds: number
+): { m1: string; m2: string; s1: string; s2: string } {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds - minutes * 60;
+    let m1: string, m2: string, s1: string, s2: string;
+    if (remainingSeconds > 9) {
+        [s1, s2] = remainingSeconds.toString();
+    } else {
+        s1 = '0';
+        s2 = remainingSeconds.toString();
+    }
+    if (minutes > 9) {
+        [m1, m2] = minutes.toString();
+    } else {
+        m1 = '0';
+        m2 = minutes.toString();
+    }
+    return { m1, m2, s1, s2 };
+}
