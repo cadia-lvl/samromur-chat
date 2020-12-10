@@ -102,10 +102,9 @@ export const downloadLocalSession = async (
         zlib: { level: 6 }, // Sets the compression level.
     });
 
-    // Catch warnings (ie stat failures and other non-blocking errors)
+    // Log warnings (ie stat failures and other non-blocking errors)
     archive.on('warning', function (err) {
         if (err.code === 'ENOENT') {
-            // log warning
         } else {
             console.log('archive creation warnings: ' + err);
         }
