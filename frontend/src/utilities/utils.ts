@@ -21,23 +21,78 @@ export function isChromium() {
     return isChrome || isEdgeChromium;
 }
 
-export function splitSeconds(
-    seconds: number
-): { m1: string; m2: string; s1: string; s2: string } {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds - minutes * 60;
-    let m1: string, m2: string, s1: string, s2: string;
+interface timestampDigits {
+    h1: string;
+    h2: string;
+    m1: string;
+    m2: string;
+    s1: string;
+    s2: string;
+}
+
+/**
+ * Change seconds to a HH:mm:ss timestamp
+ * @param seconds time in seconds
+ */
+export function splitSeconds(seconds: number): timestampDigits {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor((seconds % 3600) % 60);
+    let h1: string, h2: string, m1: string, m2: string, s1: string, s2: string;
     if (remainingSeconds > 9) {
-        [s1, s2] = remainingSeconds.toFixed(0).toString();
+        [s1, s2] = Array.from(remainingSeconds.toString());
     } else {
         s1 = '0';
-        s2 = remainingSeconds.toFixed(0).toString();
+        s2 = remainingSeconds.toString();
     }
     if (minutes > 9) {
-        [m1, m2] = minutes.toString();
+        [m1, m2] = Array.from(minutes.toString());
     } else {
         m1 = '0';
         m2 = minutes.toString();
     }
-    return { m1, m2, s1, s2 };
+    if (hours > 9) {
+        [h1, h2] = Array.from(hours.toString());
+    } else {
+        h1 = '0';
+        h2 = hours.toString();
+    }
+    return { h1, h2, m1, m2, s1, s2 };
+}
+
+export function getTimestampString({
+    h1,
+    h2,
+    m1,
+    m2,
+    s1,
+    s2,
+}: timestampDigits): string {
+    if (h1 === '0' && h2 === '0') {
+        return m1 + m2 + ':' + s1 + s2;
+    } else {
+        return h1 + h2 + ':' + m1 + m2 + ':' + s1 + s2;
+    }
+}
+
+export function getHumanReadableTime({
+    h1,
+    h2,
+    m1,
+    m2,
+    s1,
+    s2,
+}: timestampDigits): string {
+    const hrs = 'klst.';
+    const mins = 'mín.';
+    const secs = 'sek.';
+    // Remove leading zeros
+    const [displayh1, displaym1, displays1] = [h1, m1, s1].map((digit) =>
+        digit === '0' ? '' : digit
+    );
+    if (h1 === '0' && h2 === '0') {
+        return [displaym1 + m2, mins, displays1 + s2, secs].join(' ');
+    } else {
+        return [displayh1 + h2, hrs, displaym1 + m2, mins].join(' ');
+    }
 }

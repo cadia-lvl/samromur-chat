@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import * as api from '../../services/api';
 import { ages, genders } from '../../constants/demographics';
 import { SessionMetadata } from '../../types/sessions';
-import { splitSeconds } from '../../utilities/utils';
+import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
 const SessionContainer = styled.div`
     width: 100%;
@@ -68,7 +68,6 @@ export const Session: React.FunctionComponent<Props> = ({
     const participantB = 'Viðmælandi b';
     const yearsOld = 'ára';
     const sampleRateMeasurement = 'hz';
-    const duration = 'lengd';
 
     const getAge = (value: string): string => {
         const age = ages.find((val) => val.id === value);
@@ -85,8 +84,12 @@ export const Session: React.FunctionComponent<Props> = ({
         api.downloadSession(id).catch((error) => console.error(error));
     };
 
-    const a_time = splitSeconds(client_a.duration_seconds);
-    const b_time = splitSeconds(client_b.duration_seconds);
+    const a_time = getHumanReadableTime(
+        splitSeconds(client_a.duration_seconds)
+    );
+    const b_time = getHumanReadableTime(
+        splitSeconds(client_b.duration_seconds)
+    );
 
     return (
         <SessionContainer>
@@ -101,11 +104,7 @@ export const Session: React.FunctionComponent<Props> = ({
                     <span>
                         {client_a.sample_rate} {sampleRateMeasurement}
                     </span>
-                    <span>
-                        {duration} 00:{a_time.m1}
-                        {a_time.m2}:{a_time.s1}
-                        {a_time.s2}
-                    </span>
+                    <span>{a_time}</span>
                 </ClientContainer>
                 <ClientContainer>
                     <Subtitle>{participantB}</Subtitle>
@@ -116,11 +115,7 @@ export const Session: React.FunctionComponent<Props> = ({
                     <span>
                         {client_b.sample_rate} {sampleRateMeasurement}
                     </span>
-                    <span>
-                        {duration} 00:{b_time.m1}
-                        {b_time.m2}:{b_time.s1}
-                        {b_time.s2}
-                    </span>
+                    <span>{b_time}</span>
                 </ClientContainer>
             </Clients>
             <Button onClick={handleClick}>Sækja</Button>
