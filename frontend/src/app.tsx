@@ -16,7 +16,7 @@ export const App: React.FunctionComponent = () => {
                 <Route path="/takk">
                     <Thanks />
                 </Route>
-                <Route path="/mamma">
+                <Route path="/mamma-er-best">
                     <AdminPage />
                 </Route>
                 <Route path="/personuvernd">
