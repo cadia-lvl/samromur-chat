@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import * as api from '../../services/api';
 import { ages, genders } from '../../constants/demographics';
 import { SessionMetadata } from '../../types/sessions';
+import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
 const SessionContainer = styled.div`
     width: 100%;
@@ -63,6 +64,11 @@ export const Session: React.FunctionComponent<Props> = ({
     session,
     session: { client_a, client_b },
 }) => {
+    const participantA = 'Viðmælandi a';
+    const participantB = 'Viðmælandi b';
+    const yearsOld = 'ára';
+    const sampleRateMeasurement = 'hz';
+
     const getAge = (value: string): string => {
         const age = ages.find((val) => val.id === value);
         return age ? age.name : value;
@@ -78,23 +84,38 @@ export const Session: React.FunctionComponent<Props> = ({
         api.downloadSession(id).catch((error) => console.error(error));
     };
 
+    const a_time = getHumanReadableTime(
+        splitSeconds(client_a.duration_seconds)
+    );
+    const b_time = getHumanReadableTime(
+        splitSeconds(client_b.duration_seconds)
+    );
+
     return (
         <SessionContainer>
             <TitleContainer>{session.session_id}</TitleContainer>
             <Clients>
                 <ClientContainer>
-                    <Subtitle>Viðmælandi a</Subtitle>
+                    <Subtitle>{participantA}</Subtitle>
                     <span>{getGender(client_a.gender)}</span>
-                    <span>{getAge(client_a.age)} ára</span>
-                    <span>{client_a.sample_rate} hz</span>
-                    <span>{client_a.duration_seconds} sekúndur</span>
+                    <span>
+                        {getAge(client_a.age)} {yearsOld}
+                    </span>
+                    <span>
+                        {client_a.sample_rate} {sampleRateMeasurement}
+                    </span>
+                    <span>{a_time}</span>
                 </ClientContainer>
                 <ClientContainer>
-                    <Subtitle>Viðmælandi b</Subtitle>
+                    <Subtitle>{participantB}</Subtitle>
                     <span>{getGender(client_b.gender)}</span>
-                    <span>{getAge(client_a.age)} ára</span>
-                    <span>{client_b.sample_rate} hz</span>
-                    <span>{client_b.duration_seconds} sekúndur</span>
+                    <span>
+                        {getAge(client_a.age)} {yearsOld}
+                    </span>
+                    <span>
+                        {client_b.sample_rate} {sampleRateMeasurement}
+                    </span>
+                    <span>{b_time}</span>
                 </ClientContainer>
             </Clients>
             <Button onClick={handleClick}>Sækja</Button>

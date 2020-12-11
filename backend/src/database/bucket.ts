@@ -142,7 +142,7 @@ export default class Bucket {
                 Prefix: id + '/',
             })
             .promise();
-        if (!Contents) {
+        if (Contents === undefined || Contents.length == 0) {
             return res.status(500).send('Invalid_id');
         }
 

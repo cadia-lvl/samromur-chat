@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Chat, { RecordingState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
+import { getTimestampString, splitSeconds } from '../../utilities/utils';
 
 import Swipe from '../ui/animated/swipe';
 import ProgressBar from './progress-bar';
@@ -103,40 +104,15 @@ export default class Recording extends React.Component<Props, State> {
         clearInterval(this.interval);
     };
 
-    splitSeconds = (
-        seconds: number
-    ): { m1: string; m2: string; s1: string; s2: string } => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds - minutes * 60;
-        let m1: string, m2: string, s1: string, s2: string;
-        if (remainingSeconds > 9) {
-            [s1, s2] = remainingSeconds.toString();
-        } else {
-            s1 = '0';
-            s2 = remainingSeconds.toString();
-        }
-        if (minutes > 9) {
-            [m1, m2] = minutes.toString();
-        } else {
-            m1 = '0';
-            m2 = minutes.toString();
-        }
-        return { m1, m2, s1, s2 };
-    };
-
     render() {
         const { recording } = this.props;
         const { seconds } = this.state;
-        const { m1, m2, s1, s2 } = this.splitSeconds(seconds);
+        const timestampString = getTimestampString(splitSeconds(seconds));
 
         return (
             <RecordingsContainer>
                 <StopwatchContainer>
-                    <span>{m1}</span>
-                    <span>{m2}</span>
-                    <span>:</span>
-                    <span>{s1}</span>
-                    <span>{s2}</span>
+                    <span>{timestampString}</span>
                 </StopwatchContainer>
                 <SwipeSwap second={!!recording}>
                     <ProgressBar
