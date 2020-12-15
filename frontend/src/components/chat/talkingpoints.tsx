@@ -97,7 +97,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
                 Math.floor(seconds / intervalLength) %
                 this.talkingPoints.length;
             return [
-                'Vantar þér eitthvað til að spjalla um?',
+                'Vantar þig eitthvað til að spjalla um?',
                 this.talkingPoints[talkingNumber],
             ];
         }
