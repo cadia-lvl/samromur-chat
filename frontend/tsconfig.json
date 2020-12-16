@@ -1,12 +1,23 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2016",
+    "strictFunctionTypes": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "isolatedModules": true,
     "rootDir": "./src",
+    "outDir": "./docs/",
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": [
     "**/*.ts"
+  ],
+  "externalPattern": "**/node_modules/**",
+  "exclude": [
+    "src/test/**",
+    "**/node_modules/**"
   ]
 }
