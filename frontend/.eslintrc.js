@@ -6,7 +6,7 @@ module.exports = {
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:@typescript-eslint/eslint-recommended",
     ],
     "globals": {
         "Atomics": "readonly",
@@ -25,5 +25,12 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "react/prop-types": "off",
+        "no-extra-boolean-cast": "warn",
+        "no-unused-vars": "off",
+        "no-var": "warn",
+        "@typescript-eslint/no-unused-vars": [
+            "error"
+        ]
     }
 };
