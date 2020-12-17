@@ -79,7 +79,7 @@ class TextInput extends React.Component<Props, State> {
         this.ref.current?.removeEventListener('focusout', this.onFocusOut);
     };
 
-    onFocusOut = (event: FocusEvent) => {
+    onFocusOut = () => {
         this.setState({ active: false });
     };
 
