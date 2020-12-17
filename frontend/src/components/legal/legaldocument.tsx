@@ -22,13 +22,23 @@ interface LegalDocProps {
     contents: Array<any>;
 }
 
+interface PhraseLinkProps {
+    item: { link: string; text: string };
+}
+
+class PhraseLink extends React.Component<PhraseLinkProps> {
+    render() {
+        return <a href={this.props.item.link}>{this.props.item.text}</a>;
+    }
+}
+
 class ParagraphsWithLinks extends React.Component<ParagraphProps> {
     ParseParagraph() {
         return this.props.text.map((phrase) => {
             if (Array.isArray(phrase)) {
-                return phrase.map((phrase) => {
-                    return <a href={phrase.link}>{phrase.text}</a>;
-                });
+                return phrase.map((phrase) => (
+                    <PhraseLink key={phrase.text} item={phrase} />
+                ));
             } else {
                 return phrase;
             }
@@ -55,10 +65,10 @@ class Paragraphs extends React.Component<ParagraphProps> {
 }
 
 class LegalDoc extends React.Component<Props> {
-    DisplayArticles(articles) {
+    DisplayArticles(articles: Array<any>) {
         return articles.map((article) => {
             return (
-                <div>
+                <div key={article.heading}>
                     <h3> {article.heading} </h3>
                     <Paragraphs text={article.paragraphs} />
                 </div>
@@ -69,7 +79,7 @@ class LegalDoc extends React.Component<Props> {
     DisplayDocument() {
         return this.props.contents.map((data) => {
             return (
-                <div>
+                <div key={data.title}>
                     <h2> {data.title} </h2>
                     <p> {data.date} </p>
                     <Paragraphs text={data.description} />
