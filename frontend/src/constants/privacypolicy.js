@@ -68,7 +68,7 @@ export const privacypol = [
             '• koma á framfæri andmælum ef þú vilt takmarka eða koma í veg fyrir að persónuupplýsingar þínar séu unnar, ',
             '• fá upplýsingar um það hvort fram fari sjálfvirk ákvarðanataka, á hvaða rökum slík ákvarðanataka er byggð og endurskoðun á sjálfvirkri ákvarðanatöku.',
             'Viljir þú nýta rétt þinn getur þú sent skriflega fyrirspurn á samromur@ru.is. Við munum staðfesta móttöku á beiðninni og að jafnaði bregðast við beiðnum innan mánaðar frá móttöku. Verði ekki unnt að bregðast við innan mánaðar munum við tilkynna þér um töf á afgreiðslu innan mánaðar. Ekki er innheimt gjald þegar einstaklingar nýta rétt sinn í samræmi við ofangreint.',
-            ['Þú hefur einnig rétt til að leggja fram kvörtun hjá Persónuvernd sjáir þú ástæðu til þess. Upplýsingar um persónuvernd má finna á heimasíðu þeirra, '
+            ['Þú hefur einnig rétt til að leggja fram kvörtun hjá Persónuvernd sjáir þú ástæðu til þess. Upplýsingar um persónuvernd má finna á heimasíðu þeirra, ',
             [{link: 'https://www.personuvernd.is/',
               text: 'www.personuvernd.is'
             }],
