@@ -75,7 +75,7 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
             switch (message.type) {
                 case 'set_agreement':
                 case 'set_voice':
-                case 'set_username':
+                case 'set_username': {
                     const success = chatrooms.setClientParameter(req, message);
                     if (success) {
                         const payload = {
@@ -94,10 +94,12 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                         sendMessage(ws, payload);
                     }
                     break;
-                case 'ping':
+                }
+                case 'ping': {
                     const payload = { type: 'pong', message: '' };
                     sendMessage(ws, payload);
                     break;
+                }
                 default:
                     sendOther(ws, req, message);
             }
