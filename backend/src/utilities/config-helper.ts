@@ -22,7 +22,7 @@ export const getConfig = (): Config => {
 
     let config = null;
     try {
-        let config_path = process.env.SERVER_CONFIG_PATH || '../config.json';
+        const config_path = process.env.SERVER_CONFIG_PATH || '../config.json';
         config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
     } catch (err) {
         console.error(err, 'Could not load config.json, using defaults');

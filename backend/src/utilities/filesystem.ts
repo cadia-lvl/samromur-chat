@@ -40,7 +40,7 @@ export interface SessionMetadata {
 
 export const getLocalSessions = (): Array<SessionMetadata> => {
     const folderPath = '../uploads/';
-    let clientSessions: Array<SessionMetadata> = [];
+    const clientSessions: Array<SessionMetadata> = [];
 
     // Get all the json files in the folder
     const conversationsList = fs
@@ -64,7 +64,7 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
     const clientbMetas = clientMetas.filter((user) => user.id == 'b');
     // Populate the clientSessions
     clientaMetas.forEach(function (client_a) {
-        let client_b = clientbMetas.find(
+        const client_b = clientbMetas.find(
             (match) => match.data.session_id == client_a.data.session_id
         );
         // If a matching client b exists then create session metadata

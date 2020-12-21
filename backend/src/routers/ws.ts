@@ -64,7 +64,7 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
     });
 
     ws.on('message', (msg: string) => {
-        let message: Payload = JSON.parse(msg) || {};
+        const message: Payload = JSON.parse(msg) || {};
         const { clientId } = chatrooms.fromRequest(req);
 
         if (!message || !('type' in message)) {
