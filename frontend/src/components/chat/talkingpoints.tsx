@@ -93,7 +93,7 @@ export default class TalkingPoint extends React.Component<Props, State> {
         // with NextTalkingPoint % talkingpoints.length
         // ex: 24thtalkingpoint % 5talkingpoints = 4th talking point
         if (seconds > 0) {
-            let talkingNumber =
+            const talkingNumber =
                 Math.floor(seconds / intervalLength) %
                 this.talkingPoints.length;
             return [
