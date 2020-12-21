@@ -3,10 +3,12 @@ import { getConfig } from '../utilities/config-helper';
 import { Request, Response } from 'express';
 import fs from 'fs';
 
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const s3Zip = require('s3-zip');
 
 if (process.env.HTTP_PROXY) {
     // Currently have no TS typings for proxy-agent, so have to use plain require().
+    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     const proxy = require('proxy-agent');
 
     config.update({
@@ -60,7 +62,7 @@ export default class Bucket {
     /**
      * Get all folders in s3
      */
-    getSessions = async () => {
+    getSessions = async (): Promise<any> => {
         const { CommonPrefixes } = await this.s3
             .listObjectsV2({
                 Bucket: this.bucketName,
