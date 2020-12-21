@@ -88,13 +88,17 @@ export default class Recorder {
                     data: { blob },
                 } = event;
                 const url = URL.createObjectURL(blob);
-                const duration = await this.getBlobDuration(url);
-                resolve({
-                    blob,
-                    duration,
-                    url,
-                    sampleRate: this.sampleRate,
-                });
+                try {
+                    const duration = await this.getBlobDuration(url);
+                    resolve({
+                        blob,
+                        duration,
+                        url,
+                        sampleRate: this.sampleRate,
+                    });
+                } catch (error) {
+                    reject('Audio has no duration');
+                }
             };
             this.encoder.postMessage({
                 command: 'finish',
