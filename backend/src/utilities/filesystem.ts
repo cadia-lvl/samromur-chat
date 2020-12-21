@@ -106,8 +106,7 @@ export const downloadLocalSession = async (
 
     // Log warnings (ie stat failures and other non-blocking errors)
     archive.on('warning', function (err) {
-        if (err.code === 'ENOENT') {
-        } else {
+        if (err.code !== 'ENOENT') {
             console.log('archive creation warnings: ' + err);
         }
     });

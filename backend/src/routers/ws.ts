@@ -1,5 +1,5 @@
 import { express } from '../express/server';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import WebSocket from 'ws';
 import Chatrooms, { Payload, UserClient } from '../chatrooms';
 
