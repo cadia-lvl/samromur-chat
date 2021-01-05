@@ -8,6 +8,8 @@
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
     "dev": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run dev\" \"cd frontend && npm run start\"",
+    "lint": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run eslint\" \"cd frontend && npm run eslint\"",
+    "docs": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run typedoc\" \"cd frontend && npm run typedoc\"",
     "postinstall": "concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
     "start": "cd backend && npm run start",
     "check-format": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"prettier --check backend/src/**/*.{ts,tsx}\" \"prettier --check frontend/src/**/*.{ts,tsx}\"",
