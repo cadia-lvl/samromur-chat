@@ -40,14 +40,6 @@ const StopwatchContainer = styled.div`
     user-select: none;
 `;
 
-const Audio = styled.audio`
-    width: 100%;
-    & :active,
-    :focus {
-        outline: none;
-    }
-`;
-
 const SwipeSwap = styled(Swipe)`
     width: 100%;
     display: flex;
