@@ -8,6 +8,9 @@ import { getTimestampString, splitSeconds } from '../../utilities/utils';
 import Swipe from '../ui/animated/swipe';
 import ProgressBar from './progress-bar';
 
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+
 const RecordingsContainer = styled.div`
     width: 100%;
     display: flex;
@@ -35,14 +38,6 @@ const StopwatchContainer = styled.div`
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-`;
-
-const Audio = styled.audio`
-    width: 100%;
-    & :active,
-    :focus {
-        outline: none;
-    }
 `;
 
 const SwipeSwap = styled(Swipe)`
@@ -120,7 +115,12 @@ export default class Recording extends React.Component<Props, State> {
                         max={this.maxSeconds}
                         val={seconds}
                     />
-                    <Audio controls src={!!recording ? recording.url : ''} />
+                    <AudioPlayer
+                        autoPlayAfterSrcChange={false}
+                        customAdditionalControls={[]}
+                        volume={0.5}
+                        src={!!recording ? recording.url : ''}
+                    />
                 </SwipeSwap>
             </RecordingsContainer>
         );
