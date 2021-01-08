@@ -31,10 +31,6 @@ interface Props {
     children?: React.ReactNode;
 }
 
-interface RouteParams {
-    roomId: string;
-}
-
 export const Layout: React.FunctionComponent<Props> = ({ children }) => {
     return (
         <LayoutContainer>

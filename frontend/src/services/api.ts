@@ -46,7 +46,7 @@ export const uploadClip = async (
 
     const parts = pathname.split('/');
     parts.splice(parts.length - 1, 0, 'api');
-    let url = parts.join('/');
+    const url = parts.join('/');
 
     const { blob } = clip;
     if (!blob) {
@@ -67,7 +67,7 @@ export const uploadClip = async (
         type: 'text/plain',
     });
 
-    let formData: FormData = new FormData();
+    const formData: FormData = new FormData();
     formData.append('audio', blob as Blob);
     formData.append('metadata', metadata);
 

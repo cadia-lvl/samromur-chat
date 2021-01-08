@@ -11,7 +11,7 @@ const createRestRouter = (isProduction: boolean) => {
     const bucket = isProduction ? new Bucket() : undefined;
     const restRouter = express.Router();
 
-    var storage = multer.diskStorage({
+    const storage = multer.diskStorage({
         destination: (req, file, cb) => {
             cb(null, '../uploads/');
         },
@@ -25,7 +25,7 @@ const createRestRouter = (isProduction: boolean) => {
         },
     });
 
-    var upload = multer({ storage: storage }).fields([
+    const upload = multer({ storage: storage }).fields([
         { name: 'audio' },
         { name: 'metadata' },
     ]);

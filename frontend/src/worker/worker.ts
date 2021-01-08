@@ -11,10 +11,10 @@ class WavEncoder {
 
     encode = (buffer: Float32Array) => {
         const length = buffer.length;
-        let view = new DataView(new ArrayBuffer(length * 2));
+        const view = new DataView(new ArrayBuffer(length * 2));
         let offset = 0;
         for (let i = 0; i < length; i++) {
-            let x = buffer[i] * 0x7fff;
+            const x = buffer[i] * 0x7fff;
             view.setInt16(
                 offset,
                 x < 0 ? Math.max(x, -0x8000) : Math.min(x, 0x7fff),
@@ -40,7 +40,7 @@ class WavEncoder {
     // Prepend wav header
     finish = (): Promise<Blob> => {
         const dataSize = this.numSamples * 2;
-        let view = new DataView(new ArrayBuffer(44));
+        const view = new DataView(new ArrayBuffer(44));
         this.writeString(view, 0, 'RIFF');
         view.setUint32(4, 36 + dataSize, true);
         this.writeString(view, 8, 'WAVE');

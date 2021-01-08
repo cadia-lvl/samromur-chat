@@ -127,7 +127,7 @@ export default class Chat {
 
     private openSocket = (url: string): Promise<WebSocket> => {
         return new Promise((resolve, reject) => {
-            let socket = new WebSocket(url);
+            const socket = new WebSocket(url);
             socket.onopen = () => {
                 this.setChatState(ChatState.CONNECTED);
                 resolve(socket);
@@ -378,7 +378,7 @@ export default class Chat {
     };
 
     private handleClientChanged = async (message: any) => {
-        let update: { [key: string]: any } = {};
+        const update: { [key: string]: any } = {};
         switch (message.parameter) {
             case 'set_username':
                 update.username = message.value;
@@ -435,7 +435,7 @@ export default class Chat {
     private handleStopRecording = async () => {
         try {
             this.setRecordingState(RecordingState.NOT_RECORDING);
-            let recording = await this.recorder.stopRecording();
+            const recording = await this.recorder.stopRecording();
 
             // Inject sessionid
             recording.id = this.sessionId;
@@ -573,7 +573,7 @@ export default class Chat {
     public stopRecording = async (): Promise<void> => {
         try {
             this.sendMessage({ type: 'stop_recording' });
-            let recording = await this.recorder.stopRecording();
+            const recording = await this.recorder.stopRecording();
 
             // Inject sessionid
             recording.id = this.sessionId;

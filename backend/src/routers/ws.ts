@@ -1,5 +1,5 @@
 import { express } from '../express/server';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import WebSocket from 'ws';
 import Chatrooms, { Payload, UserClient } from '../chatrooms';
 
@@ -64,7 +64,7 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
     });
 
     ws.on('message', (msg: string) => {
-        let message: Payload = JSON.parse(msg) || {};
+        const message: Payload = JSON.parse(msg) || {};
         const { clientId } = chatrooms.fromRequest(req);
 
         if (!message || !('type' in message)) {
@@ -75,7 +75,7 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
             switch (message.type) {
                 case 'set_agreement':
                 case 'set_voice':
-                case 'set_username':
+                case 'set_username': {
                     const success = chatrooms.setClientParameter(req, message);
                     if (success) {
                         const payload = {
@@ -94,10 +94,12 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                         sendMessage(ws, payload);
                     }
                     break;
-                case 'ping':
+                }
+                case 'ping': {
                     const payload = { type: 'pong', message: '' };
                     sendMessage(ws, payload);
                     break;
+                }
                 default:
                     sendOther(ws, req, message);
             }

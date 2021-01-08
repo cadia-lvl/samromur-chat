@@ -96,7 +96,7 @@ export default class DropdownButton extends React.Component<Props, State> {
         );
     };
 
-    onFocusOut = (event: FocusEvent) => {
+    onFocusOut = () => {
         this.setState({ visible: false });
     };
 
