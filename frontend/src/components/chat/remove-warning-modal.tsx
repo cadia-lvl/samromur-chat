@@ -48,13 +48,13 @@ export class RemoveWarningModal extends React.Component<Props> {
                 <Content>
                     <Title>Are you sure you want to delete?</Title>
                     <Text>
-                        We like recordings of almost all sizes. Please consider
-                        sending in the recording even if it is short.
+                        Það er ekki búið að senda inn upptökuna Við viljum allar
+                        upptökur, stuttar eða langar.
                     </Text>
                     <ButtonsContainer>
                         <Button onClick={onClose}>Til baka</Button>
                         <Button red onClick={this.onRemove}>
-                            Eg er viss
+                            Eyða
                         </Button>
                     </ButtonsContainer>
                 </Content>
