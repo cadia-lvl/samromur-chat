@@ -46,6 +46,10 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                 agreed: other.agreed,
             };
             sendMessage(ws, payload);
+        } else {
+            // If no other client, sent that this client is the owner
+            const payload = { type: 'chatroom_owner' };
+            sendMessage(ws, payload);
         }
     }
 

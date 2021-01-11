@@ -43,6 +43,7 @@ export default class Chat {
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
+    onUpload!: () => void;
 
     private recorder: Recorder;
     private rtcConnection!: webkitRTCPeerConnection;
@@ -60,6 +61,7 @@ export default class Chat {
     private timeout: number;
     private timeoutIncrement: number;
     private unsentMessages: Payload[];
+    private isChatroomOwner: boolean;
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
@@ -76,6 +78,7 @@ export default class Chat {
         this.timeoutIncrement = 500;
         this.timeout = this.timeoutIncrement;
         this.unsentMessages = [];
+        this.isChatroomOwner = false;
 
         this.clients = [userClient];
 
@@ -329,6 +332,12 @@ export default class Chat {
             case 'error':
                 console.error('Error: ', message.message);
                 break;
+            case 'chatroom_owner':
+                this.handleIsChatRoomOwner();
+                break;
+            case 'upload':
+                this.handleUpload();
+                break;
             case 'pong':
                 this.handlePong();
                 break;
@@ -523,6 +532,14 @@ export default class Chat {
         }
     };
 
+    private handleIsChatRoomOwner = () => {
+        this.isChatroomOwner = true;
+    };
+
+    public isOwner = (): boolean => {
+        return this.isChatroomOwner;
+    };
+
     public hangUp = async (): Promise<void> => {
         this.rtcConnection.close();
         this.rtcConnection = await this.openRTC();
@@ -596,5 +613,15 @@ export default class Chat {
             console.error('Error cancelling recording, ', error);
             return Promise.reject();
         }
+    };
+
+    // Sends the request for other client to upload its recording
+    public uploadOther = async (): Promise<void> => {
+        await this.sendMessage({ type: 'upload' });
+    };
+
+    // Responsible for triggering the upload of this client
+    private handleUpload = () => {
+        this.onUpload();
     };
 }
