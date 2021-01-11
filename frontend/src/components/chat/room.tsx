@@ -160,6 +160,7 @@ interface State {
     voiceState: VoiceState;
     clients: UserClient[];
     recording?: AudioInfo;
+    isChatroomOwner: boolean;
 }
 
 interface RouteProp {
@@ -184,6 +185,7 @@ class Chatroom extends React.Component<Props, State> {
             voiceState: VoiceState.VOICE_DISCONNECTED,
             clients: [userClient],
             recording: undefined,
+            isChatroomOwner: true,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
@@ -209,6 +211,10 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onRecordingStopped = (recording: AudioInfo) => {
             this.setState({ recording });
         };
+
+        this.chat.onUpload = this.handleOnUpload;
+
+        this.setState({ isChatroomOwner: this.chat.isOwner() });
     };
 
     removeRecording = () => {
@@ -298,6 +304,7 @@ class Chatroom extends React.Component<Props, State> {
     onSubmit = () => {
         const { recording } = this.state;
         const { onUpload } = this.props;
+        this.chat.uploadOther();
         onUpload(recording);
     };
 
@@ -317,6 +324,15 @@ class Chatroom extends React.Component<Props, State> {
         }
     };
 
+    handleOnUpload = async () => {
+        const { recording } = this.state;
+        const { onUpload } = this.props;
+        if (recording) {
+            onUpload(recording);
+        }
+        //this.chat.uploaded();
+    };
+
     render() {
         const {
             clients,
@@ -331,6 +347,8 @@ class Chatroom extends React.Component<Props, State> {
                 params: { roomId },
             },
         } = this.props;
+
+        const isChatroomOwner = this.chat?.isOwner();
 
         return (
             <ChatroomContainer>
@@ -368,14 +386,16 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                 />
-                <Controls
-                    chat={this.chat}
-                    onRemove={this.removeRecording}
-                    onSubmit={this.onSubmit}
-                    recording={recording}
-                    recordingState={recordingState}
-                    voiceState={voiceState}
-                />
+                {isChatroomOwner && (
+                    <Controls
+                        chat={this.chat}
+                        onRemove={this.removeRecording}
+                        onSubmit={this.onSubmit}
+                        recording={recording}
+                        recordingState={recordingState}
+                        voiceState={voiceState}
+                    />
+                )}
                 <Audio autoPlay controls ref={this.audioRef} />
                 <TalkingPoints
                     recording={recording}
