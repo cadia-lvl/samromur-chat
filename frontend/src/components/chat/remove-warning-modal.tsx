@@ -69,7 +69,7 @@ export class RemoveWarningModal extends React.Component<Props> {
                     <ButtonsContainer>
                         <Button onClick={onClose}>Til baka</Button>
                         <Button green onClick={onSubmit}>
-                            Nei, senda núna!
+                            Nei, senda inn
                         </Button>
                     </ButtonsContainer>
                     <RemoveLink onClick={this.onRemove}>
