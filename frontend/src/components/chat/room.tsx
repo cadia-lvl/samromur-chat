@@ -457,6 +457,7 @@ class Chatroom extends React.Component<Props, State> {
                     isOpen={showModal}
                     onRemove={this.removeRecording}
                     onClose={this.closeWarningModal}
+                    onSubmit={this.onSubmit}
                 />
                 <StyledToastContainer
                     position="bottom-center"
