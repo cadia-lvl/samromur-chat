@@ -251,7 +251,7 @@ class Chatroom extends React.Component<Props, State> {
             alert('Þú ert enn að taka upp!');
             e.returnValue = '';
         } else if (recording) {
-            const confirmLeave = confirm(
+            const confirmLeave = window.confirm(
                 'Þú ert um það bil að fara án þess að senda upptökuna þína.'
             );
             if (!confirmLeave) {

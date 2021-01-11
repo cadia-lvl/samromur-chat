@@ -35,10 +35,6 @@ interface WarningModalProps {
 type Props = WarningModalProps;
 
 export class RemoveWarningModal extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     onRemove = () => {
         const { onRemove, onClose } = this.props;
         onRemove();

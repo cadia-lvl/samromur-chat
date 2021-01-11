@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Modal from './styles';
-import CloseIcon from '../icons/close';
 
 interface Props {
     children?: React.ReactNode;
@@ -11,10 +10,6 @@ interface Props {
 }
 
 export default class DefaultModal extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     render() {
         const { children } = this.props;
 
