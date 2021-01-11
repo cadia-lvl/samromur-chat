@@ -187,7 +187,7 @@ class Chatroom extends React.Component<Props, State> {
             voiceState: VoiceState.VOICE_DISCONNECTED,
             clients: [userClient],
             recording: undefined,
-            showModal: true,
+            showModal: false,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
@@ -411,7 +411,7 @@ class Chatroom extends React.Component<Props, State> {
                 >
                     {countdown}
                 </CounterContainer>
-                {recordingState === RecordingState.RECORDING && (
+                {recordingState !== RecordingState.RECORDING && (
                     <ShareButton onClick={this.copyToClipBoard}>
                         <span>
                             Smelltu til að afrita hlekkinn og deildu með vini
