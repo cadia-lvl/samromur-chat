@@ -467,6 +467,7 @@ export default class Chat {
 
     public unMute = async () => {
         this.setVoiceState(VoiceState.VOICE_CONNECTED);
+        this.recorder.unMute();
         const unmuted = this.clients.find(
             (client: UserClient) => client.voice === true
         );
@@ -487,6 +488,7 @@ export default class Chat {
 
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+        this.recorder.mute();
         this.hangUp();
         this.handleClientChanged({
             id: this.userClient.id,
