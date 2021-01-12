@@ -64,6 +64,11 @@ wsRouter.ws('/:room/:client', (ws: WebSocket, req: Request) => {
                 };
                 sendMessage(client.ws, payload);
             });
+            // Make the first user in the room the owner
+            if (room.length >= 1) {
+                const payload = { type: 'chatroom_owner' };
+                sendMessage(room[0].ws, payload);
+            }
         }
     });
 
