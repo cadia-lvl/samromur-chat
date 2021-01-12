@@ -386,17 +386,17 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                 />
-                {isChatroomOwner && (
-                    <Controls
-                        chat={this.chat}
-                        onRemove={this.removeRecording}
-                        onSubmit={this.onSubmit}
-                        recording={recording}
-                        recordingState={recordingState}
-                        voiceState={voiceState}
-                    />
-                )}
+                <Controls
+                    chat={this.chat}
+                    onRemove={this.removeRecording}
+                    onSubmit={this.onSubmit}
+                    recording={recording}
+                    recordingState={recordingState}
+                    voiceState={voiceState}
+                    chatRoomOwner={isChatroomOwner}
+                />
                 <Audio autoPlay controls ref={this.audioRef} />
+                {!isChatroomOwner && recordingState}
                 <TalkingPoints
                     recording={recording}
                     recordingState={recordingState}

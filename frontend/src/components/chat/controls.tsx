@@ -125,6 +125,7 @@ interface Props {
     recording: AudioInfo;
     recordingState: RecordingState;
     voiceState: VoiceState;
+    chatRoomOwner: boolean;
 }
 
 interface State {
@@ -177,7 +178,13 @@ export default class Controls extends React.Component<Props, State> {
     };
 
     render() {
-        const { onSubmit, recording, recordingState, voiceState } = this.props;
+        const {
+            onSubmit,
+            recording,
+            recordingState,
+            voiceState,
+            chatRoomOwner,
+        } = this.props;
 
         const { confirm } = this.state;
 
@@ -193,36 +200,45 @@ export default class Controls extends React.Component<Props, State> {
                             <MicIcon height={40} width={40} />
                         </MainButton>
                     </MainButtonContainer>
-                    <MainButtonContainer
-                        isActive={recordingState === RecordingState.RECORDING}
-                        onClick={this.handleRecord}
-                    >
-                        <Glow red />
-                        <MainButton>
-                            <RecordIcon
-                                active={
-                                    recordingState === RecordingState.RECORDING
-                                }
-                            />
-                        </MainButton>
-                    </MainButtonContainer>
+                    {chatRoomOwner && (
+                        <MainButtonContainer
+                            isActive={
+                                recordingState === RecordingState.RECORDING
+                            }
+                            onClick={this.handleRecord}
+                        >
+                            <Glow red />
+                            <MainButton>
+                                <RecordIcon
+                                    active={
+                                        recordingState ===
+                                        RecordingState.RECORDING
+                                    }
+                                />
+                            </MainButton>
+                        </MainButtonContainer>
+                    )}
                 </ButtonsContainer>
-                <SubmitButtons second={confirm}>
-                    <SubmitButtonsContainer>
-                        <Button onClick={this.handleConfirm}>
-                            Byrja aftur
-                        </Button>
-                        <Button onClick={onSubmit} green>
-                            Senda inn
-                        </Button>
-                    </SubmitButtonsContainer>
-                    <SubmitButtonsContainer>
-                        <Button onClick={this.handleConfirm}>Til baka</Button>
-                        <Button red onClick={this.handleRemove}>
-                            Eyða upptöku
-                        </Button>
-                    </SubmitButtonsContainer>
-                </SubmitButtons>
+                {chatRoomOwner && (
+                    <SubmitButtons second={confirm}>
+                        <SubmitButtonsContainer>
+                            <Button onClick={this.handleConfirm}>
+                                Byrja aftur
+                            </Button>
+                            <Button onClick={onSubmit} green>
+                                Senda inn
+                            </Button>
+                        </SubmitButtonsContainer>
+                        <SubmitButtonsContainer>
+                            <Button onClick={this.handleConfirm}>
+                                Til baka
+                            </Button>
+                            <Button red onClick={this.handleRemove}>
+                                Eyða upptöku
+                            </Button>
+                        </SubmitButtonsContainer>
+                    </SubmitButtons>
+                )}
             </ControlsContainer>
         );
     }
