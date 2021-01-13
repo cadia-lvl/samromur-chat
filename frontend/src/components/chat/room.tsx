@@ -18,6 +18,8 @@ import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StatusMessages from './StatusMessages';
 
+import { RemoveWarningModal } from './remove-warning-modal';
+
 const ChatroomContainer = styled.div`
     position: relative;
     width: 100%;
@@ -162,6 +164,7 @@ interface State {
     clients: UserClient[];
     recording?: AudioInfo;
     isChatroomOwner: boolean;
+    showModal: boolean;
 }
 
 interface RouteProp {
@@ -187,6 +190,7 @@ class Chatroom extends React.Component<Props, State> {
             clients: [userClient],
             recording: undefined,
             isChatroomOwner: true,
+            showModal: false,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
@@ -216,6 +220,62 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onUpload = this.handleOnUpload;
 
         this.setState({ isChatroomOwner: this.chat.isOwner() });
+        window.addEventListener('beforeunload', this.alertUser);
+        this.addPushState();
+        window.addEventListener('popstate', this.alertUserBack);
+    };
+
+    componentWillUnmount = async () => {
+        window.removeEventListener('beforeunload', this.alertUser);
+        window.removeEventListener('popstate', this.alertUserBack);
+    };
+
+    // Alert user when recording is not sent in
+    // when they try to leave the site with new ur or close window/tab
+    // We are unable to customize this and most browsers
+    // will block any attempts to do so
+    alertUser = (e) => {
+        const { recording, recordingState } = this.state;
+        e.preventDefault();
+        if (recording || recordingState === RecordingState.RECORDING) {
+            e.returnValue = '';
+        }
+    };
+
+    // Alert user when recording is not sent in
+    // when the use the back button.
+    // Prevent user leaving during a recording.
+    // Ask user to stay when recoding exists.
+    alertUserBack = (e) => {
+        const { recording, recordingState } = this.state;
+        const { history } = this.props;
+
+        e.preventDefault();
+
+        if (recordingState === RecordingState.RECORDING) {
+            this.addPushState();
+            alert('Þú ert enn að taka upp!');
+            e.returnValue = '';
+        } else if (recording) {
+            const confirmLeave = window.confirm(
+                'Þú ert um það bil að fara án þess að senda upptökuna þína.'
+            );
+            if (!confirmLeave) {
+                this.addPushState();
+                e.returnValue = '';
+            } else {
+                history.replace('/');
+            }
+        }
+    };
+
+    addPushState = () => {
+        // Push the this state for alert to have a chance to pop up.
+        window.history.pushState(
+            { name: 'browserBack' },
+            'on browser back click',
+            window.location.href
+        );
     };
 
     removeRecording = () => {
@@ -334,6 +394,14 @@ class Chatroom extends React.Component<Props, State> {
         //this.chat.uploaded();
     };
 
+    showWarningModal = () => {
+        this.setState({ showModal: true });
+    };
+
+    closeWarningModal = () => {
+        this.setState({ showModal: false });
+    };
+
     render() {
         const {
             clients,
@@ -341,6 +409,7 @@ class Chatroom extends React.Component<Props, State> {
             recordingState,
             recording,
             voiceState,
+            showModal,
         } = this.state;
 
         const {
@@ -360,11 +429,13 @@ class Chatroom extends React.Component<Props, State> {
                 >
                     {countdown}
                 </CounterContainer>
-                <ShareButton onClick={this.copyToClipBoard}>
-                    <span>
-                        Smelltu til að afrita hlekkinn og deildu með vini
-                    </span>
-                </ShareButton>
+                {recordingState !== RecordingState.RECORDING && (
+                    <ShareButton onClick={this.copyToClipBoard}>
+                        <span>
+                            Smelltu til að afrita hlekkinn og deildu með vini
+                        </span>
+                    </ShareButton>
+                )}
                 <UserList>
                     <ListHeader>
                         <HeaderItem>
@@ -395,7 +466,7 @@ class Chatroom extends React.Component<Props, State> {
                 )}
                 <Controls
                     chat={this.chat}
-                    onRemove={this.removeRecording}
+                    onRemove={this.showWarningModal}
                     onSubmit={this.onSubmit}
                     recording={recording}
                     recordingState={recordingState}
@@ -406,6 +477,12 @@ class Chatroom extends React.Component<Props, State> {
                 <TalkingPoints
                     recording={recording}
                     recordingState={recordingState}
+                />
+                <RemoveWarningModal
+                    isOpen={showModal}
+                    onRemove={this.removeRecording}
+                    onClose={this.closeWarningModal}
+                    onSubmit={this.onSubmit}
                 />
                 <StyledToastContainer
                     position="bottom-center"

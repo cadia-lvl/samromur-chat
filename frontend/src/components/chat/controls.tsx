@@ -101,7 +101,7 @@ interface ButtonProps {
     green?: boolean;
     red?: boolean;
 }
-const Button = styled.div<ButtonProps>`
+export const Button = styled.div<ButtonProps>`
     display: flex;
     justify-content: center;
     align-items: center;
