@@ -123,7 +123,7 @@ const ShareButton = styled.div`
 
     & span {
         font-weight: 600;
-        font-size 1.2rem;
+        font-size: 1.2rem;
         padding: 1rem 2rem;
     }
 
@@ -391,7 +391,6 @@ class Chatroom extends React.Component<Props, State> {
         if (recording) {
             onUpload(recording);
         }
-        //this.chat.uploaded();
     };
 
     showWarningModal = () => {
