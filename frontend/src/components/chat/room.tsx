@@ -16,6 +16,7 @@ import Recordings from './recordings';
 import TalkingPoints from './talkingpoints';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import StatusMessages from './StatusMessages';
 
 const ChatroomContainer = styled.div`
     position: relative;
@@ -386,6 +387,12 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                 />
+                {!isChatroomOwner && (
+                    <StatusMessages
+                        hasRecording={!!recording}
+                        recordingState={recordingState}
+                    />
+                )}
                 <Controls
                     chat={this.chat}
                     onRemove={this.removeRecording}
@@ -396,7 +403,6 @@ class Chatroom extends React.Component<Props, State> {
                     chatRoomOwner={isChatroomOwner}
                 />
                 <Audio autoPlay controls ref={this.audioRef} />
-                {!isChatroomOwner && recordingState}
                 <TalkingPoints
                     recording={recording}
                     recordingState={recordingState}
