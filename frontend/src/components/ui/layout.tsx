@@ -27,6 +27,13 @@ const Title = styled.h1`
     }
 `;
 
+const StyledLink = styled.a`
+    text-decoration: none;
+    :visited {
+        color: black;
+    }
+`;
+
 interface Props {
     children?: React.ReactNode;
 }
@@ -37,9 +44,9 @@ export const Layout: React.FunctionComponent<Props> = ({ children }) => {
             <Padding>
                 <Header>
                     <Title>
-                        <a href="/">
+                        <StyledLink href="/">
                             Samrómur <span>spjall</span>
-                        </a>
+                        </StyledLink>
                     </Title>
                 </Header>
                 {children}
