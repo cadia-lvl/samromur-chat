@@ -40,6 +40,7 @@ export default class Chat {
     onAudioTrack!: (stream: MediaStream) => void;
 
     onClientsChanged!: (clients: UserClient[]) => void;
+    onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
@@ -536,6 +537,7 @@ export default class Chat {
 
     private handleIsChatRoomOwner = () => {
         this.isChatroomOwner = true;
+        this.onIsOwnerChanged(this.isChatroomOwner);
     };
 
     public isOwner = (): boolean => {

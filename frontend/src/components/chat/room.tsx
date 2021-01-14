@@ -200,8 +200,8 @@ class Chatroom extends React.Component<Props, State> {
         const url = this.constructSocketUrl();
         const { userClient } = this.props;
         this.chat = new Chat(url, userClient);
-        this.chat.onClientsChanged = (clients: UserClient[]) =>
-            this.setState({ clients });
+        this.chat.onClientsChanged = this.handleClientsChanged;
+        this.chat.onIsOwnerChanged = this.handleOwnerChagned;
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
             this.setState({ voiceState });
@@ -267,6 +267,14 @@ class Chatroom extends React.Component<Props, State> {
                 history.replace('/');
             }
         }
+    };
+
+    handleClientsChanged = (clients: UserClient[]) => {
+        this.setState({ clients });
+    };
+
+    handleOwnerChagned = (isChatroomOwner: boolean) => {
+        this.setState({ isChatroomOwner });
     };
 
     addPushState = () => {
@@ -409,6 +417,7 @@ class Chatroom extends React.Component<Props, State> {
             recording,
             voiceState,
             showModal,
+            isChatroomOwner,
         } = this.state;
 
         const {
@@ -416,8 +425,6 @@ class Chatroom extends React.Component<Props, State> {
                 params: { roomId },
             },
         } = this.props;
-
-        const isChatroomOwner = this.chat?.isOwner();
 
         return (
             <ChatroomContainer>
