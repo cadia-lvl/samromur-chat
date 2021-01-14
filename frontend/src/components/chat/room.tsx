@@ -16,6 +16,7 @@ import Recordings from './recordings';
 import TalkingPoints from './talkingpoints';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import StatusMessages from './StatusMessages';
 
 import { RemoveWarningModal } from './remove-warning-modal';
 
@@ -122,7 +123,7 @@ const ShareButton = styled.div`
 
     & span {
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         padding: 1rem 2rem;
     }
 
@@ -162,6 +163,7 @@ interface State {
     voiceState: VoiceState;
     clients: UserClient[];
     recording?: AudioInfo;
+    isChatroomOwner: boolean;
     showModal: boolean;
 }
 
@@ -187,6 +189,7 @@ class Chatroom extends React.Component<Props, State> {
             voiceState: VoiceState.VOICE_DISCONNECTED,
             clients: [userClient],
             recording: undefined,
+            isChatroomOwner: true,
             showModal: false,
         };
 
@@ -197,8 +200,8 @@ class Chatroom extends React.Component<Props, State> {
         const url = this.constructSocketUrl();
         const { userClient } = this.props;
         this.chat = new Chat(url, userClient);
-        this.chat.onClientsChanged = (clients: UserClient[]) =>
-            this.setState({ clients });
+        this.chat.onClientsChanged = this.handleClientsChanged;
+        this.chat.onIsOwnerChanged = this.handleOwnerChagned;
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
             this.setState({ voiceState });
@@ -214,6 +217,9 @@ class Chatroom extends React.Component<Props, State> {
             this.setState({ recording });
         };
 
+        this.chat.onUpload = this.handleOnUpload;
+
+        this.setState({ isChatroomOwner: this.chat.isOwner() });
         window.addEventListener('beforeunload', this.alertUser);
         this.addPushState();
         window.addEventListener('popstate', this.alertUserBack);
@@ -261,6 +267,14 @@ class Chatroom extends React.Component<Props, State> {
                 history.replace('/');
             }
         }
+    };
+
+    handleClientsChanged = (clients: UserClient[]) => {
+        this.setState({ clients });
+    };
+
+    handleOwnerChagned = (isChatroomOwner: boolean) => {
+        this.setState({ isChatroomOwner });
     };
 
     addPushState = () => {
@@ -359,6 +373,7 @@ class Chatroom extends React.Component<Props, State> {
     onSubmit = () => {
         const { recording } = this.state;
         const { onUpload } = this.props;
+        this.chat.uploadOther();
         onUpload(recording);
     };
 
@@ -378,6 +393,14 @@ class Chatroom extends React.Component<Props, State> {
         }
     };
 
+    handleOnUpload = async () => {
+        const { recording } = this.state;
+        const { onUpload } = this.props;
+        if (recording) {
+            onUpload(recording);
+        }
+    };
+
     showWarningModal = () => {
         this.setState({ showModal: true });
     };
@@ -394,6 +417,7 @@ class Chatroom extends React.Component<Props, State> {
             recording,
             voiceState,
             showModal,
+            isChatroomOwner,
         } = this.state;
 
         const {
@@ -440,6 +464,12 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                 />
+                {!isChatroomOwner && (
+                    <StatusMessages
+                        hasRecording={!!recording}
+                        recordingState={recordingState}
+                    />
+                )}
                 <Controls
                     chat={this.chat}
                     onRemove={this.showWarningModal}
@@ -447,6 +477,7 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                     voiceState={voiceState}
+                    chatRoomOwner={isChatroomOwner}
                 />
                 <Audio autoPlay controls ref={this.audioRef} />
                 <TalkingPoints

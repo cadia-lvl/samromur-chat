@@ -40,9 +40,11 @@ export default class Chat {
     onAudioTrack!: (stream: MediaStream) => void;
 
     onClientsChanged!: (clients: UserClient[]) => void;
+    onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
+    onUpload!: () => void;
 
     private recorder: Recorder;
     private rtcConnection!: webkitRTCPeerConnection;
@@ -60,6 +62,7 @@ export default class Chat {
     private timeout: number;
     private timeoutIncrement: number;
     private unsentMessages: Payload[];
+    private isChatroomOwner: boolean;
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
@@ -76,6 +79,7 @@ export default class Chat {
         this.timeoutIncrement = 500;
         this.timeout = this.timeoutIncrement;
         this.unsentMessages = [];
+        this.isChatroomOwner = false;
 
         this.clients = [userClient];
 
@@ -329,6 +333,12 @@ export default class Chat {
             case 'error':
                 console.error('Error: ', message.message);
                 break;
+            case 'chatroom_owner':
+                this.handleIsChatRoomOwner();
+                break;
+            case 'upload':
+                this.handleUpload();
+                break;
             case 'pong':
                 this.handlePong();
                 break;
@@ -458,6 +468,7 @@ export default class Chat {
 
     public unMute = async () => {
         this.setVoiceState(VoiceState.VOICE_CONNECTED);
+        this.recorder.unMute();
         const unmuted = this.clients.find(
             (client: UserClient) => client.voice === true
         );
@@ -478,6 +489,7 @@ export default class Chat {
 
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+        this.recorder.mute();
         this.hangUp();
         this.handleClientChanged({
             id: this.userClient.id,
@@ -521,6 +533,15 @@ export default class Chat {
             console.error('Error answering, ', error);
             return Promise.reject();
         }
+    };
+
+    private handleIsChatRoomOwner = () => {
+        this.isChatroomOwner = true;
+        this.onIsOwnerChanged(this.isChatroomOwner);
+    };
+
+    public isOwner = (): boolean => {
+        return this.isChatroomOwner;
     };
 
     public hangUp = async (): Promise<void> => {
@@ -596,5 +617,15 @@ export default class Chat {
             console.error('Error cancelling recording, ', error);
             return Promise.reject();
         }
+    };
+
+    // Sends the request for other client to upload its recording
+    public uploadOther = async (): Promise<void> => {
+        await this.sendMessage({ type: 'upload' });
+    };
+
+    // Responsible for triggering the upload of this client
+    private handleUpload = () => {
+        this.onUpload();
     };
 }

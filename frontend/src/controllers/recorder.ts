@@ -13,6 +13,7 @@ export default class Recorder {
 
     private sourceNode!: MediaStreamAudioSourceNode;
     private processorNode!: ScriptProcessorNode;
+    private gainNode!: GainNode;
     private sampleRate: number;
 
     constructor({ sampleRate }: RecorderConfig) {
@@ -48,7 +49,8 @@ export default class Recorder {
 
     private start = (): Promise<void> => {
         this.processorNode.connect(this.audioContext.destination);
-        this.sourceNode.connect(this.processorNode);
+        this.sourceNode.connect(this.gainNode);
+        this.gainNode.connect(this.processorNode);
         if (!this.isReady()) {
             console.error('Cannot record audio before microhphone is ready.');
             return Promise.reject();
@@ -135,10 +137,25 @@ export default class Recorder {
             1,
             1
         );
+        this.gainNode = this.audioContext.createGain();
         this.processorNode.connect(this.audioContext.destination);
-        this.sourceNode.connect(this.processorNode);
+        this.sourceNode.connect(this.gainNode);
+        this.gainNode.connect(this.processorNode);
+        this.gainNode.gain.value = 1;
 
         return Promise.resolve(rtcStream);
+    };
+
+    mute = () => {
+        if (this.gainNode) {
+            this.gainNode.gain.value = 0;
+        }
+    };
+
+    unMute = () => {
+        if (this.gainNode) {
+            this.gainNode.gain.value = 1;
+        }
     };
 
     startRecording = async (): Promise<void> => {

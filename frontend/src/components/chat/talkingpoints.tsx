@@ -10,7 +10,7 @@ import { shuffleArray } from '../../utilities/utils';
 
 const TalkingPointContainer = styled.div`
     width: 100%;
-    margin: 8rem auto;
+    margin: 8rem auto 0rem auto;
     display: flex;
     flex-direction: column;
     align-items: center;
