@@ -10,7 +10,7 @@
     "dev": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run dev\" \"cd frontend && npm run start\"",
     "postinstall": "concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
     "start": "cd backend && npm run start",
-    "format-check": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"prettier --check backend/src/**/*.{ts,tsx}\" \"prettier --check frontend/src/**/*.{ts,tsx}\"",
+    "check-format": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"prettier --check backend/src/**/*.{ts,tsx}\" \"prettier --check frontend/src/**/*.{ts,tsx}\"",
     "auto-format": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"prettier --write backend/src/**/*.{ts,tsx}\" \"prettier --write frontend/src/**/*.{ts,tsx}\""
   },
   "dependencies": {
