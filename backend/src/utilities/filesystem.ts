@@ -78,8 +78,7 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
         }
     });
 
-    // Show the most recent session at the top like for production
-    return clientSessions.reverse();
+    return clientSessions;
 };
 
 export const downloadLocalSession = async (
