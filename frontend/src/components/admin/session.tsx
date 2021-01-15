@@ -110,7 +110,7 @@ export const Session: React.FunctionComponent<Props> = ({
                     <Subtitle>{participantB}</Subtitle>
                     <span>{getGender(client_b.gender)}</span>
                     <span>
-                        {getAge(client_a.age)} {yearsOld}
+                        {getAge(client_b.age)} {yearsOld}
                     </span>
                     <span>
                         {client_b.sample_rate} {sampleRateMeasurement}
