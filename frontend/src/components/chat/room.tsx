@@ -226,7 +226,7 @@ class Chatroom extends React.Component<Props, State> {
         const { userClient } = this.props;
         this.chat = new Chat(url, userClient);
         this.chat.onClientsChanged = this.handleClientsChanged;
-        this.chat.onIsOwnerChanged = this.handleOwnerChagned;
+        this.chat.onIsOwnerChanged = this.handleOwnerChanged;
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
         this.chat.onChatStateChanged = this.handleChatStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
@@ -270,9 +270,9 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     // Alert user when recording is not sent in
-    // when the use the back button.
+    // when they use the back button.
     // Prevent user leaving during a recording.
-    // Ask user to stay when recoding exists.
+    // Ask user to stay when recording exists.
     alertUserBack = (e) => {
         const { recording, recordingState } = this.state;
         const { history } = this.props;
@@ -300,7 +300,7 @@ class Chatroom extends React.Component<Props, State> {
         this.setState({ clients });
     };
 
-    handleOwnerChagned = (isChatroomOwner: boolean) => {
+    handleOwnerChanged = (isChatroomOwner: boolean) => {
         this.setState({ isChatroomOwner });
     };
 
