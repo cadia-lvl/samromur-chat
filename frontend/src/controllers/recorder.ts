@@ -61,19 +61,61 @@ export default class Recorder {
         this.sourceNode.connect(this.gainNode);
         this.gainNode.connect(this.processorNode);
         if (!this.isReady()) {
-            console.error('Cannot record audio before microhphone is ready.');
+            console.error('Cannot record audio before microphone is ready.');
             return Promise.reject();
         }
 
         this.processorNode.onaudioprocess = (ev: AudioProcessingEvent) => {
+            let downsampled = this.downsampleBuffer(ev.inputBuffer, 16000);
             this.encoder.postMessage({
                 command: 'encode',
-                buffer: ev.inputBuffer.getChannelData(0),
+                buffer: downsampled,
             });
         };
 
         return Promise.resolve();
     };
+
+    // Now the desired sample rate of wave might not match the sample rate of
+    // the recording, gotta downsample the recording
+    private downsampleBuffer(buffer: AudioBuffer, rate: number) {
+        if (rate === buffer.sampleRate) {
+            return buffer;
+        }
+        if (rate > buffer.sampleRate) {
+            console.error(
+                'Downsampling rate is larger than original sample rate'
+            );
+        }
+        var sampleRateRatio = buffer.sampleRate / rate;
+        var newLength = Math.round(buffer.length / sampleRateRatio);
+        var result = new Float32Array(newLength);
+        var offsetResult = 0;
+        var offsetBuffer = 0;
+        let nowBuffering = buffer.getChannelData(0);
+        while (offsetResult < result.length) {
+            var nextOffsetBuffer = Math.round(
+                (offsetResult + 1) * sampleRateRatio
+            );
+            // Use average value of skipped samples
+            var accum = 0,
+                count = 0;
+            for (
+                var i = offsetBuffer;
+                i < nextOffsetBuffer && i < buffer.length;
+                i++
+            ) {
+                accum += nowBuffering[i];
+                count++;
+            }
+            result[offsetResult] = accum / count;
+            // Or you can simply get rid of the skipped samples:
+            // result[offsetResult] = buffer[nextOffsetBuffer];
+            offsetResult++;
+            offsetBuffer = nextOffsetBuffer;
+        }
+        return result;
+    }
 
     private getBlobDuration = async (url: string): Promise<number> => {
         return new Promise((resolve) => {
@@ -117,7 +159,7 @@ export default class Recorder {
         });
     };
 
-    // Check all the browser prefixes for microhpone support.
+    // Check all the browser prefixes for microphone support.
     isMicrophoneSupported = (): boolean => {
         return !!(
             navigator.mediaDevices?.getUserMedia ||
@@ -137,7 +179,18 @@ export default class Recorder {
         const recordingStream = this.microphone.clone();
         const rtcStream = this.microphone.clone();
 
-        this.audioContext = new AudioContext({ sampleRate: this.sampleRate });
+        // NOTE: since firefox gives this error message: Connecting AudioNodes from
+        // AudioContexts with different sample-rate is currently not supported.
+        // SO we need to use the default sampleRate
+        // THEN downsample the buffer after recording and before encoding in
+        // wave
+        this.sampleRate = this.microphone.getAudioTracks()[0].getSettings()
+            .sampleRate as number;
+        this.audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)({ sampleRate: this.sampleRate });
+        // Set sample rate to the active one
+        this.sampleRate = this.audioContext.sampleRate;
+
         this.sourceNode = this.audioContext.createMediaStreamSource(
             recordingStream
         );
@@ -171,6 +224,11 @@ export default class Recorder {
         if (!this.isMicrophoneSupported) {
             console.log(AudioError.NO_MIC_SUPPORT);
             return Promise.reject(AudioError.NO_MIC_SUPPORT);
+        }
+        if (!this.processorNode) {
+            // TODO: Throw a predefined error.
+            console.error('NO_PROCESSOR_NODE');
+            return Promise.reject('NO_PROCESSOR_NODE');
         }
         return this.start();
     };

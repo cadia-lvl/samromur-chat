@@ -49,7 +49,7 @@ export default class Chat {
     onError!: (message: any) => void;
 
     private recorder: Recorder;
-    private rtcConnection!: webkitRTCPeerConnection;
+    private rtcConnection!: RTCPeerConnection;
     private rtcConfiguration: RTCConfiguration;
     private socket!: WebSocket;
     private socketUrl: string;
@@ -170,11 +170,9 @@ export default class Chat {
         });
     };
 
-    private openRTC = async (): Promise<webkitRTCPeerConnection> => {
+    private openRTC = async (): Promise<RTCPeerConnection> => {
         try {
-            const connection = new webkitRTCPeerConnection(
-                this.rtcConfiguration
-            );
+            const connection = new RTCPeerConnection(this.rtcConfiguration);
             // When a remote user adds stream to the peer connection, we display it
             connection.ontrack = (event: RTCTrackEvent) => {
                 const remoteAudio = event.streams[0];

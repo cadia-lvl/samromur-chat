@@ -131,12 +131,12 @@ class FrontPage extends React.Component<Props, State> {
                                 deilt með öðrum þátttakendum. Við þátttöku má
                                 notast við síma, tölvu eða spjaldtölvu frá öðrum
                                 framleiðendum en Apple einnig þarf að nota
-                                Chrome vafrann. Til þess að tryggja góð
-                                hljóðgæði er mælt er með því að þátttakendur
-                                noti heyrnartól með hljóðnema. Ef þátttakendur
-                                taka þátt í sama herberginu er mikilvægt að
-                                tryggja að nægileg fjarlægð sé á milli
-                                þátttakenda svo framlag hvers þátttakenda
+                                Chrome, Edge eða Firefox vafrann. Til þess að
+                                tryggja góð hljóðgæði er mælt er með því að
+                                þátttakendur noti heyrnartól með hljóðnema. Ef
+                                þátttakendur taka þátt í sama herberginu er
+                                mikilvægt að tryggja að nægileg fjarlægð sé á
+                                milli þátttakenda svo framlag hvers þátttakenda
                                 haldist hreint af öðru tali.
                             </p>
                             <NewTabLink href="https://www.youtube.com/watch?v=pwi1fD0A6L4&feature=youtu.be">
