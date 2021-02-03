@@ -63,6 +63,7 @@ export default class Chat {
     private timeoutIncrement: number;
     private unsentMessages: Payload[];
     private isChatroomOwner: boolean;
+    private isDisconnecting: boolean;
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
@@ -80,6 +81,7 @@ export default class Chat {
         this.timeout = this.timeoutIncrement;
         this.unsentMessages = [];
         this.isChatroomOwner = false;
+        this.isDisconnecting = false;
 
         this.clients = [userClient];
 
@@ -143,7 +145,7 @@ export default class Chat {
             socket.onclose = () => {
                 this.setChatState(ChatState.DISCONNECTED);
                 // Try to reconnect if closed
-                if (!this.reconnecting) {
+                if (!this.reconnecting && !this.isDisconnecting) {
                     this.reconnect();
                 }
             };
@@ -280,7 +282,7 @@ export default class Chat {
                 this.socket.send(JSON.stringify(payload));
                 return Promise.resolve();
             }
-            if (!this.reconnecting) {
+            if (!this.reconnecting && !this.isDisconnecting) {
                 // Lost websocket connection, attempt to reconnect.
                 this.reconnect();
             }
@@ -627,5 +629,12 @@ export default class Chat {
     // Responsible for triggering the upload of this client
     private handleUpload = () => {
         this.onUpload();
+    };
+
+    public disconnect = async () => {
+        console.log('Disconnecting...');
+        this.isDisconnecting = true;
+        this.socket.close();
+        this.rtcConnection.close();
     };
 }
