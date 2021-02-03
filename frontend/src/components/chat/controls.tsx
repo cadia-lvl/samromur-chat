@@ -5,6 +5,8 @@ import Chat, { RecordingState, VoiceState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
 import Swipe from '../ui/animated/swipe';
 import MicIcon from '../ui/icons/mic';
+import SpeakerMute from '../ui/icons/speaker-mute';
+import Speaker from '../ui/icons/speaker';
 
 const ControlsContainer = styled(Swipe)`
     width: 100%;
@@ -196,9 +198,15 @@ export default class Controls extends React.Component<Props, State> {
                         onClick={this.handleVoice}
                     >
                         <Glow />
-                        <MainButton>
-                            <MicIcon height={40} width={40} />
-                        </MainButton>
+                        {voiceState === VoiceState.VOICE_CONNECTED ? (
+                            <MainButton title="Slökktu á hljóði samtalsins">
+                                <Speaker height={40} width={40} />
+                            </MainButton>
+                        ) : (
+                            <MainButton title="Kveiktu á hljóði samtalsins">
+                                <SpeakerMute height={40} width={40} />
+                            </MainButton>
+                        )}
                     </MainButtonContainer>
                     {chatRoomOwner && (
                         <MainButtonContainer
@@ -208,7 +216,13 @@ export default class Controls extends React.Component<Props, State> {
                             onClick={this.handleRecord}
                         >
                             <Glow red />
-                            <MainButton>
+                            <MainButton
+                                title={
+                                    recordingState !== RecordingState.RECORDING
+                                        ? 'Smelltu hér til byrja að taka upp'
+                                        : 'Smelltu hér til að stöðva upptökuna'
+                                }
+                            >
                                 <RecordIcon
                                     active={
                                         recordingState ===
