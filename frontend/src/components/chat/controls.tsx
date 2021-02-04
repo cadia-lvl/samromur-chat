@@ -199,11 +199,11 @@ export default class Controls extends React.Component<Props, State> {
                     >
                         <Glow />
                         {voiceState === VoiceState.VOICE_CONNECTED ? (
-                            <MainButton title="Slökktu á hljóði samtalsins">
+                            <MainButton title="Slökktu á hljóði">
                                 <Speaker height={40} width={40} />
                             </MainButton>
                         ) : (
-                            <MainButton title="Kveiktu á hljóði samtalsins">
+                            <MainButton title="Kveiktu á hljóði">
                                 <SpeakerMute height={40} width={40} />
                             </MainButton>
                         )}
