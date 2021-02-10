@@ -375,6 +375,7 @@ class Chatroom extends React.Component<Props, State> {
         const { onUpload } = this.props;
         this.chat.uploadOther();
         onUpload(recording);
+        this.chat.disconnect();
     };
 
     copyToClipBoard = async () => {
@@ -398,6 +399,7 @@ class Chatroom extends React.Component<Props, State> {
         const { onUpload } = this.props;
         if (recording) {
             onUpload(recording);
+            this.chat.disconnect();
         }
     };
 
