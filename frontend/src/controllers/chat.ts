@@ -180,6 +180,9 @@ export default class Chat {
             };
 
             // Setup stream listening
+            if (!this.microphone) {
+                return Promise.reject('No microphone found.');
+            }
             this.microphone.getTracks().forEach((track: MediaStreamTrack) => {
                 connection.addTrack(track, this.microphone);
             });
@@ -545,7 +548,7 @@ export default class Chat {
     };
 
     public hangUp = async (): Promise<void> => {
-        this.rtcConnection.close();
+        this.rtcConnection?.close();
         this.rtcConnection = await this.openRTC();
         //this.setCallState(CallState.HUNG_UP);
         return this.sendMessage({ type: 'hang_up' });
