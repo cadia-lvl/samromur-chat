@@ -4,9 +4,8 @@ import styled from 'styled-components';
 import Chat, { RecordingState, VoiceState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
 import Swipe from '../ui/animated/swipe';
-import MicIcon from '../ui/icons/mic';
-import SpeakerMute from '../ui/icons/speaker-mute';
-import Speaker from '../ui/icons/speaker';
+import HeadSet from '../ui/icons/headset';
+import HeadSetMuted from '../ui/icons/headset-muted';
 
 const ControlsContainer = styled(Swipe)`
     width: 100%;
@@ -200,11 +199,11 @@ export default class Controls extends React.Component<Props, State> {
                         <Glow />
                         {voiceState === VoiceState.VOICE_CONNECTED ? (
                             <MainButton title="Slökktu á hljóði">
-                                <Speaker height={40} width={40} />
+                                <HeadSet height={40} width={40} />
                             </MainButton>
                         ) : (
                             <MainButton title="Kveiktu á hljóði">
-                                <SpeakerMute height={40} width={40} />
+                                <HeadSetMuted height={40} width={40} />
                             </MainButton>
                         )}
                     </MainButtonContainer>
