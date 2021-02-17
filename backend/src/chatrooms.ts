@@ -28,9 +28,11 @@ interface RequestData {
 
 export default class Chatrooms {
     private chatrooms: Rooms;
+    private maxUsersPerRoom: number;
 
     constructor() {
         this.chatrooms = {};
+        this.maxUsersPerRoom = 2;
     }
 
     /**
@@ -54,6 +56,10 @@ export default class Chatrooms {
             if (this.chatrooms[roomId][clientId]) {
                 return false;
             } else {
+                const usersInRoom = Object.keys(this.chatrooms[roomId]).length;
+                if (usersInRoom >= this.maxUsersPerRoom) {
+                    return false;
+                }
                 // Put user in chatroom
                 this.chatrooms[roomId][clientId] = user;
                 return true;
