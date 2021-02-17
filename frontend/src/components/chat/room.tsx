@@ -500,7 +500,7 @@ class Chatroom extends React.Component<Props, State> {
                     <ErrorContainer>
                         <ErrorMessage>
                             Villa kom upp við tengingu. Vinsamlegast farðu aftur
-                            á heimasíðuna og reyndu aftur
+                            á heimasíðuna og reyndu aftur.
                         </ErrorMessage>
                     </ErrorContainer>
                 )}
