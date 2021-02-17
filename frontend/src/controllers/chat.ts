@@ -648,8 +648,4 @@ export default class Chat {
         this.socket.close();
         this.rtcConnection.close();
     };
-
-    public isMicrophoneReady = () => {
-        return this.recorder.isMicrophoneReady();
-    };
 }
