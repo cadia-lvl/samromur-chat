@@ -499,9 +499,8 @@ class Chatroom extends React.Component<Props, State> {
                 {error && (
                     <ErrorContainer>
                         <ErrorMessage>
-                            Villa kom upp, þú gast ekki tengst spjallrásinni.
-                            Vinsamlegast farðu aftur á heimasíðuna og reyndu
-                            annað nafn á spjallrásinni þinni
+                            Villa kom upp við tengingu. Vinsamlegast farðu aftur
+                            á heimasíðuna og reyndu aftur
                         </ErrorMessage>
                     </ErrorContainer>
                 )}
