@@ -145,9 +145,16 @@ const StyledToastContainer = styled(ToastContainer).attrs({
     progressClassName: 'progress',
 })`
     .toast {
-        background-color: #60c197;
         color: white;
         text-align: center;
+    }
+
+    .Toastify__toast {
+        background-color: #60c197;
+    }
+
+    .Toastify__toast--warning {
+        background-color: #f1c40f;
     }
 
     .Toastify__toast--error {
@@ -223,7 +230,7 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
         this.chat.onChatStateChanged = this.handleChatStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
-            this.setState({ voiceState });
+            this.handleVoiceStateChanged(voiceState);
         this.chat.onError = this.handleChatError;
 
         this.chat.onAudioTrack = (stream: MediaStream) => {
@@ -340,11 +347,22 @@ class Chatroom extends React.Component<Props, State> {
 
     handleRecordingStateChanged = (recordingState: RecordingState) => {
         this.setState({ recordingState });
-        if (recordingState === RecordingState.RECORDING_REQUESTED) {
+        if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.voiceState === VoiceState.VOICE_CONNECTED
+        ) {
+            // TODO: check to if recording is supported
             this.startCountdown();
             if (this.state.recording) {
                 this.setState({ recording: undefined });
             }
+        } else if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.voiceState === VoiceState.VOICE_DISCONNECTED
+        ) {
+            toast.error('Óvirkur hljóðnemi kom í veg fyrir upptöku', {
+                toastId: 'toast-record',
+            });
         } else {
             this.removeCountdown();
         }
@@ -354,7 +372,18 @@ class Chatroom extends React.Component<Props, State> {
         this.setState({ chatState });
         if (chatState === ChatState.CONNECTED) {
             console.log('Chat is fully initialized');
+            toast('Spjallsvæði er tilbúið', { toastId: 'toast-chat' });
         }
+    };
+
+    handleVoiceStateChanged = (voiceState: VoiceState) => {
+        this.setState({ voiceState });
+        console.log('Mic state is ' + voiceState.toLowerCase());
+        // NOTE: I'm not sure if the following should be a toast message. It's
+        // annoying if it pops up every time the user clicks the mic icon
+        toast('Hljóðnemi er ' + voiceState.toLowerCase(), {
+            toastId: 'toast-mic',
+        });
     };
 
     constructSocketUrl = (): string => {
@@ -410,8 +439,7 @@ class Chatroom extends React.Component<Props, State> {
         try {
             toast.dismiss(toastId);
             await navigator.clipboard.writeText(window.location.href);
-            toast('Tengill afritaður.', {
-                draggable: false,
+            toast('Tengill afritaður', {
                 toastId, // prevent duplicates
             });
         } catch (err) {
@@ -461,11 +489,20 @@ class Chatroom extends React.Component<Props, State> {
             },
         } = this.props;
 
+        if (
+            chatState === ChatState.DISCONNECTED &&
+            voiceState === VoiceState.VOICE_DISCONNECTED
+        ) {
+            toast.warn('Bið gangsetningar hljóðnema', {
+                toastId: 'toast-chat-init',
+            });
+        }
         return (
             <ChatroomContainer>
                 <CounterContainer
                     active={
-                        recordingState === RecordingState.RECORDING_REQUESTED
+                        recordingState === RecordingState.RECORDING_REQUESTED &&
+                        voiceState === VoiceState.VOICE_CONNECTED
                     }
                 >
                     {countdown}
@@ -536,6 +573,7 @@ class Chatroom extends React.Component<Props, State> {
                 <StyledToastContainer
                     position="bottom-center"
                     hideProgressBar
+                    draggable={false}
                     pauseOnHover={false}
                     transition={Slide}
                 />
