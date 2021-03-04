@@ -31,18 +31,27 @@ export default class Recorder {
                 sampleRate: this.sampleRate,
             };
 
+            const deny = (error: MediaStreamError) =>
+                reject(
+                    ({
+                        NotAllowedError: AudioError.MIC_NOT_ALLOWED,
+                        NotFoundError: AudioError.NO_MIC,
+                    } as { [errorName: string]: AudioError })[error.name] ||
+                        error
+                );
+
             if (navigator.mediaDevices?.getUserMedia) {
                 navigator.mediaDevices
                     .getUserMedia(options)
-                    .then(resolve, reject);
+                    .then(resolve, deny);
             } else if (navigator.getUserMedia) {
-                navigator.getUserMedia(options, resolve, reject);
+                navigator.getUserMedia(options, resolve, deny);
             } else if (navigator.webkitGetUserMedia) {
-                navigator.webkitGetUserMedia(options, resolve, reject);
+                navigator.webkitGetUserMedia(options, resolve, deny);
             } else if (navigator.mozGetUserMedia) {
-                navigator.mozGetUserMedia(options, resolve, reject);
+                navigator.mozGetUserMedia(options, resolve, deny);
             } else {
-                reject(AudioError.NO_SUPPORT);
+                reject(AudioError.NO_MIC_SUPPORT);
             }
         });
     };
