@@ -94,6 +94,7 @@ export default class Chat {
                 },
             ],
         };
+        console.log('initiate chat');
         this.init();
     }
 
@@ -113,11 +114,17 @@ export default class Chat {
         this.onVoiceStateChanged(state);
     };
 
+    // TODO: when anything in init fails, the user should be given a toast
+    // message of what component is not work in order to establish a working
+    // chatroom such as an ice connection could not be established or the
+    // microphone is not accessible
     private init = async () => {
         try {
             this.socket = await this.openSocket(this.socketUrl);
             this.setUsername(this.userClient.username);
+            console.log('initiating connection to microphone');
             this.microphone = await this.recorder.init();
+            console.log('connection to microphone established');
 
             // Open RTC Connection
             this.rtcConnection = await this.openRTC();
@@ -127,6 +134,7 @@ export default class Chat {
 
             // start websocket ping pong to keep the connection alive
             this.startPingPong();
+            this.setChatState(ChatState.CONNECTED);
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -136,7 +144,6 @@ export default class Chat {
         return new Promise((resolve, reject) => {
             const socket = new WebSocket(url);
             socket.onopen = () => {
-                this.setChatState(ChatState.CONNECTED);
                 resolve(socket);
             };
             socket.onerror = (e) => {
