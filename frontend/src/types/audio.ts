@@ -19,7 +19,7 @@ export enum RecordingError {
 }
 
 export enum AudioError {
-    NOT_ALLOWED = 'NOT_ALLOWED',
+    MIC_NOT_ALLOWED = 'MIC_NOT_ALLOWED',
     NO_MIC = 'NO_MIC',
-    NO_SUPPORT = 'NO_SUPPORT',
+    NO_MIC_SUPPORT = 'NO_MIC_SUPPORT',
 }
