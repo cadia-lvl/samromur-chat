@@ -169,7 +169,8 @@ export default class Recorder {
 
     startRecording = async (): Promise<void> => {
         if (!this.isMicrophoneSupported) {
-            return Promise.reject();
+            console.log(AudioError.NO_MIC_SUPPORT);
+            return Promise.reject(AudioError.NO_MIC_SUPPORT);
         }
         return this.start();
     };

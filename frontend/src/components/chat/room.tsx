@@ -221,6 +221,7 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onClientsChanged = this.handleClientsChanged;
         this.chat.onIsOwnerChanged = this.handleOwnerChagned;
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
+        this.chat.onChatStateChanged = this.handleChatStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
             this.setState({ voiceState });
         this.chat.onError = this.handleChatError;
@@ -349,6 +350,13 @@ class Chatroom extends React.Component<Props, State> {
         }
     };
 
+    handleChatStateChanged = (chatState: ChatState) => {
+        this.setState({ chatState });
+        if (chatState === ChatState.CONNECTED) {
+            console.log('Chat is fully initialized');
+        }
+    };
+
     constructSocketUrl = (): string => {
         // Get room id
         const {
@@ -438,6 +446,7 @@ class Chatroom extends React.Component<Props, State> {
         const {
             clients,
             countdown,
+            chatState,
             recordingState,
             recording,
             voiceState,

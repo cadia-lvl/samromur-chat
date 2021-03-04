@@ -43,6 +43,7 @@ export default class Chat {
     onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
+    onChatStateChanged!: (state: ChatState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
     onError!: (message: any) => void;
@@ -102,6 +103,7 @@ export default class Chat {
 
     private setChatState = (state: ChatState) => {
         this.chatState = state;
+        this.onChatStateChanged(state);
     };
 
     private setRecordingState = (state: RecordingState) => {
