@@ -474,30 +474,39 @@ export default class Chat {
     };
 
     private handleHangUp = async () => {
-        this.rtcConnection?.close();
-        this.rtcConnection = await this.openRTC();
-        this.setCallState(CallState.HUNG_UP);
+        try {
+            this.rtcConnection?.close();
+            this.rtcConnection = await this.openRTC();
+            this.setCallState(CallState.HUNG_UP);
+        } catch (error) {
+            console.error('Error while hanging up, ', error);
+        }
     };
 
     public unMute = async () => {
-        this.setVoiceState(VoiceState.VOICE_CONNECTED);
-        this.recorder.unMute();
-        const unmuted = this.clients.find(
-            (client: UserClient) => client.voice === true
-        );
-        if (unmuted) {
-            this.call();
+        if (!this.microphone) {
+            this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+            console.log('no mic available');
+        } else {
+            this.setVoiceState(VoiceState.VOICE_CONNECTED);
+            this.recorder.unMute();
+            const unmuted = this.clients.find(
+                (client: UserClient) => client.voice === true
+            );
+            if (unmuted) {
+                this.call();
+            }
+            this.handleClientChanged({
+                id: this.userClient.id,
+                parameter: 'set_voice',
+                value: true,
+            });
+            this.sendMessage({
+                id: this.userClient.id,
+                type: 'set_voice',
+                value: true,
+            });
         }
-        this.handleClientChanged({
-            id: this.userClient.id,
-            parameter: 'set_voice',
-            value: true,
-        });
-        this.sendMessage({
-            id: this.userClient.id,
-            type: 'set_voice',
-            value: true,
-        });
     };
 
     public mute = async () => {
