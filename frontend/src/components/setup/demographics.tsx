@@ -10,7 +10,7 @@ import Checkbox from '../ui/input/checkbox';
 import TextInput from '../ui/input/text-input';
 import NewTabLink from './new-tab-link';
 import UnsupportedBrowser from '../ui/unsupported-browser';
-import { isChromium } from '../../utilities/utils';
+import { isRecordingSupported } from '../../utilities/utils';
 
 const DemographicContainer = styled.div`
     display: grid;
@@ -155,7 +155,7 @@ export default class DemographicForm extends React.Component<Props, State> {
     };
 
     render() {
-        if (isChromium()) {
+        if (isRecordingSupported()) {
             const { age, agreed, gender, username } = this.state;
             const terms = '/skilmalar';
             const privacypolicy = '/personuvernd';

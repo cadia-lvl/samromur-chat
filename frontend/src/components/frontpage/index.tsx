@@ -5,7 +5,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import TextInput from '../ui/input/text-input';
 import Layout from '../ui/layout';
 import UnsupportedBrowser from '../ui/unsupported-browser';
-import { isChromium } from '../../utilities/utils';
+import { isRecordingSupported } from '../../utilities/utils';
 
 import NewTabLink from '../setup/new-tab-link';
 
@@ -77,7 +77,7 @@ class FrontPage extends React.Component<Props, State> {
     };
 
     render() {
-        if (isChromium()) {
+        if (isRecordingSupported()) {
             return (
                 <Layout>
                     <FrontPageContainer>

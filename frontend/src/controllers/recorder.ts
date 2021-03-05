@@ -1,6 +1,7 @@
 import { AudioInfo, AudioError } from '../types/audio';
 
 import WavEncoder from '../worker';
+import { isRecordingSupported } from '../utilities/utils';
 
 interface RecorderConfig {
     sampleRate: number;
@@ -159,16 +160,6 @@ export default class Recorder {
         });
     };
 
-    // Check all the browser prefixes for microphone support.
-    isMicrophoneSupported = (): boolean => {
-        return !!(
-            navigator.mediaDevices?.getUserMedia ||
-            navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia
-        );
-    };
-
     init = async (): Promise<MediaStream> => {
         if (this.isReady()) {
             return Promise.reject();
@@ -221,7 +212,7 @@ export default class Recorder {
     };
 
     startRecording = async (): Promise<void> => {
-        if (!this.isMicrophoneSupported) {
+        if (!isRecordingSupported()) {
             console.log(AudioError.NO_MIC_SUPPORT);
             return Promise.reject(AudioError.NO_MIC_SUPPORT);
         }
