@@ -75,7 +75,7 @@ const finish = async () => {
 
 ctx.onmessage = (event) => {
     const data = event.data;
-    if (data.command == 'encode') {
+    if (data.command === 'encode') {
         encoder.encode(data.buffer);
     } else {
         finish();
