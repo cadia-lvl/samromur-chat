@@ -16,7 +16,7 @@ import Recordings from './recordings';
 import TalkingPoints from './talkingpoints';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import StatusMessages from './StatusMessages';
+import StatusMessages from './status-messages';
 
 import { RemoveWarningModal } from './remove-warning-modal';
 
@@ -149,6 +149,22 @@ const StyledToastContainer = styled(ToastContainer).attrs({
         color: white;
         text-align: center;
     }
+
+    .Toastify__toast--error {
+        background-color: #ff4f5e;
+    }
+`;
+
+const ErrorContainer = styled.div`
+    background-color: #ff4f5e;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+`;
+
+const ErrorMessage = styled.div`
+    font-size: 1.2rem;
+    color: white;
+    margin: 0 1rem;
 `;
 
 interface ChatroomProps {
@@ -165,6 +181,7 @@ interface State {
     recording?: AudioInfo;
     isChatroomOwner: boolean;
     showModal: boolean;
+    error: string;
 }
 
 interface RouteProp {
@@ -191,6 +208,7 @@ class Chatroom extends React.Component<Props, State> {
             recording: undefined,
             isChatroomOwner: true,
             showModal: false,
+            error: undefined,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
@@ -205,6 +223,7 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
             this.setState({ voiceState });
+        this.chat.onError = this.handleChatError;
 
         this.chat.onAudioTrack = (stream: MediaStream) => {
             const { current: audio } = this.audioRef;
@@ -388,7 +407,7 @@ class Chatroom extends React.Component<Props, State> {
                 toastId, // prevent duplicates
             });
         } catch (err) {
-            toast('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
+            toast.error('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
                 toastId: 'toast-error',
             });
         }
@@ -411,6 +430,10 @@ class Chatroom extends React.Component<Props, State> {
         this.setState({ showModal: false });
     };
 
+    handleChatError = (message: string) => {
+        this.setState({ error: message });
+    };
+
     render() {
         const {
             clients,
@@ -420,6 +443,7 @@ class Chatroom extends React.Component<Props, State> {
             voiceState,
             showModal,
             isChatroomOwner,
+            error,
         } = this.state;
 
         const {
@@ -466,11 +490,19 @@ class Chatroom extends React.Component<Props, State> {
                     recording={recording}
                     recordingState={recordingState}
                 />
-                {!isChatroomOwner && (
+                {!isChatroomOwner && !error && (
                     <StatusMessages
                         hasRecording={!!recording}
                         recordingState={recordingState}
                     />
+                )}
+                {error && (
+                    <ErrorContainer>
+                        <ErrorMessage>
+                            Villa kom upp við tengingu. Vinsamlegast farðu aftur
+                            á heimasíðuna og reyndu aftur.
+                        </ErrorMessage>
+                    </ErrorContainer>
                 )}
                 <Controls
                     chat={this.chat}

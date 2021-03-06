@@ -45,6 +45,7 @@ export default class Chat {
     onRecordingStateChanged!: (state: RecordingState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
+    onError!: (message: any) => void;
 
     private recorder: Recorder;
     private rtcConnection!: webkitRTCPeerConnection;
@@ -336,7 +337,7 @@ export default class Chat {
                 this.handleHangUp();
                 break;
             case 'error':
-                console.error('Error: ', message.message);
+                this.handleError(message);
                 break;
             case 'chatroom_owner':
                 this.handleIsChatRoomOwner();
@@ -349,6 +350,13 @@ export default class Chat {
                 break;
             default:
                 console.error('Misunderstood, ', message);
+        }
+    };
+
+    private handleError = (message: any) => {
+        console.error('Error: ', message.message);
+        if (message.message === 'login_failed') {
+            this.onError(message.message);
         }
     };
 
@@ -466,7 +474,7 @@ export default class Chat {
     };
 
     private handleHangUp = async () => {
-        this.rtcConnection.close();
+        this.rtcConnection?.close();
         this.rtcConnection = await this.openRTC();
         this.setCallState(CallState.HUNG_UP);
     };
