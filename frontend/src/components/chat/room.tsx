@@ -407,7 +407,7 @@ class Chatroom extends React.Component<Props, State> {
                 toastId, // prevent duplicates
             });
         } catch (err) {
-            toast('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
+            toast.error('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
                 toastId: 'toast-error',
             });
         }
