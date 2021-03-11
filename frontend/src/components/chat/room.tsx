@@ -349,7 +349,7 @@ class Chatroom extends React.Component<Props, State> {
         this.setState({ recordingState });
         if (
             recordingState === RecordingState.RECORDING_REQUESTED &&
-            this.state.voiceState === VoiceState.VOICE_CONNECTED
+            this.state.clients.every(c => c.voice)
         ) {
             // TODO: check to if recording is supported
             this.startCountdown();
@@ -358,8 +358,10 @@ class Chatroom extends React.Component<Props, State> {
             }
         } else if (
             recordingState === RecordingState.RECORDING_REQUESTED &&
-            this.state.voiceState === VoiceState.VOICE_DISCONNECTED
+            !(this.state.clients.every((c) => c.voice))
         ) {
+            recordingState = RecordingState.NOT_RECORDING;
+            this.setState({recordingState});
             toast.error('Óvirkur hljóðnemi kom í veg fyrir upptöku', {
                 toastId: 'toast-record',
             });
@@ -497,7 +499,7 @@ class Chatroom extends React.Component<Props, State> {
                 <CounterContainer
                     active={
                         recordingState === RecordingState.RECORDING_REQUESTED &&
-                        voiceState === VoiceState.VOICE_CONNECTED
+                        this.state.clients.every((c) => c.voice)
                     }
                 >
                     {countdown}
