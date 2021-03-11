@@ -379,11 +379,6 @@ class Chatroom extends React.Component<Props, State> {
     handleVoiceStateChanged = (voiceState: VoiceState) => {
         this.setState({ voiceState });
         console.log('Mic state is ' + voiceState.toLowerCase());
-        // NOTE: I'm not sure if the following should be a toast message. It's
-        // annoying if it pops up every time the user clicks the mic icon
-        toast('Hljóðnemi er ' + voiceState.toLowerCase(), {
-            toastId: 'toast-mic',
-        });
     };
 
     constructSocketUrl = (): string => {
