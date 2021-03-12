@@ -145,9 +145,16 @@ const StyledToastContainer = styled(ToastContainer).attrs({
     progressClassName: 'progress',
 })`
     .toast {
-        background-color: #60c197;
         color: white;
         text-align: center;
+    }
+
+    .Toastify__toast {
+        background-color: #60c197;
+    }
+
+    .Toastify__toast--warning {
+        background-color: #f1c40f;
     }
 
     .Toastify__toast--error {
@@ -221,8 +228,9 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onClientsChanged = this.handleClientsChanged;
         this.chat.onIsOwnerChanged = this.handleOwnerChagned;
         this.chat.onRecordingStateChanged = this.handleRecordingStateChanged;
+        this.chat.onChatStateChanged = this.handleChatStateChanged;
         this.chat.onVoiceStateChanged = (voiceState) =>
-            this.setState({ voiceState });
+            this.handleVoiceStateChanged(voiceState);
         this.chat.onError = this.handleChatError;
 
         this.chat.onAudioTrack = (stream: MediaStream) => {
@@ -339,14 +347,40 @@ class Chatroom extends React.Component<Props, State> {
 
     handleRecordingStateChanged = (recordingState: RecordingState) => {
         this.setState({ recordingState });
-        if (recordingState === RecordingState.RECORDING_REQUESTED) {
+        if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.clients.every((c) => c.voice)
+        ) {
+            // TODO: check to if recording is supported
             this.startCountdown();
             if (this.state.recording) {
                 this.setState({ recording: undefined });
             }
+        } else if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            !this.state.clients.every((c) => c.voice)
+        ) {
+            recordingState = RecordingState.NOT_RECORDING;
+            this.setState({ recordingState });
+            toast.error('Óvirkur hljóðnemi kom í veg fyrir upptöku', {
+                toastId: 'toast-record',
+            });
         } else {
             this.removeCountdown();
         }
+    };
+
+    handleChatStateChanged = (chatState: ChatState) => {
+        this.setState({ chatState });
+        if (chatState === ChatState.CONNECTED) {
+            console.log('Chat is fully initialized');
+            toast('Spjallsvæði er tilbúið', { toastId: 'toast-chat' });
+        }
+    };
+
+    handleVoiceStateChanged = (voiceState: VoiceState) => {
+        this.setState({ voiceState });
+        console.log('Mic state is ' + voiceState.toLowerCase());
     };
 
     constructSocketUrl = (): string => {
@@ -402,8 +436,7 @@ class Chatroom extends React.Component<Props, State> {
         try {
             toast.dismiss(toastId);
             await navigator.clipboard.writeText(window.location.href);
-            toast('Tengill afritaður.', {
-                draggable: false,
+            toast('Tengill afritaður', {
                 toastId, // prevent duplicates
             });
         } catch (err) {
@@ -438,6 +471,7 @@ class Chatroom extends React.Component<Props, State> {
         const {
             clients,
             countdown,
+            chatState,
             recordingState,
             recording,
             voiceState,
@@ -452,11 +486,20 @@ class Chatroom extends React.Component<Props, State> {
             },
         } = this.props;
 
+        if (
+            chatState === ChatState.DISCONNECTED &&
+            voiceState === VoiceState.VOICE_DISCONNECTED
+        ) {
+            toast.warn('Bið gangsetningar hljóðnema', {
+                toastId: 'toast-chat-init',
+            });
+        }
         return (
             <ChatroomContainer>
                 <CounterContainer
                     active={
-                        recordingState === RecordingState.RECORDING_REQUESTED
+                        recordingState === RecordingState.RECORDING_REQUESTED &&
+                        this.state.clients.every((c) => c.voice)
                     }
                 >
                     {countdown}
@@ -527,6 +570,7 @@ class Chatroom extends React.Component<Props, State> {
                 <StyledToastContainer
                     position="bottom-center"
                     hideProgressBar
+                    draggable={false}
                     pauseOnHover={false}
                     transition={Slide}
                 />

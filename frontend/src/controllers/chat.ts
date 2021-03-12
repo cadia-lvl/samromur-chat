@@ -43,6 +43,7 @@ export default class Chat {
     onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
+    onChatStateChanged!: (state: ChatState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
     onError!: (message: any) => void;
@@ -94,6 +95,7 @@ export default class Chat {
                 },
             ],
         };
+        console.log('initiate chat');
         this.init();
     }
 
@@ -101,6 +103,7 @@ export default class Chat {
 
     private setChatState = (state: ChatState) => {
         this.chatState = state;
+        this.onChatStateChanged(state);
     };
 
     private setRecordingState = (state: RecordingState) => {
@@ -113,11 +116,17 @@ export default class Chat {
         this.onVoiceStateChanged(state);
     };
 
+    // TODO: when anything in init fails, the user should be given a toast
+    // message of what component is not work in order to establish a working
+    // chatroom such as an ice connection could not be established or the
+    // microphone is not accessible
     private init = async () => {
         try {
             this.socket = await this.openSocket(this.socketUrl);
             this.setUsername(this.userClient.username);
+            console.log('initiating connection to microphone');
             this.microphone = await this.recorder.init();
+            console.log('connection to microphone established');
 
             // Open RTC Connection
             this.rtcConnection = await this.openRTC();
@@ -127,6 +136,7 @@ export default class Chat {
 
             // start websocket ping pong to keep the connection alive
             this.startPingPong();
+            this.setChatState(ChatState.CONNECTED);
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -136,7 +146,6 @@ export default class Chat {
         return new Promise((resolve, reject) => {
             const socket = new WebSocket(url);
             socket.onopen = () => {
-                this.setChatState(ChatState.CONNECTED);
                 resolve(socket);
             };
             socket.onerror = (e) => {
@@ -474,30 +483,39 @@ export default class Chat {
     };
 
     private handleHangUp = async () => {
-        this.rtcConnection?.close();
-        this.rtcConnection = await this.openRTC();
-        this.setCallState(CallState.HUNG_UP);
+        try {
+            this.rtcConnection?.close();
+            this.rtcConnection = await this.openRTC();
+            this.setCallState(CallState.HUNG_UP);
+        } catch (error) {
+            console.error('Error while hanging up, ', error);
+        }
     };
 
     public unMute = async () => {
-        this.setVoiceState(VoiceState.VOICE_CONNECTED);
-        this.recorder.unMute();
-        const unmuted = this.clients.find(
-            (client: UserClient) => client.voice === true
-        );
-        if (unmuted) {
-            this.call();
+        if (!this.microphone) {
+            this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+            console.log('no mic available');
+        } else {
+            this.setVoiceState(VoiceState.VOICE_CONNECTED);
+            this.recorder.unMute();
+            const unmuted = this.clients.find(
+                (client: UserClient) => client.voice === true
+            );
+            if (unmuted) {
+                this.call();
+            }
+            this.handleClientChanged({
+                id: this.userClient.id,
+                parameter: 'set_voice',
+                value: true,
+            });
+            this.sendMessage({
+                id: this.userClient.id,
+                type: 'set_voice',
+                value: true,
+            });
         }
-        this.handleClientChanged({
-            id: this.userClient.id,
-            parameter: 'set_voice',
-            value: true,
-        });
-        this.sendMessage({
-            id: this.userClient.id,
-            type: 'set_voice',
-            value: true,
-        });
     };
 
     public mute = async () => {
