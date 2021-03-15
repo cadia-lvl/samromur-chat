@@ -19,3 +19,10 @@ export interface UserClient {
     username: string;
     voice: boolean;
 }
+
+export interface StoredDemographics {
+    username: string;
+    age: Demographic;
+    gender: Demographic;
+    agreed: boolean;
+}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Demographic } from '../../types/user';
+import { Demographic, StoredDemographics } from '../../types/user';
 import { ages, genders } from '../../constants/demographics';
 
 import Info from './information';
@@ -11,6 +11,11 @@ import TextInput from '../ui/input/text-input';
 import NewTabLink from './new-tab-link';
 import UnsupportedBrowser from '../ui/unsupported-browser';
 import { isChromium } from '../../utilities/utils';
+import {
+    loadDemographics,
+    saveDemographics,
+    demographicsInStorage,
+} from '../../utilities/local-storage';
 
 const DemographicContainer = styled.div`
     display: grid;
@@ -123,6 +128,20 @@ export default class DemographicForm extends React.Component<Props, State> {
         };
     }
 
+    componentDidMount() {
+        if (demographicsInStorage()) {
+            const user: StoredDemographics = loadDemographics();
+            const { username, age, gender, agreed } = user;
+
+            this.setState({
+                username,
+                age,
+                gender,
+                agreed,
+            });
+        }
+    }
+
     handleAgree = () => {
         this.setState({ agreed: !this.state.agreed });
     };
@@ -152,6 +171,8 @@ export default class DemographicForm extends React.Component<Props, State> {
             return;
         }
         this.props.onSubmit(age.id, gender.id, username);
+
+        saveDemographics({ age, agreed, gender, username });
     };
 
     render() {
@@ -164,6 +185,7 @@ export default class DemographicForm extends React.Component<Props, State> {
                     <UsernameInput
                         label={'Notendanafn'}
                         onChange={this.onUsernameChange}
+                        value={username}
                     />
                     <DropdownButton
                         content={ages.map((age: Demographic) => age.name)}
