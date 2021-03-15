@@ -67,7 +67,7 @@ export default class Recorder {
         }
 
         this.processorNode.onaudioprocess = (ev: AudioProcessingEvent) => {
-            let downsampled = this.downsampleBuffer(ev.inputBuffer, 16000);
+            const downsampled = this.downsampleBuffer(ev.inputBuffer, 16000);
             this.encoder.postMessage({
                 command: 'encode',
                 buffer: downsampled,
@@ -93,16 +93,16 @@ export default class Recorder {
         const result = new Float32Array(newLength);
         let offsetResult = 0;
         let offsetBuffer = 0;
-        let nowBuffering = buffer.getChannelData(0);
+        const nowBuffering = buffer.getChannelData(0);
         while (offsetResult < result.length) {
-            var nextOffsetBuffer = Math.round(
+            const nextOffsetBuffer = Math.round(
                 (offsetResult + 1) * sampleRateRatio
             );
             // Use average value of skipped samples
-            var accum = 0,
+            let accum = 0,
                 count = 0;
             for (
-                var i = offsetBuffer;
+                let i = offsetBuffer;
                 i < nextOffsetBuffer && i < buffer.length;
                 i++
             ) {
