@@ -16,7 +16,12 @@ const CheckboxContainer = styled.div<CheckProps>`
     padding: 0.2rem;
     border: 2px solid ${({ active }) => (active ? 'black' : '#e2e2e2')};
 
-    & :hover {
+    &:hover {
+        border: 2px solid black;
+    }
+
+    &:focus {
+        outline: none;
         border: 2px solid black;
     }
 `;
@@ -46,7 +51,7 @@ export const Checkbox: React.FunctionComponent<Props> = ({
     onChange,
 }) => {
     return (
-        <CheckboxContainer active={checked} onClick={onChange}>
+        <CheckboxContainer active={checked} onClick={onChange} tabIndex={0}>
             <CheckboxInput />
             <CheckMark active={checked} />
         </CheckboxContainer>
