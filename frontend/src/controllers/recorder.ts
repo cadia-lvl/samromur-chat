@@ -88,11 +88,11 @@ export default class Recorder {
                 'Downsampling rate is larger than original sample rate'
             );
         }
-        var sampleRateRatio = buffer.sampleRate / rate;
-        var newLength = Math.round(buffer.length / sampleRateRatio);
-        var result = new Float32Array(newLength);
-        var offsetResult = 0;
-        var offsetBuffer = 0;
+        const sampleRateRatio = buffer.sampleRate / rate;
+        const newLength = Math.round(buffer.length / sampleRateRatio);
+        const result = new Float32Array(newLength);
+        let offsetResult = 0;
+        let offsetBuffer = 0;
         let nowBuffering = buffer.getChannelData(0);
         while (offsetResult < result.length) {
             var nextOffsetBuffer = Math.round(
