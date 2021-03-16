@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import CheckMarkIcon from '../icons/check-mark';
 
@@ -50,9 +51,34 @@ export const Checkbox: React.FunctionComponent<Props> = ({
     checked,
     onChange,
 }) => {
+    const [focus, setFocus] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useLayoutEffect(() => {
+        const { current } = inputRef;
+
+        if (current !== null) {
+            current.addEventListener('focusin', onFocusIn);
+            current.addEventListener('focusout', onFocusOut);
+
+            return () => {
+                current.removeEventListener('focusin', onFocusIn);
+                current.removeEventListener('focusout', onFocusOut);
+            };
+        }
+    }, []);
+
+    const onFocusIn = () => {
+        setFocus(true);
+    };
+
+    const onFocusOut = () => {
+        setFocus(false);
+    };
+
     return (
-        <CheckboxContainer active={checked} onClick={onChange} tabIndex={0}>
-            <CheckboxInput />
+        <CheckboxContainer active={focus || checked} onClick={onChange}>
+            <CheckboxInput ref={inputRef} />
             <CheckMark active={checked} />
         </CheckboxContainer>
     );
