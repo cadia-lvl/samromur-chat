@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import DropdownArrowIcon from '../ui/icons/dropdown-arrow';
 import ShowMore from '../ui/animated/show-more';
+import { recursiveMap } from '../../utilities/utils';
 
 const InformationContainer = styled.div`
     width: 100%;
@@ -58,6 +59,11 @@ export const Information: React.FC<Props> = ({
     const handleClick = () => {
         setReadMore(!readMore);
     };
+
+    const hideFromTabbing = (child: any) => {
+        return React.cloneElement(child, { tabIndex: -1 });
+    };
+
     return (
         <InformationContainer className={className} ref={ref}>
             <TitleContainer onClick={handleClick}>
@@ -69,7 +75,9 @@ export const Information: React.FC<Props> = ({
                     fill={'#0099ff'}
                 />
             </TitleContainer>
-            <ReadMoreContainer active={readMore}>{children}</ReadMoreContainer>
+            <ReadMoreContainer active={readMore}>
+                {readMore ? children : recursiveMap(children, hideFromTabbing)}
+            </ReadMoreContainer>
         </InformationContainer>
     );
 };

@@ -4,7 +4,12 @@ type Props = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 const NewTabLink: React.FC<Props> = (props: Props) => {
     return (
-        <a href={props.href} target="_blank" rel="noopener noreferrer">
+        <a
+            {...props}
+            href={props.href}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             {props.children}
         </a>
     );
