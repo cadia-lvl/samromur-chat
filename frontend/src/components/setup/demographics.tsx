@@ -167,7 +167,7 @@ export default class DemographicForm extends React.Component<Props, State> {
 
     onSubmit = () => {
         const { age, agreed, gender, username } = this.state;
-        if (!agreed || !age || !gender || !username) {
+        if (!agreed || !age.name || !gender.name || !username) {
             return;
         }
         this.props.onSubmit(age.id, gender.id, username);
