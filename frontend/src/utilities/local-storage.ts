@@ -1,5 +1,5 @@
 import { ages, genders } from '../constants/demographics';
-import { StoredDemographics } from '../types/user';
+import { Demographic, StoredDemographics } from '../types/user';
 
 const defaultDemographics: StoredDemographics = {
     agreed: false,
@@ -63,7 +63,7 @@ const combineWithDefault = (demo: any): StoredDemographics => {
     const { age, agreed, gender, username } = demo;
     const combinedDemographics = defaultDemographics;
 
-    if (age && age in ages) {
+    if (ageFound(age)) {
         combinedDemographics.age = age;
     }
 
@@ -71,7 +71,7 @@ const combineWithDefault = (demo: any): StoredDemographics => {
         combinedDemographics.agreed = agreed;
     }
 
-    if (gender && gender in genders) {
+    if (genderFound(gender)) {
         combinedDemographics.gender = gender;
     }
 
@@ -80,4 +80,24 @@ const combineWithDefault = (demo: any): StoredDemographics => {
     }
 
     return combinedDemographics;
+};
+
+const genderFound = (gender: Demographic): boolean => {
+    if (gender) {
+        const found = genders.find(({ id }) => id === gender.id);
+        if (found) {
+            return true;
+        }
+    }
+    return false;
+};
+
+const ageFound = (age: Demographic): boolean => {
+    if (age) {
+        const found = ages.find(({ id }) => id === age.id);
+        if (found) {
+            return true;
+        }
+    }
+    return false;
 };
