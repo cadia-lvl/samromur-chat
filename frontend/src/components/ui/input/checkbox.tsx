@@ -77,7 +77,7 @@ export const Checkbox: React.FunctionComponent<Props> = ({
     };
 
     return (
-        <CheckboxContainer active={focus || checked} onClick={onChange}>
+        <CheckboxContainer active={focus} onClick={onChange}>
             <CheckboxInput ref={inputRef} />
             <CheckMark active={checked} />
         </CheckboxContainer>

@@ -155,14 +155,22 @@ export default class DemographicForm extends React.Component<Props, State> {
         const age = ages.find(
             (val: Demographic) => val.name === value
         ) as Demographic;
-        this.setState({ age });
+
+        // Only update if a value was found
+        if (age) {
+            this.setState({ age });
+        }
     };
 
     onGenderSelect = (value: string) => {
         const gender = genders.find(
             (val: Demographic) => val.name === value
         ) as Demographic;
-        this.setState({ gender });
+
+        // Only update if a value was found
+        if (gender) {
+            this.setState({ gender });
+        }
     };
 
     onSubmit = () => {
@@ -175,13 +183,19 @@ export default class DemographicForm extends React.Component<Props, State> {
         saveDemographics({ age, agreed, gender, username });
     };
 
+    handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            this.onSubmit();
+        }
+    };
+
     render() {
         if (isChromium()) {
             const { age, agreed, gender, username } = this.state;
             const terms = '/skilmalar';
             const privacypolicy = '/personuvernd';
             return (
-                <DemographicContainer>
+                <DemographicContainer onKeyPress={this.handleKeyPress}>
                     <UsernameInput
                         label={'Notendanafn'}
                         onChange={this.onUsernameChange}
@@ -233,6 +247,7 @@ export default class DemographicForm extends React.Component<Props, State> {
                         disabled={
                             !agreed || !age.name || !gender.name || !username
                         }
+                        tabIndex={0}
                     >
                         <span>Áfram</span>
                     </SubmitButton>
