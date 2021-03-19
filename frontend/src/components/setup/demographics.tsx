@@ -17,7 +17,7 @@ import {
     demographicsInStorage,
 } from '../../utilities/local-storage';
 
-const DemographicContainer = styled.div`
+const DemographicContainer = styled.form`
     display: grid;
     gap: 1rem;
     width: 40rem;
@@ -49,11 +49,12 @@ interface SubmitButtonProps {
     disabled: boolean;
 }
 
-const SubmitButton = styled.div<SubmitButtonProps>`
+const SubmitButton = styled.input<SubmitButtonProps>`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border: 1px solid ${({ disabled }) => (disabled ? 'gray' : '#60C197')};
 
     border-radius: 0.1rem;
 
@@ -61,15 +62,14 @@ const SubmitButton = styled.div<SubmitButtonProps>`
     color: white;
 
     cursor: ${({ disabled }) => (disabled ? 'initial' : 'pointer')};
-    & :active {
+    &:active {
         transform: ${({ disabled }) => `translateY(${disabled ? 0 : 2}px)`};
+        outline: none;
     }
 
-    & span {
-        font-weight: 600;
-        font-size: 1.1rem;
-        padding: 1rem 2rem;
-    }
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
 
     grid-column: 1 / 3;
     width: 100%;
@@ -173,7 +173,10 @@ export default class DemographicForm extends React.Component<Props, State> {
         }
     };
 
-    onSubmit = () => {
+    onSubmit = (event: any) => {
+        // Prevent refresh page behavior
+        event?.preventDefault();
+
         const { age, agreed, gender, username } = this.state;
         if (!agreed || !age.name || !gender.name || !username) {
             return;
@@ -183,19 +186,13 @@ export default class DemographicForm extends React.Component<Props, State> {
         saveDemographics({ age, agreed, gender, username });
     };
 
-    handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            this.onSubmit();
-        }
-    };
-
     render() {
         if (isChromium()) {
             const { age, agreed, gender, username } = this.state;
             const terms = '/skilmalar';
             const privacypolicy = '/personuvernd';
             return (
-                <DemographicContainer onKeyPress={this.handleKeyPress}>
+                <DemographicContainer onSubmit={this.onSubmit}>
                     <UsernameInput
                         label={'Notendanafn'}
                         onChange={this.onUsernameChange}
@@ -243,14 +240,13 @@ export default class DemographicForm extends React.Component<Props, State> {
                         </span>
                     </AgreeContainer>
                     <SubmitButton
-                        onClick={this.onSubmit}
+                        type={'submit'}
                         disabled={
                             !agreed || !age.name || !gender.name || !username
                         }
                         tabIndex={0}
-                    >
-                        <span>Áfram</span>
-                    </SubmitButton>
+                        value={'Áfram'}
+                    />
                 </DemographicContainer>
             );
         } else {
