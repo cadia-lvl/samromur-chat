@@ -49,7 +49,7 @@ interface SubmitButtonProps {
     disabled: boolean;
 }
 
-const SubmitButton = styled.input<SubmitButtonProps>`
+const SubmitButton = styled.button<SubmitButtonProps>`
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -67,9 +67,11 @@ const SubmitButton = styled.input<SubmitButtonProps>`
         outline: none;
     }
 
-    font-weight: 600;
-    font-size: 1.1rem;
-    padding: 1rem 2rem;
+    & span {
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
 
     grid-column: 1 / 3;
     width: 100%;
@@ -245,8 +247,9 @@ export default class DemographicForm extends React.Component<Props, State> {
                             !agreed || !age.name || !gender.name || !username
                         }
                         tabIndex={0}
-                        value={'Áfram'}
-                    />
+                    >
+                        <span>Áfram</span>
+                    </SubmitButton>
                 </DemographicContainer>
             );
         } else {
