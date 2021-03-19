@@ -63,7 +63,7 @@ const combineWithDefault = (demo: any): StoredDemographics => {
     const { age, agreed, gender, username } = demo;
     const combinedDemographics = defaultDemographics;
 
-    if (ageFound(age)) {
+    if (demographicFound(ages, age)) {
         combinedDemographics.age = age;
     }
 
@@ -71,7 +71,7 @@ const combineWithDefault = (demo: any): StoredDemographics => {
         combinedDemographics.agreed = agreed;
     }
 
-    if (genderFound(gender)) {
+    if (demographicFound(genders, gender)) {
         combinedDemographics.gender = gender;
     }
 
@@ -82,22 +82,12 @@ const combineWithDefault = (demo: any): StoredDemographics => {
     return combinedDemographics;
 };
 
-const genderFound = (gender: Demographic): boolean => {
-    if (gender) {
-        const found = genders.find(({ id }) => id === gender.id);
-        if (found) {
-            return true;
-        }
-    }
-    return false;
-};
-
-const ageFound = (age: Demographic): boolean => {
-    if (age) {
-        const found = ages.find(({ id }) => id === age.id);
-        if (found) {
-            return true;
-        }
+const demographicFound = (
+    demographicArray: Demographic[],
+    demographic: Demographic
+): boolean => {
+    if (demographicArray && demographic) {
+        return demographicArray.some(({ id }) => id === demographic.id);
     }
     return false;
 };
