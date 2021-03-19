@@ -110,7 +110,7 @@ const Indicator = styled.div<{ connected: boolean }>`
     background-color: ${({ connected }) => (connected ? '#60C197' : 'gray')};
 `;
 
-const ShareButton = styled.div`
+const ShareButton = styled.button`
     align-self: center;
     background-color: #60c197;
     color: white;
@@ -118,6 +118,7 @@ const ShareButton = styled.div`
     justify-content: center;
     user-select: none;
     width: 100%;
+    border: none;
 
     cursor: pointer;
 

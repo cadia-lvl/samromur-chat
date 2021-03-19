@@ -47,7 +47,7 @@ const MainButtonContainer = styled.div<{ isActive: boolean }>`
     }
 `;
 
-const MainButton = styled.div`
+const MainButton = styled.button`
     position: relative;
     width: 5rem;
     height: 5rem;
@@ -57,6 +57,7 @@ const MainButton = styled.div`
     align-items: center;
     background-color: white;
     border-radius: 50%;
+    border: none;
     cursor: pointer;
 `;
 
@@ -102,10 +103,11 @@ interface ButtonProps {
     green?: boolean;
     red?: boolean;
 }
-export const Button = styled.div<ButtonProps>`
+export const Button = styled.button<ButtonProps>`
     display: flex;
     justify-content: center;
     align-items: center;
+    border: none;
     background-color: ${({ green, red }) =>
         green ? '#60C197' : red ? '#ff4f5e' : '#0099ff'};
     color: white;

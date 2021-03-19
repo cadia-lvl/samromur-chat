@@ -17,7 +17,7 @@ const FrontPageContainer = styled.div`
     gap: 1.5rem;
 `;
 
-const SubmitButton = styled.div`
+const SubmitButton = styled.button`
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@ const SubmitButton = styled.div`
     }
 `;
 
-const JoinContainer = styled.div`
+const JoinContainer = styled.form`
     width: 100%;
     display: flex;
     gap: 1rem;
@@ -81,16 +81,14 @@ class FrontPage extends React.Component<Props, State> {
             return (
                 <Layout>
                     <FrontPageContainer>
-                        <JoinContainer>
+                        <JoinContainer onClick={this.handleJoin}>
                             <UrlInput
                                 label={'Opna spjall'}
                                 value={this.state.userUrl}
                                 placeholder={'Spjallkóði'}
                                 onChange={this.onUrlChange}
                             />
-                            <SubmitButton onClick={this.handleJoin}>
-                                <span>Opna</span>
-                            </SubmitButton>
+                            <SubmitButton>Opna</SubmitButton>
                         </JoinContainer>
                         <WelcomeTextContainer>
                             <h3>Kæri þátttakandi,</h3>

@@ -38,7 +38,7 @@ const ClientContainer = styled.div`
     flex-direction: column;
 `;
 
-const Button = styled.div`
+const Button = styled.button`
     width: 100%;
     display: flex;
     justify-content: center;
@@ -50,6 +50,7 @@ const Button = styled.div`
     background-color: gray;
     color: white;
     margin-top: 0.5rem;
+    border: none
 
     :active {
         transform: translateY(2px);
