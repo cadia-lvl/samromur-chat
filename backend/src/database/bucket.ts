@@ -39,6 +39,7 @@ export default class Bucket {
         this.bucketName = getConfig().BUCKET_NAME;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private assertFolder = (folder: string): Promise<any> => {
         return this.s3
             .putObject({
@@ -51,7 +52,7 @@ export default class Bucket {
     /**
      * Fetch a public url from path.
      */
-    getPublicUrl = async (path: string) => {
+    getPublicUrl = async (path: string): Promise<string> => {
         return this.s3.getSignedUrl('getObject', {
             Bucket: getConfig().BUCKET_NAME,
             Key: path,
@@ -62,6 +63,7 @@ export default class Bucket {
     /**
      * Get all folders in s3
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getSessions = async (): Promise<any> => {
         const { CommonPrefixes } = await this.s3
             .listObjectsV2({
@@ -133,6 +135,7 @@ export default class Bucket {
         return Promise.resolve({ id, data });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     downloadSession = async (req: Request, res: Response): Promise<any> => {
         const {
             params: { id },

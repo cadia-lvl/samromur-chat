@@ -7,6 +7,7 @@ import {
     downloadLocalSession,
 } from '../utilities/filesystem';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const createRestRouter = (isProduction: boolean) => {
     const bucket = isProduction ? new Bucket() : undefined;
     const restRouter = express.Router();

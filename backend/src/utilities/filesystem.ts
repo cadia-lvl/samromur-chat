@@ -3,6 +3,7 @@ import path from 'path';
 import { Request, Response } from 'express';
 import archiver from 'archiver';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const saveDemographics = async (
     age: string,
     gender: string,
@@ -84,7 +85,7 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
 export const downloadLocalSession = async (
     req: Request,
     res: Response
-): Promise<any> => {
+): Promise<any> => { /* eslint-disable-line @typescript-eslint/no-explicit-any */
     const {
         params: { id },
     } = req;

@@ -119,7 +119,7 @@ export default class Recording extends React.Component<Props, State> {
                         autoPlayAfterSrcChange={false}
                         customAdditionalControls={[]}
                         volume={0.5}
-                        src={!!recording ? recording.url : ''}
+                        src={!!recording ? recording.url : ''} // eslint-disable-line no-extra-boolean-cast
                     />
                 </SwipeSwap>
             </RecordingsContainer>
