@@ -175,10 +175,7 @@ export default class DemographicForm extends React.Component<Props, State> {
         }
     };
 
-    onSubmit = (event: any) => {
-        // Prevent refresh page behavior
-        event?.preventDefault();
-
+    onSubmit = () => {
         const { age, agreed, gender, username } = this.state;
         if (!agreed || !age.name || !gender.name || !username) {
             return;
@@ -242,11 +239,9 @@ export default class DemographicForm extends React.Component<Props, State> {
                         </span>
                     </AgreeContainer>
                     <SubmitButton
-                        type={'submit'}
                         disabled={
                             !agreed || !age.name || !gender.name || !username
                         }
-                        tabIndex={0}
                     >
                         <span>Áfram</span>
                     </SubmitButton>
