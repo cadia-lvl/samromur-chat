@@ -87,6 +87,7 @@ export default class DropdownButton extends React.Component<Props, State> {
 
     componentDidMount = () => {
         this.selectRef.current?.addEventListener('focusout', this.onFocusOut);
+        this.selectRef.current?.addEventListener('focusin', this.onFocusIn);
     };
 
     componentWillUnmount = () => {
@@ -98,6 +99,10 @@ export default class DropdownButton extends React.Component<Props, State> {
 
     onFocusOut = () => {
         this.setState({ visible: false });
+    };
+
+    onFocusIn = () => {
+        this.setState({ visible: true });
     };
 
     onSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
