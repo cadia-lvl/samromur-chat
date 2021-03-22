@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * This method shuffles the input array randomly using the Fisher-Yates shuffle.
  * @param array the array to be shuffled
@@ -116,3 +118,30 @@ export function getHumanReadableTime({
         return [displayh1 + h2, hrs, displaym1 + m2, mins].join(' ');
     }
 }
+
+/**
+ * Credit to stackoverflow: https://stackoverflow.com/questions/32916786/react-children-map-recursively
+ * Reursivly goes over the input React.ReactNode and executes the
+ * input function of all of the children, grandchildren and so forth
+ * @param children
+ * @param fn the function to execute on all decendants
+ * @returns a modified ReactNode according to the fn
+ */
+export const recursiveMap = (
+    children: React.ReactNode,
+    fn: any
+): React.ReactNode => {
+    return React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) {
+            return child;
+        }
+
+        if (child.props.children) {
+            child = React.cloneElement(child, {
+                children: recursiveMap(child.props.children, fn),
+            });
+        }
+
+        return fn(child);
+    });
+};

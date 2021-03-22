@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Demographic } from '../../types/user';
+import { Demographic, StoredDemographics } from '../../types/user';
 import { ages, genders } from '../../constants/demographics';
 
 import Info from './information';
@@ -11,8 +11,13 @@ import TextInput from '../ui/input/text-input';
 import NewTabLink from './new-tab-link';
 import UnsupportedBrowser from '../ui/unsupported-browser';
 import { isRecordingSupported } from '../../utilities/utils';
+import {
+    loadDemographics,
+    saveDemographics,
+    demographicsInStorage,
+} from '../../utilities/local-storage';
 
-const DemographicContainer = styled.div`
+const DemographicContainer = styled.form`
     display: grid;
     gap: 1rem;
     width: 40rem;
@@ -44,11 +49,12 @@ interface SubmitButtonProps {
     disabled: boolean;
 }
 
-const SubmitButton = styled.div<SubmitButtonProps>`
+const SubmitButton = styled.button<SubmitButtonProps>`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border: 1px solid ${({ disabled }) => (disabled ? 'gray' : '#60C197')};
 
     border-radius: 0.1rem;
 
@@ -56,8 +62,9 @@ const SubmitButton = styled.div<SubmitButtonProps>`
     color: white;
 
     cursor: ${({ disabled }) => (disabled ? 'initial' : 'pointer')};
-    & :active {
+    &:active {
         transform: ${({ disabled }) => `translateY(${disabled ? 0 : 2}px)`};
+        outline: none;
     }
 
     & span {
@@ -123,6 +130,20 @@ export default class DemographicForm extends React.Component<Props, State> {
         };
     }
 
+    componentDidMount() {
+        if (demographicsInStorage()) {
+            const user: StoredDemographics = loadDemographics();
+            const { username, age, gender, agreed } = user;
+
+            this.setState({
+                username,
+                age,
+                gender,
+                agreed,
+            });
+        }
+    }
+
     handleAgree = () => {
         this.setState({ agreed: !this.state.agreed });
     };
@@ -136,22 +157,32 @@ export default class DemographicForm extends React.Component<Props, State> {
         const age = ages.find(
             (val: Demographic) => val.name === value
         ) as Demographic;
-        this.setState({ age });
+
+        // Only update if a value was found
+        if (age) {
+            this.setState({ age });
+        }
     };
 
     onGenderSelect = (value: string) => {
         const gender = genders.find(
             (val: Demographic) => val.name === value
         ) as Demographic;
-        this.setState({ gender });
+
+        // Only update if a value was found
+        if (gender) {
+            this.setState({ gender });
+        }
     };
 
     onSubmit = () => {
         const { age, agreed, gender, username } = this.state;
-        if (!agreed || !age || !gender || !username) {
+        if (!agreed || !age.name || !gender.name || !username) {
             return;
         }
         this.props.onSubmit(age.id, gender.id, username);
+
+        saveDemographics({ age, agreed, gender, username });
     };
 
     render() {
@@ -160,10 +191,11 @@ export default class DemographicForm extends React.Component<Props, State> {
             const terms = '/skilmalar';
             const privacypolicy = '/personuvernd';
             return (
-                <DemographicContainer>
+                <DemographicContainer onSubmit={this.onSubmit}>
                     <UsernameInput
                         label={'Notendanafn'}
                         onChange={this.onUsernameChange}
+                        value={username}
                     />
                     <DropdownButton
                         content={ages.map((age: Demographic) => age.name)}
@@ -207,7 +239,6 @@ export default class DemographicForm extends React.Component<Props, State> {
                         </span>
                     </AgreeContainer>
                     <SubmitButton
-                        onClick={this.onSubmit}
                         disabled={
                             !agreed || !age.name || !gender.name || !username
                         }
