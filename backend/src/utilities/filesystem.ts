@@ -85,7 +85,8 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
 export const downloadLocalSession = async (
     req: Request,
     res: Response
-): Promise<any> => { /* eslint-disable-line @typescript-eslint/no-explicit-any */
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+): Promise<any> => {
     const {
         params: { id },
     } = req;
