@@ -70,7 +70,8 @@ class FrontPage extends React.Component<Props, State> {
         this.setState({ userUrl });
     };
 
-    handleJoin = () => {
+    handleJoin = (event) => {
+        event.preventDefault();
         const { history } = this.props;
         const { userUrl } = this.state;
         history.push(`/${userUrl}`);
