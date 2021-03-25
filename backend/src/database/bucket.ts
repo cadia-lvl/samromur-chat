@@ -3,10 +3,12 @@ import { getConfig } from '../utilities/config-helper';
 import { Request, Response } from 'express';
 import fs from 'fs';
 
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const s3Zip = require('s3-zip');
 
 if (process.env.HTTP_PROXY) {
     // Currently have no TS typings for proxy-agent, so have to use plain require().
+    /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     const proxy = require('proxy-agent');
 
     config.update({
@@ -37,6 +39,7 @@ export default class Bucket {
         this.bucketName = getConfig().BUCKET_NAME;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private assertFolder = (folder: string): Promise<any> => {
         return this.s3
             .putObject({
@@ -49,7 +52,7 @@ export default class Bucket {
     /**
      * Fetch a public url from path.
      */
-    getPublicUrl = async (path: string) => {
+    getPublicUrl = async (path: string): Promise<string> => {
         return this.s3.getSignedUrl('getObject', {
             Bucket: getConfig().BUCKET_NAME,
             Key: path,
@@ -60,7 +63,8 @@ export default class Bucket {
     /**
      * Get all folders in s3
      */
-    getSessions = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getSessions = async (): Promise<any> => {
         const { CommonPrefixes } = await this.s3
             .listObjectsV2({
                 Bucket: this.bucketName,
@@ -131,6 +135,7 @@ export default class Bucket {
         return Promise.resolve({ id, data });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     downloadSession = async (req: Request, res: Response): Promise<any> => {
         const {
             params: { id },

@@ -19,8 +19,10 @@ export interface IconProps {
 }
 
 // To-do: large to medium and medium to small etc on small screens
+/* eslint-disable no-extra-boolean-cast */
 export default styled(Icon)<IconProps>`
     height: ${({ height }) => (height ? height : '20px')};
     width: ${({ width }) => (width ? width : '20px')};
     fill: ${({ fill }) => (!!fill ? fill : 'gray')};
 `;
+/* eslint-enable no-extra-boolean-cast */

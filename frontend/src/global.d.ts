@@ -1,6 +1,6 @@
 declare global {
-    var MediaRecorder: any;
-    var webkit: any;
+    var MediaRecorder: any; // eslint-disable-line no-var
+    var webkit: any; // eslint-disable-line no-var
 
     interface Navigator {
         webkitGetUserMedia: any;
