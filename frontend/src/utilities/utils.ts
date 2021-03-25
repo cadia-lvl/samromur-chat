@@ -11,17 +11,36 @@ export function shuffleArray(array: any[]) {
     }
 }
 
-export function isChromium() {
-    // TODO:  Use feature detection when possible.
+// Check if audio recording is supported
+export function isAudioRecordingSupported() {
+    return typeof window.MediaRecorder !== 'undefined';
+}
 
-    // Check if is chrome
-    const isChrome = !!window.chrome;
+// Check all the browser prefixes for microphone support.
+export function isMicrophoneSupported(): boolean {
+    return !!(
+        navigator.mediaDevices?.getUserMedia ||
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia
+    );
+}
 
-    // Thank you https://stackoverflow.com/a/9851769
-    // Edge (based on chromium) detection
-    const isEdgeChromium =
-        isChrome && navigator.userAgent.indexOf('Edg') !== -1;
-    return isChrome || isEdgeChromium;
+export function isRecordingSupported() {
+    // Use feature detection when possible.
+    // Check if microphone is supported
+    // Check if audio recording is supported
+    // TODO: check to see if mediaRecording polyfill is supported/usable if
+
+    // // Check if is chrome
+    // const isChrome = !!window.chrome;
+
+    // // Thank you https://stackoverflow.com/a/9851769
+    // // Edge (based on chromium) detection
+    // const isEdgeChromium =
+    //     isChrome && navigator.userAgent.indexOf('Edg') !== -1;
+    // return isChrome || isEdgeChromium || isAudioRecordingSupported;
+    return isAudioRecordingSupported() && isMicrophoneSupported();
 }
 
 interface timestampDigits {
