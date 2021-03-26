@@ -59,6 +59,10 @@ const MainButton = styled.button`
     border-radius: 50%;
     border: none;
     cursor: pointer;
+outline: none;
+&:focus-visible {
+    border: 2px solid black;
+}
 `;
 
 const Glow = styled.div<{ red?: boolean }>`
