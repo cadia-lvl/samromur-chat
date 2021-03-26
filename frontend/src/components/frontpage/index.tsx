@@ -24,6 +24,7 @@ const SubmitButton = styled.button`
     align-items: center;
     justify-content: center;
     background-color: #60c197;
+    border: none;
     color: white;
     cursor: pointer;
     font-size: 2rem;
