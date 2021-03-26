@@ -13,7 +13,7 @@ const ThanksContainer = styled.div`
     align-items: center;
 `;
 
-const Button = styled.div`
+const Button = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,6 +22,7 @@ const Button = styled.div`
     font-size: 1.8rem;
     font-weight: 600;
     background-color: #60c197;
+    border: none;
     color: white;
 
     :active {

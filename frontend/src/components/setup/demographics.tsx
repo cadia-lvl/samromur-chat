@@ -175,7 +175,8 @@ export default class DemographicForm extends React.Component<Props, State> {
         }
     };
 
-    onSubmit = () => {
+    onSubmit = (event) => {
+        event.preventDefault();
         const { age, agreed, gender, username } = this.state;
         if (!agreed || !age.name || !gender.name || !username) {
             return;

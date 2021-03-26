@@ -20,12 +20,14 @@ const Text = styled.div`
     margin-bottom: 2rem;
 `;
 
-const RemoveLink = styled.div`
+const RemoveLink = styled.button`
     display: inline-block;
     cursor: pointer;
     text-decoration: underline;
     font-size: 1rem;
     margin-top: 1rem;
+    border: none;
+    background-color: white;
 
     &: hover {
         color: red;

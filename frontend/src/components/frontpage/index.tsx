@@ -17,13 +17,14 @@ const FrontPageContainer = styled.div`
     gap: 1.5rem;
 `;
 
-const SubmitButton = styled.div`
+const SubmitButton = styled.button`
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: #60c197;
+    border: none;
     color: white;
     cursor: pointer;
     font-size: 2rem;
@@ -37,7 +38,7 @@ const SubmitButton = styled.div`
     }
 `;
 
-const JoinContainer = styled.div`
+const JoinContainer = styled.form`
     width: 100%;
     display: flex;
     gap: 1rem;
@@ -70,7 +71,8 @@ class FrontPage extends React.Component<Props, State> {
         this.setState({ userUrl });
     };
 
-    handleJoin = () => {
+    handleJoin = (event) => {
+        event.preventDefault();
         const { history } = this.props;
         const { userUrl } = this.state;
         history.push(`/${userUrl}`);
@@ -81,16 +83,14 @@ class FrontPage extends React.Component<Props, State> {
             return (
                 <Layout>
                     <FrontPageContainer>
-                        <JoinContainer>
+                        <JoinContainer onClick={this.handleJoin}>
                             <UrlInput
                                 label={'Opna spjall'}
                                 value={this.state.userUrl}
                                 placeholder={'Spjallkóði'}
                                 onChange={this.onUrlChange}
                             />
-                            <SubmitButton onClick={this.handleJoin}>
-                                <span>Opna</span>
-                            </SubmitButton>
+                            <SubmitButton>Opna</SubmitButton>
                         </JoinContainer>
                         <WelcomeTextContainer>
                             <h3>Kæri þátttakandi,</h3>
