@@ -1,3 +1,9 @@
+---
+layout: page
+title: ReadMe
+permalink: /readme/
+---
+
 # About
 
 Samrómur chat is a VoIP web application written in Typescript.
