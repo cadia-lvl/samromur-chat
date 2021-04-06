@@ -30,7 +30,7 @@ twitter_username: samromur
 github_username: cadia-lvl
 
 # Build settings
-theme: minima
+theme: just-the-docs
 plugins:
   - jekyll-feed
 
