@@ -52,5 +52,19 @@ pm2 restart spjall.samromur  # for new intance: pm2 start npm -- start
 
 ```
 
+### Generating docs
+
+Generating the docs for the frontend and backend.
+```
+npm run docs
+```
+
+[Install jekyll following the github guide](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll).
+
+```
+cd docs
+bundle exec jekyll serve
+```
+
 ## License
 [MIT License](/LICENSE)
