@@ -73,7 +73,7 @@
   "scripts": {
     "start": "node scripts/start.js",
     "eslint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
-    "typedoc": "typedoc",
+    "typedoc": "typedoc --out ../docs/frontend/",
     "build": "rm -f -r ../backend/public && node scripts/build.js && mv build ../backend/public",
     "test": "node scripts/test.js"
   },

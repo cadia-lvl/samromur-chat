@@ -7,7 +7,7 @@
     "dev": "tsc-watch --onSuccess \"npm run start:dev\"",
     "build": "tsc",
     "eslint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
-    "typedoc": "typedoc",
+    "typedoc": "typedoc --out ../docs/backend/",
     "start:dev": "node build/index.js",
     "start": "NODE_ENV=production || SET NODE_ENV=production&& node build/index.js"
   },

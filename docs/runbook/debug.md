@@ -1,8 +1,11 @@
 ---
 layout: page
 title: Runbook
-permalink: /runbook/
+permalink: /runbook/debug
 ---
+
+* TOC
+{:toc}
 
 As Spjall has a lot of bugs right now we often need to spot bugs easily. This
 means whenever possible, we should run Spjall in debug mode. 

@@ -29,6 +29,12 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: samromur
 github_username: cadia-lvl
 
+aux_links:
+    "Client side docs":
+        - "/frontend/"
+    "Server side docs":
+        - "/backend/"
+
 # Build settings
 theme: just-the-docs
 plugins:

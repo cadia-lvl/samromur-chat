@@ -1,8 +1,13 @@
 ---
 layout: page
-title: ReadMe
+title: About Spjall
 permalink: /readme/
+nav_order: 2
+
 ---
+
+* TOC
+{:toc}
 
 # About
 
