@@ -134,6 +134,7 @@ interface Props {
     recordingState: RecordingState;
     voiceState: VoiceState;
     chatRoomOwner: boolean;
+    createToast: (message: string) => void;
 }
 
 interface State {
@@ -158,7 +159,9 @@ export default class Controls extends React.Component<Props, State> {
         if (voiceState === VoiceState.VOICE_CONNECTED) {
             chat.mute();
         } else {
-            chat.unMute();
+            chat.unMute().catch(() => {
+                this.props.createToast('Hljóðnemi finnst ekki');
+            });
         }
     };
 

@@ -494,6 +494,7 @@ export default class Chat {
         if (!this.microphone) {
             this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
             console.log('no mic available');
+            throw new Error('no mic available');
         } else {
             this.setVoiceState(VoiceState.VOICE_CONNECTED);
             this.recorder.unMute();
