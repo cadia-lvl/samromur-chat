@@ -56,6 +56,7 @@ export const uploadClip = async (
     const id = clip.id || uuid(); // Generate new id as fallback
 
     const jsonString = JSON.stringify({
+        username: demographics.username,
         age: demographics.age,
         duration_seconds: clip.duration,
         gender: demographics.gender,

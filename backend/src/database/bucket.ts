@@ -17,6 +17,7 @@ if (process.env.HTTP_PROXY) {
 }
 
 export interface ClientMetadata {
+    username: string;
     age: string;
     duration_seconds: number;
     gender: string;

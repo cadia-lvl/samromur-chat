@@ -9,6 +9,7 @@ export interface Demographic {
 }
 
 export interface UserDemographics {
+    username: string;
     age: string;
     gender: string;
 }
