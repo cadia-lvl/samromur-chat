@@ -297,6 +297,10 @@ class Chatroom extends React.Component<Props, State> {
         }
     };
 
+    createToast(toastMessage) {
+        toast.error(toastMessage, { toastId: 'toast-mic' });
+    }
+
     handleClientsChanged = (clients: UserClient[]) => {
         this.setState({ clients });
     };
@@ -556,6 +560,7 @@ class Chatroom extends React.Component<Props, State> {
                     recordingState={recordingState}
                     voiceState={voiceState}
                     chatRoomOwner={isChatroomOwner}
+                    createToast={this.createToast}
                 />
                 <Audio autoPlay controls ref={this.audioRef} />
                 <TalkingPoints
