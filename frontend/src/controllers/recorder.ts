@@ -17,6 +17,7 @@ export default class Recorder {
     private processorNode!: ScriptProcessorNode;
     private gainNode!: GainNode;
     private sampleRate: number;
+    private downsampleRate: number;
 
     public onChunkReceived: ((audioChunk: AudioChunk) => void) | undefined;
     private chunkInterval: number = 0;
@@ -25,6 +26,7 @@ export default class Recorder {
     private isRecording: boolean = false;
 
     constructor({ sampleRate, chunkInterval }: RecorderConfig) {
+        this.downsampleRate = 16000;
         this.sampleRate = sampleRate;
         this.encoder = new WavEncoder();
         this.chunkInterval = chunkInterval;
@@ -90,7 +92,10 @@ export default class Recorder {
         };
 
         this.processorNode.onaudioprocess = (ev: AudioProcessingEvent) => {
-            const downsampled = this.downsampleBuffer(ev.inputBuffer, 16000);
+            const downsampled = this.downsampleBuffer(
+                ev.inputBuffer,
+                this.downsampleRate
+            );
             this.encoder.postMessage({
                 command: 'encode',
                 buffer: downsampled,
@@ -192,7 +197,7 @@ export default class Recorder {
                             blob,
                             duration,
                             url,
-                            sampleRate: this.sampleRate,
+                            sampleRate: this.downsampleRate,
                             chunkCount,
                         });
                     } catch (error) {
