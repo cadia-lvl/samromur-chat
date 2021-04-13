@@ -61,6 +61,7 @@ export const uploadClip = async (
         gender: demographics.gender,
         sample_rate: clip.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
+        reference: demographics.reference,
     });
 
     const metadata = new Blob([jsonString], {

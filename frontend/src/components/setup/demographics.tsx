@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Demographic, StoredDemographics } from '../../types/user';
-import { ages, genders } from '../../constants/demographics';
+import { ages, genders, references } from '../../constants/demographics';
 
 import Info from './information';
 import DropdownButton from '../ui/input/dropdown';
@@ -102,7 +102,12 @@ const AgreeContainer = styled.div`
 `;
 
 interface Props {
-    onSubmit: (age: string, gender: string, username: string) => void;
+    onSubmit: (
+        age: string,
+        gender: string,
+        username: string,
+        reference: string
+    ) => void;
 }
 
 interface State {
@@ -110,6 +115,7 @@ interface State {
     age: Demographic;
     gender: Demographic;
     username: string;
+    reference: Demographic;
 }
 
 export default class DemographicForm extends React.Component<Props, State> {
@@ -127,6 +133,10 @@ export default class DemographicForm extends React.Component<Props, State> {
                 name: '',
             },
             username: '',
+            reference: {
+                id: '',
+                name: '',
+            },
         };
     }
 
@@ -175,20 +185,37 @@ export default class DemographicForm extends React.Component<Props, State> {
         }
     };
 
+    onReferenceSelect = (value: string) => {
+        const reference = references.find(
+            (val: Demographic) => val.name === value
+        ) as Demographic;
+
+        // Only update if a value was found
+        if (reference) {
+            this.setState({ reference });
+        }
+    };
+
     onSubmit = (event) => {
         event.preventDefault();
-        const { age, agreed, gender, username } = this.state;
-        if (!agreed || !age.name || !gender.name || !username) {
+        const { age, agreed, gender, username, reference } = this.state;
+        if (
+            !agreed ||
+            !age.name ||
+            !gender.name ||
+            !username ||
+            !reference.name
+        ) {
             return;
         }
-        this.props.onSubmit(age.id, gender.id, username);
+        this.props.onSubmit(age.id, gender.id, username, reference.id);
 
         saveDemographics({ age, agreed, gender, username });
     };
 
     render() {
         if (isRecordingSupported()) {
-            const { age, agreed, gender, username } = this.state;
+            const { age, agreed, gender, username, reference } = this.state;
             const terms = '/skilmalar';
             const privacypolicy = '/personuvernd';
             return (
@@ -211,6 +238,14 @@ export default class DemographicForm extends React.Component<Props, State> {
                         label={'Kyn'}
                         onSelect={this.onGenderSelect}
                         selected={gender.name}
+                    />
+                    <DropdownButton
+                        content={references.map(
+                            (reference: Demographic) => reference.name
+                        )}
+                        label={'Reference'}
+                        onSelect={this.onReferenceSelect}
+                        selected={reference.name}
                     />
                     <Information title={'Hvers vegna skiptir þetta máli?'}>
                         <p>

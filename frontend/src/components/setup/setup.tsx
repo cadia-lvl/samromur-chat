@@ -47,8 +47,13 @@ class Setup extends React.Component<Props, State> {
         };
     }
 
-    onSubmitDemographics = (age: string, gender: string, username: string) => {
-        this.setState({ demographics: { age, gender } });
+    onSubmitDemographics = (
+        age: string,
+        gender: string,
+        username: string,
+        reference: string
+    ) => {
+        this.setState({ demographics: { age, gender, reference } });
         const id = uuid();
         const userClient: UserClient = {
             agreed: false,
