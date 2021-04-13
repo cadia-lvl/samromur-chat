@@ -131,11 +131,13 @@ export const Session: React.FunctionComponent<Props> = ({
                     </span>
                     <span>{b_time}</span>
                 </ClientContainer>
-                <ClientContainer>
-                    <ReferenceText>
-                        {reference} {getReference()}
-                    </ReferenceText>
-                </ClientContainer>
+                {getReference() && (
+                    <ClientContainer>
+                        <ReferenceText>
+                            {reference} {getReference()}
+                        </ReferenceText>
+                    </ClientContainer>
+                )}
             </Clients>
             <Button onClick={handleClick}>Sækja</Button>
         </SessionContainer>
