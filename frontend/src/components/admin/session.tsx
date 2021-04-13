@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as api from '../../services/api';
-import { ages, genders } from '../../constants/demographics';
+import { ages, genders, references } from '../../constants/demographics';
 import { SessionMetadata } from '../../types/sessions';
 import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
@@ -24,6 +24,11 @@ const TitleContainer = styled.div`
 
 const Subtitle = styled.span`
     font-weight: 600;
+`;
+
+const ReferenceText = styled.span`
+    font-weight: 600;
+    text-align: left;
 `;
 
 const Clients = styled.div`
@@ -69,6 +74,7 @@ export const Session: React.FunctionComponent<Props> = ({
     const participantB = 'Viðmælandi b';
     const yearsOld = 'ára';
     const sampleRateMeasurement = 'hz';
+    const reference = 'Tilvísun: ';
 
     const getAge = (value: string): string => {
         const age = ages.find((val) => val.id === value);
@@ -91,6 +97,17 @@ export const Session: React.FunctionComponent<Props> = ({
     const b_time = getHumanReadableTime(
         splitSeconds(client_b.duration_seconds)
     );
+
+    /**
+     * Fetches the reference person of the session
+     * @returns the reference of client A, or null if not found in the list of references
+     */
+    const getReference = (): string => {
+        const reference = references.find(
+            (val) => val.id === client_a.reference
+        );
+        return reference ? reference.name : '';
+    };
 
     return (
         <SessionContainer>
@@ -118,6 +135,13 @@ export const Session: React.FunctionComponent<Props> = ({
                     </span>
                     <span>{b_time}</span>
                 </ClientContainer>
+                {getReference() && (
+                    <ClientContainer>
+                        <ReferenceText>
+                            {reference} {getReference()}
+                        </ReferenceText>
+                    </ClientContainer>
+                )}
             </Clients>
             <Button onClick={handleClick}>Sækja</Button>
         </SessionContainer>

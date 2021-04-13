@@ -4,6 +4,7 @@ export interface ClientMetadata {
     gender: string;
     sample_rate: number;
     session_id: string;
+    reference: string;
 }
 
 export interface SessionMetadata {

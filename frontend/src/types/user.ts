@@ -11,6 +11,7 @@ export interface Demographic {
 export interface UserDemographics {
     age: string;
     gender: string;
+    reference: string;
 }
 
 export interface UserClient {
