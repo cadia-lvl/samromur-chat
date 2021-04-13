@@ -1,6 +1,6 @@
 {
   "name": "samromur-chat",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "voice-chat recording software",
   "license": "MIT",
   "scripts": {
@@ -9,7 +9,8 @@
     "build:frontend": "cd frontend && npm run build",
     "dev": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run dev\" \"cd frontend && npm run start\"",
     "lint": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run eslint\" \"cd frontend && npm run eslint\"",
-    "docs": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run typedoc\" \"cd frontend && npm run typedoc\"",
+    "typedoc": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run typedoc\" \"cd frontend && npm run typedoc\"",
+    "docs": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd docs && bundle exec jekyll build && npm run typedoc && bundle exec jekyll serve --skip-initial-build -o\"",
     "postinstall": "concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
     "start": "cd backend && npm run start",
     "check-format": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"prettier --check backend/src/**/*.{ts,tsx}\" \"prettier --check frontend/src/**/*.{ts,tsx}\"",

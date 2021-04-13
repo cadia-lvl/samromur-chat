@@ -1,13 +1,13 @@
 {
   "name": "samromur-chat-backend",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "This handles the ws and api session requests",
   "main": "index.js",
   "scripts": {
     "dev": "tsc-watch --onSuccess \"npm run start:dev\"",
     "build": "tsc",
     "eslint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
-    "typedoc": "typedoc --out ../docs/backend/",
+    "typedoc": "typedoc --out ../docs/_site/backend/",
     "start:dev": "node build/index.js",
     "start": "NODE_ENV=production || SET NODE_ENV=production&& node build/index.js"
   },
