@@ -19,9 +19,9 @@ export const genders: Array<Demographic> = [
 ];
 
 export const references: Array<Demographic> = [
-    { id: 'staffan', name: 'Staffan' },
-    { id: 'judy', name: 'Judy' },
     { id: 'david', name: 'David' },
     { id: 'eydis', name: 'Eydís' },
+    { id: 'judy', name: 'Judy' },
+    { id: 'staffan', name: 'Staffan' },
     { id: 'other', name: 'Annað' },
 ];

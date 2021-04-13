@@ -98,6 +98,10 @@ export const Session: React.FunctionComponent<Props> = ({
         splitSeconds(client_b.duration_seconds)
     );
 
+    /**
+     * Fetches the reference person of the session
+     * @returns the reference of client A, or null if not found in the list of references
+     */
     const getReference = (): string => {
         const reference = references.find(
             (val) => val.id === client_a.reference

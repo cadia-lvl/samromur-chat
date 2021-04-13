@@ -185,6 +185,10 @@ export default class DemographicForm extends React.Component<Props, State> {
         }
     };
 
+    /**
+     * Updates the state reference to value if found in the list of references
+     * @param value the new reference value
+     */
     onReferenceSelect = (value: string) => {
         const reference = references.find(
             (val: Demographic) => val.name === value
