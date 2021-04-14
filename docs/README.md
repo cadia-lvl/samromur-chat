@@ -1,3 +1,14 @@
+---
+layout: page
+title: About Spjall
+permalink: /readme/
+nav_order: 2
+
+---
+
+* TOC
+{:toc}
+
 # About
 
 Samrómur chat is a VoIP web application written in Typescript.
@@ -44,6 +55,24 @@ git pull
 npm run build
 pm2 restart spjall.samromur  # for new intance: pm2 start npm -- start
 
+```
+
+### Generating docs
+
+[Install jekyll following the github guide](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll).
+
+```
+# Generate the docs for the run book
+cd docs
+bundle exec jekyll build
+
+# Generating the docs for the frontend and backend.
+cd ../
+npm run docs
+
+# Locally view the website
+cd docs
+bundle exec jekyll serve --skip-initial-build -o
 ```
 
 ## License
