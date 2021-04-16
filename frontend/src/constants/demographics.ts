@@ -23,6 +23,7 @@ export const references: Array<Demographic> = [
     { id: 'eydis', name: 'Eydís' },
     { id: 'judy', name: 'Judy' },
     { id: 'safa', name: 'Safa' },
+    { id: 'smari', name: 'Smári' },
     { id: 'staffan', name: 'Staffan' },
     { id: 'other', name: 'Annað' },
 ];
