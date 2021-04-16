@@ -20,8 +20,8 @@ export const genders: Array<Demographic> = [
 
 export const references: Array<Demographic> = [
     { id: 'david', name: 'David' },
-    { id: 'eydis', name: 'Eydís' },
     { id: 'judy', name: 'Judy' },
+    { id: 'ragnar', name: 'Ragnar' },
     { id: 'safa', name: 'Safa' },
     { id: 'smari', name: 'Smári' },
     { id: 'staffan', name: 'Staffan' },
