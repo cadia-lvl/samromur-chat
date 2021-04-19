@@ -247,7 +247,7 @@ export default class DemographicForm extends React.Component<Props, State> {
                         content={references.map(
                             (reference: Demographic) => reference.name
                         )}
-                        label={'Reference'}
+                        label={'Tilvísun'}
                         onSelect={this.onReferenceSelect}
                         selected={reference.name}
                     />
