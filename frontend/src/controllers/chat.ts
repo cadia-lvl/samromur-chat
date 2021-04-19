@@ -208,7 +208,9 @@ export default class Chat {
      */
     private startPingPong() {
         const payload = { type: 'ping', message: '' };
-        this.sendMessage(payload);
+        if (this.isWebSocketOpen()) {
+            this.sendMessage(payload);
+        }
     }
 
     /**
