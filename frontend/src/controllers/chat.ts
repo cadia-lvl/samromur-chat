@@ -223,7 +223,10 @@ export default class Chat {
      * Checks if the websocket is open and ready for messaging
      */
     private isWebSocketOpen = () => {
-        return this.socket.readyState === this.socket.OPEN;
+        if (this.socket) {
+            return this.socket.readyState === this.socket.OPEN;
+        }
+        return false;
     };
 
     /**
