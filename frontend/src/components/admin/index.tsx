@@ -6,9 +6,7 @@ import Layout from '../ui/layout';
 import Session from './session';
 
 import * as api from '../../services/api';
-import { ClientMetadata, SessionMetadata } from '../../types/sessions';
-import session from './session';
-import { Demographic } from '../../types/user';
+import { SessionMetadata } from '../../types/sessions';
 import { references } from '../../constants/demographics';
 
 const AdminPageContainer = styled.div`
