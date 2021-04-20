@@ -35,8 +35,12 @@ interface BarProps {
 
 const LeaderBoardBar = styled.div<BarProps>`
     width: ${({ percents }) => percents}%;
+    height: 3rem;
     background-color: #60c197;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 const SessionsContainer = styled.div`
@@ -127,9 +131,9 @@ class AdminPage extends React.Component<Props, State> {
                                             (ref.collected * 100) /
                                             leaderBoard[0].collected
                                         }
-                                    >{`${Math.floor(
-                                        ref.collected
-                                    )}`}</LeaderBoardBar>
+                                    >{`${(ref.collected / 60).toFixed(
+                                        2
+                                    )} mín`}</LeaderBoardBar>
                                 </LeaderBoardItem>
                             );
                         })}
