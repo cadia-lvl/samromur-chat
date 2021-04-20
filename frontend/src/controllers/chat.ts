@@ -208,7 +208,9 @@ export default class Chat {
      */
     private startPingPong() {
         const payload = { type: 'ping', message: '' };
-        this.sendMessage(payload);
+        if (this.isWebSocketOpen()) {
+            this.sendMessage(payload);
+        }
     }
 
     /**
@@ -223,7 +225,10 @@ export default class Chat {
      * Checks if the websocket is open and ready for messaging
      */
     private isWebSocketOpen = () => {
-        return this.socket.readyState === this.socket.OPEN;
+        if (this.socket) {
+            return this.socket.readyState === this.socket.OPEN;
+        }
+        return false;
     };
 
     /**

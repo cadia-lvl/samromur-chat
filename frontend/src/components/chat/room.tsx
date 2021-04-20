@@ -428,10 +428,10 @@ class Chatroom extends React.Component<Props, State> {
         return endpoint.concat(`/${id}`);
     };
 
-    onSubmit = () => {
+    onSubmit = async () => {
         const { recording } = this.state;
         const { onUpload } = this.props;
-        this.chat.uploadOther();
+        await this.chat.uploadOther();
         onUpload(recording);
         this.chat.disconnect();
     };
