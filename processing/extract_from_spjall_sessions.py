@@ -87,19 +87,27 @@ def main():
     with open('spjall_sessions.csv', 'w') as recorded_sessions:
         print('session id,usable,name', file=recorded_sessions)
         for session in sessions:
-            # Exclude sessions where an age or gender is not provided
-            if session['session_id'] in partial_sessions:
-                # TODO: a client a recording has a duration of null
+            # When client recording has a duration of null then assign it as a
+            # partial recording
+            if session['session_id'] in partial_sessions or \
+              session['client_a']['duration_seconds'] is None or \
+              session['client_b']['duration_seconds'] is None:
                 print(session['session_id'] + ',P,', file=recorded_sessions)
-                total_partial_seconds += \
-                    session['client_b']['duration_seconds']
-                total_seconds += session['client_b']['duration_seconds']
+                if session['client_b']['duration_seconds']:
+                    client_duration = session['client_b']['duration_seconds']
+                elif session['client_a']['duration_seconds']:
+                    client_duration = session['client_a']['duration_seconds']
+                else:
+                    client_duration = 0
+                total_partial_seconds += client_duration
+                total_seconds += client_duration
             elif session['session_id'] in valid_sessions:
                 print(session['session_id'] + ',Y,', file=recorded_sessions)
                 total_valid_seconds += session['client_a']['duration_seconds']
                 total_seconds += session['client_a']['duration_seconds']
             elif session['session_id'] in invalid_sessions:
                 print(session['session_id'] + ',N,', file=recorded_sessions)
+            # Exclude sessions where an age or gender is not provided
             elif (session['client_a']['age'] and session['client_b']['age']
                   != ''):
                 print(session['session_id'] + ',Y,', file=recorded_sessions)
