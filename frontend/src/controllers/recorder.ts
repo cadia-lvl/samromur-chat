@@ -261,12 +261,18 @@ export default class Recorder {
         return Promise.resolve(rtcStream);
     };
 
+    /**
+     * Mute mic by setting volume/gain to 0.
+     */
     mute = () => {
         if (this.gainNode) {
             this.gainNode.gain.value = 0;
         }
     };
 
+    /**
+     * Activate mic by setting volume/gain to 1.
+     */
     unMute = () => {
         if (this.gainNode) {
             this.gainNode.gain.value = 1;

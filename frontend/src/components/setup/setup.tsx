@@ -64,6 +64,11 @@ class Setup extends React.Component<Props, State> {
         this.setState({ userClient });
     };
 
+    /**
+     * Calls the frontend api to send the recording and the demographics to the
+     * backend. Then, it transfers the user to the thank you page.
+     * @param {AudioInfo} recording from the local client
+     **/
     onUpload = async (recording: AudioInfo) => {
         const { demographics } = this.state;
         try {

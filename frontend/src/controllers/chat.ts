@@ -280,7 +280,8 @@ export default class Chat {
     };
 
     /**
-     * Sends all the messages that the client tried to send while not connected to the server.
+     * Sends all the messages that the client tried to send while not connected
+     * to the server.
      */
     private sendUnsentMessages = () => {
         let delay = 250;
@@ -349,7 +350,7 @@ export default class Chat {
 
     /**
      * Sends a message over the WebSocket connection.
-     * If the connection is closed, the function starts a the reconnect process
+     * If the connection is closed, the function starts the reconnect process
      * and stores any unsent messages in the unsentMessages array.
      * @param payload the message to send
      */
@@ -588,6 +589,9 @@ export default class Chat {
         }
     };
 
+    /**
+     * UnMute the microphone and set the voiceChat state to connected
+     */
     public unMute = async () => {
         if (!this.microphone) {
             this.mute();
@@ -619,6 +623,10 @@ export default class Chat {
         }
     };
 
+    /**
+     * Mute works more like deafen than a pure mute since you also can't hear
+     * the other person in the call {@link hangUp}.
+     */
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
         if (this.microphone) {
@@ -637,6 +645,9 @@ export default class Chat {
         });
     };
 
+    /**
+     * Create rtcConnection offer for the other client
+     */
     private call = async (): Promise<void> => {
         try {
             if (!this.rtcConnection) {
@@ -649,10 +660,14 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error calling, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
+    /**
+     * Through the rtc connection, receive the offer from the other client.
+     * Respond with an answer.
+     */
     private answer = async (): Promise<void> => {
         try {
             // Check for an rtcConnection because after a reconnect there
@@ -705,6 +720,10 @@ export default class Chat {
         return this.isChatroomOwner;
     };
 
+    /**
+     * Close the peer to peer connection. Create a new peer to peer connection
+     * that is ready to connect to a peer.
+     */
     public hangUp = async (): Promise<void> => {
         this.rtcConnection?.close();
         this.rtcConnection = null;
@@ -713,7 +732,7 @@ export default class Chat {
         return this.sendMessage({ type: 'hang_up' });
     };
 
-    // Todo
+    // TODO
     public sendAgreement = async (value: boolean): Promise<void> => {
         this.sendMessage({
             id: this.userClient.id,
@@ -734,6 +753,10 @@ export default class Chat {
         }
     };
 
+    /**
+     * Send request to start recording to client b. Set the sessionId from the
+     * uuid.
+     */
     public requestRecording = async (): Promise<void> => {
         try {
             await this.sendMessage({ type: 'start_recording' });
@@ -781,12 +804,16 @@ export default class Chat {
         }
     };
 
-    // Sends the request for other client to upload its recording
+    /**
+     * Sends the request for other client to upload its recording
+     **/
     public uploadOther = async (): Promise<void> => {
         await this.sendMessage({ type: 'upload' });
     };
 
-    // Responsible for triggering the upload of this client
+    /**
+     * Responsible for triggering the upload of this client
+     **/
     private handleUpload = () => {
         this.onUpload();
     };
