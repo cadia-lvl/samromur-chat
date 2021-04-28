@@ -130,10 +130,30 @@ export default class Chat {
         this.onVoiceStateChanged(state);
     };
 
-    // TODO: when anything in init fails, the user should be given a toast
-    // message of what component is not work in order to establish a working
-    // chatroom such as an ice connection could not be established or the
-    // microphone is not accessible
+    /**
+     * Get the mic state
+     */
+    private getVoiceState = (): VoiceState => {
+        return this.voiceState;
+    };
+
+    /**
+     * Starts and connects to all the necessary underlying technology in a
+     * chatroom:
+     *
+     * * microphone - connect mic to chatroom to record and obtain audio
+     * * websockets - connect to the chatroom server
+     * * rtc connections - connect directly to the other user
+     * * pingpong - ping pong ws server to keep the connection alive
+     * * unMute - activate mic
+     * * setUsername
+     * * setChatState
+     *
+     * TODO: When anything in init fails, the user should be given a toast
+     * message of what component is not working in order to establish a working
+     * chatroom, such as an ice connection could not be established or the
+     * microphone is not accessible.
+     **/
     private init = async () => {
         try {
             this.socket = await this.openSocket(this.socketUrl);
@@ -300,6 +320,10 @@ export default class Chat {
         if (!this.reconnecting) {
             this.setUsername(this.userClient.username);
             this.sendUnsentMessages();
+            // Make sure the browser's mic state matches the server's mic state
+            this.getVoiceState() === VoiceState.VOICE_CONNECTED
+                ? this.unMute()
+                : this.mute();
             console.info('Successfully reconnected to the server.');
             return Promise.resolve('Successfully reconnected to the server.');
         }
@@ -526,7 +550,7 @@ export default class Chat {
 
     public unMute = async () => {
         if (!this.microphone) {
-            this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+            this.mute();
             console.log('no mic available');
             throw new Error('no mic available');
         } else {
@@ -553,8 +577,10 @@ export default class Chat {
 
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
-        this.recorder.mute();
-        this.hangUp();
+        if (this.microphone) {
+            this.recorder.mute();
+            this.hangUp();
+        }
         this.handleClientChanged({
             id: this.userClient.id,
             parameter: 'set_voice',
