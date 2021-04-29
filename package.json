@@ -3,6 +3,10 @@
   "version": "1.1.0",
   "description": "voice-chat recording software",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cadia-lvl/samromur-chat.git"
+  },
   "scripts": {
     "build": "concurrently -p \"[{name}]\" -n \"BE,FE\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd backend && npm run build\" \"cd frontend && npm run build\"",
     "build:backend": "cd backend && npm run build",

@@ -13,6 +13,10 @@
   },
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cadia-lvl/samromur-chat.git"
+  },
   "dependencies": {
     "@types/archiver": "^5.1.0",
     "aws-sdk": "^2.755.0",
