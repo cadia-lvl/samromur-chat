@@ -209,6 +209,14 @@ export default class Chat {
         });
     };
 
+    /**
+     * Establish an rtcpeerconnection, but only finish if there is a microphone.
+     *
+     * In a normal chatroom, it would be ok to have a peer to peer connection
+     * where only one person has a working mic. But since our primary goal is
+     * data collection, we'll disable establishing a connection between
+     * users with non-functioning mics and just set the chatroom to idle.
+     */
     private openRTC = async (): Promise<RTCPeerConnection> => {
         try {
             const connection = new RTCPeerConnection(this.rtcConfiguration);
@@ -486,10 +494,24 @@ export default class Chat {
         return this.sendMessage({ type: 'set_username', value: username });
     };
 
+    /**
+     * With the incoming rtc offer, initiate the answer procedure. But only if
+     * the user has a working microphone.
+     *
+     * In a normal chatroom, it would be ok to have a peer to peer connection
+     * where only one person has a working mic. But since our primary goal is
+     * data collection, we'll disable establishing a connection between
+     * users with non-functioning mics and just set the chatroom to idle.
+     */
     private handleIncomingCall = async (message: any) => {
         this.incomingOffer = message.offer;
         this.setCallState(CallState.INCOMING_CALL);
-        await this.answer();
+        // Only answer calls if users have a working microphone
+        if (this.microphone) {
+            await this.answer();
+        } else {
+            this.setCallState(CallState.IDLE);
+        }
     };
 
     private handleIncomingAnswer = async (message: any) => {
@@ -505,7 +527,9 @@ export default class Chat {
     private handleIncomingCandidate = async (message: any) => {
         const candidate = new RTCIceCandidate(message.candidate);
         try {
-            this.rtcConnection.addIceCandidate(candidate);
+            if (this.rtcConnection) {
+                this.rtcConnection.addIceCandidate(candidate);
+            }
         } catch (error) {
             console.error('Error handling ice candidate');
         }
@@ -540,9 +564,11 @@ export default class Chat {
 
     private handleHangUp = async () => {
         try {
-            this.rtcConnection?.close();
-            this.rtcConnection = await this.openRTC();
-            this.setCallState(CallState.HUNG_UP);
+            if (this.microphone) {
+                this.rtcConnection?.close();
+                this.rtcConnection = await this.openRTC();
+                this.setCallState(CallState.HUNG_UP);
+            }
         } catch (error) {
             console.error('Error while hanging up, ', error);
         }
@@ -608,6 +634,13 @@ export default class Chat {
 
     private answer = async (): Promise<void> => {
         try {
+            // Check for an rtcConnection because after a reconnect there
+            // sometimes isn't a established rtcConnection so then a chain of
+            // errors pop up.
+            // So try establishing one.
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             // Handle incoming offer
             const description = new RTCSessionDescription(this.incomingOffer);
             this.rtcConnection.setRemoteDescription(description);
