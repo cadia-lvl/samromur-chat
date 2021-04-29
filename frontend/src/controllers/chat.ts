@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Recorder from './recorder';
 import { AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
+//import { saveSessionId, clearSessionId } from '../utilities/local-storage';
 
 export enum ChatState {
     CONNECTED = 'CONNECTED',
@@ -43,6 +44,7 @@ export default class Chat {
     onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
+    onChunkReceived!: (blob: Blob) => void;
     onChatStateChanged!: (state: ChatState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
@@ -70,7 +72,9 @@ export default class Chat {
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
             sampleRate: 16000,
+            chunkInterval: 5,
         });
+        this.recorder.onChunkReceived = this.handleChunkReceived;
         this.socketUrl = socketUrl;
         this.userClient = userClient;
         this.callState = CallState.IDLE;
@@ -98,6 +102,13 @@ export default class Chat {
         console.log('initiate chat');
         this.init();
     }
+
+    private handleChunkReceived = (blob: Blob): void => {
+        console.log('chat received blob', blob);
+        if (this.onChunkReceived !== undefined) {
+            this.onChunkReceived(blob);
+        }
+    };
 
     private setCallState = (state: CallState) => (this.callState = state);
 

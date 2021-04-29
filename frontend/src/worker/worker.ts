@@ -2,11 +2,13 @@ class WavEncoder {
     private sampleRate: number;
     private numSamples: number;
     private dataViews: DataView[];
+    private chunks: Array<DataView[]>;
 
     constructor(sampleRate: number) {
         this.sampleRate = sampleRate;
         this.numSamples = 0;
         this.dataViews = [];
+        this.chunks = [];
     }
 
     encode = (buffer: Float32Array) => {
@@ -26,6 +28,23 @@ class WavEncoder {
         this.numSamples += length;
     };
 
+    /**
+     * Returns a blob with the current recorded data with a wav header
+     * @returns blob with data
+     */
+    getChunkBlob = async (): Promise<Blob> => {
+        const dataViews = [...this.dataViews];
+        const view = this.generateWaveHeader();
+        dataViews.unshift(view);
+
+        // move dataview into chunks array, and clear current dataview
+        this.chunks.push(dataViews);
+        this.reset();
+
+        // return the current chunk
+        return Promise.resolve(new Blob(dataViews, { type: 'audio/wav' }));
+    };
+
     writeString = (view: DataView, offset: number, string: string) => {
         for (let i = 0; i < string.length; i++) {
             view.setUint8(offset + i, string.charCodeAt(i));
@@ -39,6 +58,13 @@ class WavEncoder {
 
     // Prepend wav header
     finish = (): Promise<Blob> => {
+        const view = this.generateWaveHeader();
+        this.dataViews.unshift(view);
+        return Promise.resolve(new Blob(this.dataViews, { type: 'audio/wav' }));
+    };
+
+    // Create wav header
+    private generateWaveHeader = (): DataView => {
         const dataSize = this.numSamples * 2;
         const view = new DataView(new ArrayBuffer(44));
         this.writeString(view, 0, 'RIFF');
@@ -55,8 +81,7 @@ class WavEncoder {
         view.setUint16(34, 16, true);
         this.writeString(view, 36, 'data');
         view.setUint32(40, dataSize, true);
-        this.dataViews.unshift(view);
-        return Promise.resolve(new Blob(this.dataViews, { type: 'audio/wav' }));
+        return view;
     };
 }
 
@@ -73,12 +98,28 @@ const finish = async () => {
     });
 };
 
+/**
+ * Requests the current data in the recorder
+ */
+const getAndPostBlob = async () => {
+    const blob = await encoder.getChunkBlob();
+    ctx.postMessage({ command: 'chunk-available', blob });
+};
+
 ctx.onmessage = (event) => {
     const data = event.data;
-    if (data.command === 'encode') {
-        encoder.encode(data.buffer);
-    } else {
-        finish();
+    switch (data.command) {
+        case 'encode':
+            encoder.encode(data.buffer);
+            break;
+        case 'get-blob':
+            getAndPostBlob();
+            break;
+        case 'finish':
+            finish();
+            break;
+        default:
+            console.log('Unknow command sent to encoder.');
     }
 };
 

@@ -3,8 +3,13 @@ import { AudioInfo, AudioError } from '../types/audio';
 import WavEncoder from '../worker';
 import { isRecordingSupported } from '../utilities/utils';
 
+// import IndexedDB from '../utilities/indexed-db';
+//import { writeBlobToLocalForage } from '../utilities/local-storage';
+
 interface RecorderConfig {
     sampleRate: number;
+    //onChunkAvailable: () => void;
+    chunkInterval: number;
 }
 
 export default class Recorder {
@@ -17,9 +22,13 @@ export default class Recorder {
     private gainNode!: GainNode;
     private sampleRate: number;
 
-    constructor({ sampleRate }: RecorderConfig) {
+    public onChunkReceived: ((blob: Blob) => void) | undefined;
+    private chunkInterval: number = 0;
+
+    constructor({ sampleRate, chunkInterval }: RecorderConfig) {
         this.sampleRate = sampleRate;
         this.encoder = new WavEncoder();
+        this.chunkInterval = chunkInterval;
     }
 
     private isReady = (): boolean => !!this.microphone;
@@ -58,13 +67,34 @@ export default class Recorder {
     };
 
     private start = (): Promise<void> => {
-        this.processorNode.connect(this.audioContext.destination);
         this.sourceNode.connect(this.gainNode);
         this.gainNode.connect(this.processorNode);
+        this.processorNode.connect(this.audioContext.destination);
         if (!this.isReady()) {
             console.error('Cannot record audio before microphone is ready.');
             return Promise.reject();
         }
+
+        this.encoder.onmessage = async (event) => {
+            const {
+                data: { blob },
+                data: { command },
+            } = event;
+
+            console.log(event);
+
+            if (command === 'chunk-available') {
+                console.log(blob);
+                //writeDataToLocalBase(data);
+                //this.idb.writeBlobToDb(blob);
+                //writeBlobToLocalForage(blob);
+                console.log('received chunk');
+                if (this.onChunkReceived) {
+                    console.log('found a chunkReceived function');
+                    this.onChunkReceived(blob);
+                }
+            }
+        };
 
         this.processorNode.onaudioprocess = (ev: AudioProcessingEvent) => {
             const downsampled = this.downsampleBuffer(ev.inputBuffer, 16000);
@@ -72,9 +102,25 @@ export default class Recorder {
                 command: 'encode',
                 buffer: downsampled,
             });
+            //this.encoder.postMessage({ command: 'getData' });
         };
 
+        if (this.chunkInterval > 0) {
+            this.startChunkRequesting();
+        }
+
         return Promise.resolve();
+    };
+
+    private startChunkRequesting = () => {
+        setTimeout(() => this.requestChunk(), this.chunkInterval * 1000);
+    };
+
+    private requestChunk = () => {
+        // if recording
+        this.encoder.postMessage({ command: 'get-blob' });
+        console.log('chunk requested, recorder.');
+        this.startChunkRequesting();
     };
 
     // Now the desired sample rate of wave might not match the sample rate of

@@ -89,3 +89,51 @@ export const uploadClip = async (
             return Promise.reject(error.code);
         });
 };
+
+export const uploadChunk = async (
+    blob: Blob,
+    demographics: UserDemographics
+): Promise<void> => {
+    let pathname = window.location.href;
+    if (pathname.includes('localhost')) {
+        pathname = pathname.replace('3000', '3030');
+    }
+
+    const parts = pathname.split('/');
+    parts.splice(parts.length - 1, 0, 'api');
+    const url = parts.join('/');
+
+    const id = uuid(); // Generate new id as fallback
+
+    const jsonString = JSON.stringify({
+        age: demographics.age,
+        gender: demographics.gender,
+        session_id: id.replace(/_client_[a|b]/, ''),
+        reference: demographics.reference,
+    });
+
+    const metadata = new Blob([jsonString], {
+        type: 'text/plain',
+    });
+
+    const formData: FormData = new FormData();
+    formData.append('audio', blob as Blob);
+    formData.append('metadata', metadata);
+
+    return axios({
+        method: 'POST',
+        url: url,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            id,
+        },
+        data: formData,
+    })
+        .then((response: AxiosResponse) => {
+            return response.data;
+        })
+        .catch((error: AxiosError) => {
+            console.error(error.message);
+            return Promise.reject(error.code);
+        });
+};
