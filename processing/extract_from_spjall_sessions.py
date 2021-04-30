@@ -125,6 +125,16 @@ def main():
                              session['session_id'])
             else:
                 print(session['session_id'] + ',N,', file=recorded_sessions)
+        print('38ced83e-c37d-4687-8f60-bd2332c7ab2d,P,,not on mamma',
+              file=recorded_sessions)
+        client_a_duration = 16*60+9
+        total_seconds += client_a_duration
+        total_partial_seconds += client_a_duration
+        print('c08bdf8a-8a21-4a60-a558-6bf0f5e30b93,P,,not on mamma',
+              file=recorded_sessions)
+        client_a_duration = 16*60+1
+        total_seconds += client_a_duration
+        total_partial_seconds += client_a_duration
         print('non-spjall recording,Y,convo 2,', file=recorded_sessions)
         total_seconds += (32*60+38)
         total_valid_seconds += (32*60+38)
