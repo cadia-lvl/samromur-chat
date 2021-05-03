@@ -59,6 +59,7 @@ def main():
                       '2f1655ff-ddbc-4581-bd97-4727b5ae7ca3',
                       '50d1de3c-5b4c-4404-914e-602a7d91b4c3',
                       '5331448b-8c5f-4f98-9ca2-f97321a385b1',
+                      '54ddefa8-a7db-437b-a7d1-31a378396222',
                       '81dd3246-3e3d-4f60-9f4f-c050485b1551',
                       '2d219d50-728f-4e10-9bf5-5c7895a82934',
                       'ad46e29b-eea2-4c3d-adfb-35727f65d961',
@@ -66,6 +67,7 @@ def main():
                       'de3b604f-f3a5-4400-9f47-1872f8907a2c',
                       'e25bc38d-26bc-42e0-9d81-13ccedfe6072']
     partial_sessions = ['3ac74ae1-0fd0-40ae-b85b-ca4456122004',
+                        '334c8c37-90d7-4269-a164-a7bf762a09f5',
                         '2651b605-cd91-40ef-96e6-71b250a3e467',
                         '038d54f9-0d0e-42db-864a-e8369f4da021',
                         '171f4b4f-e5d5-44b1-aac8-ff046275560c',
@@ -73,6 +75,9 @@ def main():
                         '5f55950e-0602-409c-b7e2-f7c1f0881b48',
                         '9a67bc98-eaf2-4ba3-be01-dfb8914ff28d',
                         'a552db29-8bca-4e2e-b766-36d6a31f5000',
+                        '198f2863-88e6-40e9-89bd-381e15a93739',
+                        '7f09cd67-785d-463f-928f-34c7ef5fc07d',
+                        'b6ad9f96-1e34-4a6f-b2db-06c86d2b202d',
                         'f123a375-79ac-4748-928a-20f754ccca66']
     invalid_sessions = ['2474fff6-929b-4642-88ae-b79f2fda6be4',
                         '319735f1-f2bc-41db-908d-00023eeea23a',
@@ -125,9 +130,24 @@ def main():
                              session['session_id'])
             else:
                 print(session['session_id'] + ',N,', file=recorded_sessions)
+        print('30509101-ed6a-4153-b58c-085cea60f079 ,P,,not \
+            on mamma karl tvitugt', file=recorded_sessions)
+        client_a_duration = 10*60+1
+        total_seconds += client_a_duration
+        total_partial_seconds += client_a_duration
         print('38ced83e-c37d-4687-8f60-bd2332c7ab2d,P,,not on mamma',
               file=recorded_sessions)
         client_a_duration = 16*60+9
+        total_seconds += client_a_duration
+        total_partial_seconds += client_a_duration
+        print('42ae267b-891f-4232-b99b-fdc78da4986b,P,,not on mamma kona \
+            thritugt 2 voice one channel', file=recorded_sessions)
+        client_a_duration = 13*60+30
+        total_seconds += client_a_duration
+        total_partial_seconds += client_a_duration
+        print('66f4f282-79c3-4f14-bcf8-fcc7bf401fd2,P,,not on mamma monologue',
+              file=recorded_sessions)
+        client_a_duration = 17*60+4
         total_seconds += client_a_duration
         total_partial_seconds += client_a_duration
         print('c08bdf8a-8a21-4a60-a558-6bf0f5e30b93,P,,not on mamma',
