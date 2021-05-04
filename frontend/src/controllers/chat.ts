@@ -50,7 +50,7 @@ export default class Chat {
     onError!: (message: any) => void;
 
     private recorder: Recorder;
-    private rtcConnection!: RTCPeerConnection;
+    private rtcConnection!: RTCPeerConnection | null;
     private rtcConfiguration: RTCConfiguration;
     private socket!: WebSocket;
     private socketUrl: string;
@@ -566,6 +566,7 @@ export default class Chat {
         try {
             if (this.microphone) {
                 this.rtcConnection?.close();
+                this.rtcConnection = null;
                 this.rtcConnection = await this.openRTC();
                 this.setCallState(CallState.HUNG_UP);
             }
@@ -686,6 +687,7 @@ export default class Chat {
 
     public hangUp = async (): Promise<void> => {
         this.rtcConnection?.close();
+        this.rtcConnection = null;
         this.rtcConnection = await this.openRTC();
         //this.setCallState(CallState.HUNG_UP);
         return this.sendMessage({ type: 'hang_up' });
@@ -773,7 +775,8 @@ export default class Chat {
         console.log('Disconnecting...');
         this.isDisconnecting = true;
         this.socket.close();
-        this.rtcConnection.close();
+        this.rtcConnection?.close();
+        this.rtcConnection = null;
     };
 
     public clearRecording = () => {
