@@ -132,6 +132,12 @@ const ShareButton = styled.button`
         transform: translateY(2px);
     }
 
+    :focus {
+        border: red solid;
+        transform: translateY(2px);
+        transform: translateX(2px);
+    }
+
     @media (max-width: 1024px) {
         grid-column: 1;
         max-width: 100%;
@@ -203,6 +209,8 @@ class Chatroom extends React.Component<Props, State> {
     private chat: Chat;
     private interval?: any;
     private timeout?: any;
+    private clientsRequired = 2;
+    private shareButtonRef;
 
     constructor(props: Props) {
         super(props);
@@ -220,6 +228,7 @@ class Chatroom extends React.Component<Props, State> {
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
+        this.shareButtonRef = React.createRef<HTMLElement>();
     }
 
     componentDidMount = async () => {
@@ -354,13 +363,28 @@ class Chatroom extends React.Component<Props, State> {
         this.setState({ recordingState });
         if (
             recordingState === RecordingState.RECORDING_REQUESTED &&
-            this.state.clients.every((c) => c.voice)
+            this.state.clients.every((c) => c.voice) &&
+            this.state.clients.length == this.clientsRequired
         ) {
             // TODO: check to if recording is supported
             this.startCountdown();
             if (this.state.recording) {
                 this.setState({ recording: undefined });
             }
+        } else if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.clients.length != this.clientsRequired
+        ) {
+            recordingState = RecordingState.NOT_RECORDING;
+            this.setState({ recordingState });
+            toast.error(
+                'Það þarf tvo til að taka upp samtal. Deildu þessum hlekk með einhverum öðrum.',
+                {
+                    toastId: 'toast-two-ppl',
+                }
+            );
+            this.shareButtonRef.current.focus({preventScroll: false});
+            this.shareButtonRef.current.scrollIntoView(true);
         } else if (
             recordingState === RecordingState.RECORDING_REQUESTED &&
             !this.state.clients.every((c) => c.voice)
@@ -510,7 +534,10 @@ class Chatroom extends React.Component<Props, State> {
                     {countdown}
                 </CounterContainer>
                 {recordingState !== RecordingState.RECORDING && (
-                    <ShareButton onClick={this.copyToClipBoard}>
+                    <ShareButton
+                        onClick={this.copyToClipBoard}
+                        ref={this.shareButtonRef}
+                    >
                         <span>
                             Smelltu til að afrita hlekkinn og deildu með vini
                         </span>
