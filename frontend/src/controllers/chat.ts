@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Recorder from './recorder';
 import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
+import { MicError, RTCError } from '../types/errors';
 
 export enum ChatState {
     CONNECTED = 'CONNECTED',
@@ -579,7 +580,11 @@ export default class Chat {
         if (!this.microphone) {
             this.mute();
             console.log('no mic available');
-            throw new Error('no mic available');
+            throw new MicError('no mic available');
+        } else if (!this.rtcConnection) {
+            this.mute();
+            console.log('Peer connection is unopened');
+            throw new RTCError('Peer connection is unopened');
         } else {
             this.setVoiceState(VoiceState.VOICE_CONNECTED);
             this.recorder.unMute();

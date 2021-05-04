@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Chat, { RecordingState, VoiceState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
 import { LoadingSpinning } from '../ui/animated/spinner';
+import { MicError } from '../../types/errors';
 import Swipe from '../ui/animated/swipe';
 import HeadSet from '../ui/icons/headset';
 import HeadSetMuted from '../ui/icons/headset-muted';
@@ -168,8 +169,15 @@ export default class Controls extends React.Component<Props, State> {
         if (voiceState === VoiceState.VOICE_CONNECTED) {
             chat.mute();
         } else {
-            chat.unMute().catch(() => {
-                this.props.createToast('Hljóðnemi finnst ekki');
+            // Toast based on the exception type
+            chat.unMute().catch((err) => {
+                if (err instanceof MicError) {
+                    this.props.createToast('Hljóðnemi fannst ekki');
+                } else {
+                    this.props.createToast(
+                        'Jafningjanet: Aðrar tengingar eru ekki opnar'
+                    );
+                }
             });
         }
     };
