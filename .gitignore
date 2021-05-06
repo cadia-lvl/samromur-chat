@@ -5,3 +5,6 @@ frontend/build
 backend/public
 backend/uploads
 uploads
+processing/*.wav
+processing/*.json
+processing/*.zip

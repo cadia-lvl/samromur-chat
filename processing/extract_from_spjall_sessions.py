@@ -145,11 +145,11 @@ def main():
         client_a_duration = 13*60+30
         total_seconds += client_a_duration
         total_partial_seconds += client_a_duration
-        print('66f4f282-79c3-4f14-bcf8-fcc7bf401fd2,P,,not on mamma monologue',
+        # a monologue has different characteristics from a conversation so not
+        # valid data
+        print('66f4f282-79c3-4f14-bcf8-fcc7bf401fd2,N,,not on mamma monologue',
               file=recorded_sessions)
         client_a_duration = 17*60+4
-        total_seconds += client_a_duration
-        total_partial_seconds += client_a_duration
         print('c08bdf8a-8a21-4a60-a558-6bf0f5e30b93,P,,not on mamma',
               file=recorded_sessions)
         client_a_duration = 16*60+1
