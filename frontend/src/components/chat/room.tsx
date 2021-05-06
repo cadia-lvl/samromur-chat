@@ -110,10 +110,11 @@ const Indicator = styled.div<{ connected: boolean }>`
     background-color: ${({ connected }) => (connected ? '#60C197' : 'gray')};
 `;
 
-const ShareButton = styled.button`
+const ShareButton = styled.button<{ soloRecord: boolean }>`
     align-self: center;
-    background-color: #60c197;
+    background-color: ${({ soloRecord }) => (soloRecord ? 'red' : '#60C197')};
     color: white;
+    transform: ${({ soloRecord }) => (soloRecord ? 'translateY(2px)' : '')};
     display: flex;
     justify-content: center;
     user-select: none;
@@ -190,6 +191,7 @@ interface State {
     isChatroomOwner: boolean;
     showModal: boolean;
     error: string;
+    soloRecord: boolean;
 }
 
 interface RouteProp {
@@ -203,6 +205,8 @@ class Chatroom extends React.Component<Props, State> {
     private chat: Chat;
     private interval?: any;
     private timeout?: any;
+    private clientsRequired = 2;
+    private shareButtonRef;
 
     constructor(props: Props) {
         super(props);
@@ -217,9 +221,11 @@ class Chatroom extends React.Component<Props, State> {
             isChatroomOwner: true,
             showModal: false,
             error: undefined,
+            soloRecord: false,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
+        this.shareButtonRef = React.createRef<HTMLElement>();
     }
 
     componentDidMount = async () => {
@@ -352,15 +358,27 @@ class Chatroom extends React.Component<Props, State> {
 
     handleRecordingStateChanged = (recordingState: RecordingState) => {
         this.setState({ recordingState });
-        if (
-            recordingState === RecordingState.RECORDING_REQUESTED &&
-            this.state.clients.every((c) => c.voice)
-        ) {
+        if (this.isRecordingAllowed(recordingState)) {
             // TODO: check to if recording is supported
             this.startCountdown();
             if (this.state.recording) {
                 this.setState({ recording: undefined });
             }
+        } else if (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.clients.length != this.clientsRequired
+        ) {
+            recordingState = RecordingState.NOT_RECORDING;
+            this.setState({ recordingState });
+            toast.error(
+                'Það þarf tvo til að taka upp samtal. Deildu þessum hlekk með einhverum öðrum.',
+                {
+                    toastId: 'toast-two-ppl',
+                }
+            );
+            this.setState({ soloRecord: true });
+            this.shareButtonRef.current.focus();
+            this.shareButtonRef.current.scrollIntoView(true);
         } else if (
             recordingState === RecordingState.RECORDING_REQUESTED &&
             !this.state.clients.every((c) => c.voice)
@@ -373,6 +391,14 @@ class Chatroom extends React.Component<Props, State> {
         } else {
             this.removeCountdown();
         }
+    };
+
+    isRecordingAllowed = (recordingState: RecordingState) => {
+        return (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.clients.every((c) => c.voice) &&
+            this.state.clients.length == this.clientsRequired
+        );
     };
 
     handleChatStateChanged = (chatState: ChatState) => {
@@ -437,6 +463,7 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     copyToClipBoard = async () => {
+        this.setState({ soloRecord: false });
         const toastId = 'toast-copied';
         try {
             toast.dismiss(toastId);
@@ -483,6 +510,7 @@ class Chatroom extends React.Component<Props, State> {
             showModal,
             isChatroomOwner,
             error,
+            soloRecord,
         } = this.state;
 
         const {
@@ -502,15 +530,16 @@ class Chatroom extends React.Component<Props, State> {
         return (
             <ChatroomContainer>
                 <CounterContainer
-                    active={
-                        recordingState === RecordingState.RECORDING_REQUESTED &&
-                        this.state.clients.every((c) => c.voice)
-                    }
+                    active={this.isRecordingAllowed(recordingState)}
                 >
                     {countdown}
                 </CounterContainer>
                 {recordingState !== RecordingState.RECORDING && (
-                    <ShareButton onClick={this.copyToClipBoard}>
+                    <ShareButton
+                        onClick={this.copyToClipBoard}
+                        ref={this.shareButtonRef}
+                        soloRecord={soloRecord}
+                    >
                         <span>
                             Smelltu til að afrita hlekkinn og deildu með vini
                         </span>
