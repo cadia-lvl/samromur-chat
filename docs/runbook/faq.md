@@ -19,8 +19,7 @@ browser: Safari, Chrome, or Firefox.
 If you still can't hear the other participant then Spjall doesn't work for your
 device or your friend's device. One of you should try to access spjall on a
 different device and see if that works. If it still doesn't work, then you
-should report this to the spjall developers along with the operating system and
-browsers used.
+should [report this problem to the spjall developers](/runbook/faq#it-doesnt-seem-to-work-how-can-i-report-the-problem-to-the-developers).
 
 ### I'm using Safari but I get a message that I should use Chrome or Firefox instead.
 
