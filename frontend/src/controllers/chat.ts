@@ -518,6 +518,9 @@ export default class Chat {
     private handleIncomingAnswer = async (message: any) => {
         try {
             const description = new RTCSessionDescription(message.answer);
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             await this.rtcConnection.setRemoteDescription(description);
         } catch (error) {
             // To-do error handling?
@@ -627,6 +630,9 @@ export default class Chat {
 
     private call = async (): Promise<void> => {
         try {
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             const offer: RTCSessionDescriptionInit = await this.rtcConnection.createOffer();
             await this.rtcConnection.setLocalDescription(offer);
             await this.sendMessage({ type: 'call', offer });
