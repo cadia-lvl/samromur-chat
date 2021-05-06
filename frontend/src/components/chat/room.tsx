@@ -110,10 +110,11 @@ const Indicator = styled.div<{ connected: boolean }>`
     background-color: ${({ connected }) => (connected ? '#60C197' : 'gray')};
 `;
 
-const ShareButton = styled.button`
+const ShareButton = styled.button<{ soloRecord: boolean }>`
     align-self: center;
-    background-color: #60c197;
+    background-color: ${({ soloRecord }) => (soloRecord ? 'red' : '#60C197')};
     color: white;
+    transform: ${({ soloRecord }) => (soloRecord ? 'translateY(2px)' : '')};
     display: flex;
     justify-content: center;
     user-select: none;
@@ -130,12 +131,6 @@ const ShareButton = styled.button`
 
     :active {
         transform: translateY(2px);
-    }
-
-    :focus {
-        border: red solid;
-        transform: translateY(2px);
-        transform: translateX(2px);
     }
 
     @media (max-width: 1024px) {
@@ -196,6 +191,7 @@ interface State {
     isChatroomOwner: boolean;
     showModal: boolean;
     error: string;
+    soloRecord: boolean;
 }
 
 interface RouteProp {
@@ -225,6 +221,7 @@ class Chatroom extends React.Component<Props, State> {
             isChatroomOwner: true,
             showModal: false,
             error: undefined,
+            soloRecord: false,
         };
 
         this.audioRef = React.createRef<HTMLAudioElement>();
@@ -379,6 +376,7 @@ class Chatroom extends React.Component<Props, State> {
                     toastId: 'toast-two-ppl',
                 }
             );
+            this.setState({ soloRecord: true });
             this.shareButtonRef.current.focus();
             this.shareButtonRef.current.scrollIntoView(true);
         } else if (
@@ -465,6 +463,7 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     copyToClipBoard = async () => {
+        this.setState({ soloRecord: false });
         const toastId = 'toast-copied';
         try {
             toast.dismiss(toastId);
@@ -511,6 +510,7 @@ class Chatroom extends React.Component<Props, State> {
             showModal,
             isChatroomOwner,
             error,
+            soloRecord,
         } = this.state;
 
         const {
@@ -538,6 +538,7 @@ class Chatroom extends React.Component<Props, State> {
                     <ShareButton
                         onClick={this.copyToClipBoard}
                         ref={this.shareButtonRef}
+                        soloRecord={soloRecord}
                     >
                         <span>
                             Smelltu til að afrita hlekkinn og deildu með vini
