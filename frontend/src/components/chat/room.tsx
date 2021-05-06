@@ -361,11 +361,7 @@ class Chatroom extends React.Component<Props, State> {
 
     handleRecordingStateChanged = (recordingState: RecordingState) => {
         this.setState({ recordingState });
-        if (
-            recordingState === RecordingState.RECORDING_REQUESTED &&
-            this.state.clients.every((c) => c.voice) &&
-            this.state.clients.length == this.clientsRequired
-        ) {
+        if (this.isRecordingAllowed(recordingState)) {
             // TODO: check to if recording is supported
             this.startCountdown();
             if (this.state.recording) {
@@ -397,6 +393,14 @@ class Chatroom extends React.Component<Props, State> {
         } else {
             this.removeCountdown();
         }
+    };
+
+    isRecordingAllowed = (recordingState: RecordingState) => {
+        return (
+            recordingState === RecordingState.RECORDING_REQUESTED &&
+            this.state.clients.every((c) => c.voice) &&
+            this.state.clients.length == this.clientsRequired
+        );
     };
 
     handleChatStateChanged = (chatState: ChatState) => {
@@ -526,10 +530,7 @@ class Chatroom extends React.Component<Props, State> {
         return (
             <ChatroomContainer>
                 <CounterContainer
-                    active={
-                        recordingState === RecordingState.RECORDING_REQUESTED &&
-                        this.state.clients.every((c) => c.voice)
-                    }
+                    active={this.isRecordingAllowed(recordingState)}
                 >
                     {countdown}
                 </CounterContainer>
