@@ -297,8 +297,13 @@ export default class Chat {
 
     /**
      * Reconnect will start a process to reconnect.
-     * The process will attempt to reconnect to the WebSocket server
-     * every timeout milliseconds
+     * The reconnecting flag is set.
+     * If the prior attempt was unsuccessful, the process will attempt to
+     * reconnect to the WebSocket server after the given timeout(milliseconds).
+     * If successful, call {@link setUsername} and {@link sendUnsentMessages}
+     * the corresponding mic method ({@link unMute} {@link mute}).
+     * If there is no rtcConnection then open one with {@link openRTC}.
+     * @return {Promise} returns a Promise about successful reconnection.
      */
     private reconnect = async () => {
         // If not reconnecting, set to reconnecting and reset timeout
@@ -333,6 +338,10 @@ export default class Chat {
             this.getVoiceState() === VoiceState.VOICE_CONNECTED
                 ? this.unMute()
                 : this.mute();
+            if (this.microphone && !this.rtcConnection) {
+                this.rtcConnection = null;
+                this.rtcConnection = await this.openRTC();
+            }
             console.info('Successfully reconnected to the server.');
             return Promise.resolve('Successfully reconnected to the server.');
         }
