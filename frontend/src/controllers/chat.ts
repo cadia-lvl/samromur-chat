@@ -312,7 +312,7 @@ export default class Chat {
         try {
             this.socket = await this.openSocket(this.socketUrl);
         } catch (error) {
-            console.error('Error reconnecting to the server.');
+            console.error('Error reconnecting to the server.', error);
         }
         this.reconnecting = !this.isWebSocketOpen();
         if (this.reconnecting) {
@@ -361,7 +361,7 @@ export default class Chat {
             );
         } catch (error) {
             console.error('Error sending message, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -535,7 +535,7 @@ export default class Chat {
                 this.rtcConnection.addIceCandidate(candidate);
             }
         } catch (error) {
-            console.error('Error handling ice candidate');
+            console.error('Error handling ice candidate ', error);
         }
     };
 
@@ -666,7 +666,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error answering, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -721,7 +721,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error starting recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -740,7 +740,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error requesting recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -757,7 +757,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error stopping recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -768,7 +768,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error cancelling recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
