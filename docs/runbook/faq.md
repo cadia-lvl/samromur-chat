@@ -37,6 +37,13 @@ Now you should see the Develop tab so do the following:
 **ios(iphone/ipad):** Settings > Safari > Advanced > Experimental Features >
 MediaRecorder > Enable
 
+### I'm on Edge and I can't access the mic. What do I do?
+
+For some people, Edge does not automatically ask for access to the mic. To
+enable your mic for Edge, go to your Edge Settings. Then go to the following:
+Cookies and site permissions > click on Microphone > and enable **Ask before
+accessing (recommended)**.
+
 ### Is it ok to have background noise?
 
 Yes. However it's recommended that you cannot hear yourself in your friend's audio.
