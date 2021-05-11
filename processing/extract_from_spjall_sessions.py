@@ -9,6 +9,7 @@
 import json
 import urllib.request
 import sys
+import datetime
 
 
 def download_url(session_url, session_id):
@@ -30,11 +31,12 @@ def calculate_total_time(total_seconds, total_valid_seconds,
             partially valid hrs
     '''
     # TODO: better format the time
-    print(str(total_seconds/3600) +
+    print(str(datetime.timedelta(seconds=total_seconds)) +
           ' hrs/20 hrs collected on spjall')
-    print(str(total_valid_seconds/3600) +
+    print(str(datetime.timedelta(seconds=total_valid_seconds)) +
           ' total valid hrs')
-    print(str(total_partial_seconds/3600) + ' partially valid hrs')
+    print(str(datetime.timedelta(seconds=total_partial_seconds)) +
+          ' partially valid hrs')
 
 
 def main():
@@ -64,6 +66,7 @@ def main():
                       '2d219d50-728f-4e10-9bf5-5c7895a82934',
                       'ad46e29b-eea2-4c3d-adfb-35727f65d961',
                       'b107d272-73c7-45d2-af9e-9ded79697fd3',
+                      'ccd0f1a6-1619-42ab-a80a-d2496dfcb346',
                       'de3b604f-f3a5-4400-9f47-1872f8907a2c',
                       'e25bc38d-26bc-42e0-9d81-13ccedfe6072']
     partial_sessions = ['3ac74ae1-0fd0-40ae-b85b-ca4456122004',
