@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { AudioInfo } from '../types/audio';
+import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserDemographics } from '../types/user';
 import { SessionMetadata } from '../types/sessions';
 import { v4 as uuid } from 'uuid';
@@ -39,14 +39,7 @@ export const uploadClip = async (
     clip: AudioInfo,
     demographics: UserDemographics
 ): Promise<void> => {
-    let pathname = window.location.href;
-    if (pathname.includes('localhost')) {
-        pathname = pathname.replace('3000', '3030');
-    }
-
-    const parts = pathname.split('/');
-    parts.splice(parts.length - 1, 0, 'api');
-    const url = parts.join('/');
+    const url = getIDApiUrl();
 
     const { blob } = clip;
     if (!blob) {
@@ -62,6 +55,7 @@ export const uploadClip = async (
         sample_rate: clip.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
         reference: demographics.reference,
+        nbrOfChunks: clip.nbrOfChunks,
     });
 
     const metadata = new Blob([jsonString], {
@@ -72,12 +66,15 @@ export const uploadClip = async (
     formData.append('audio', blob as Blob);
     formData.append('metadata', metadata);
 
+    const chunk_id: string = numberToPaddedString(clip.nbrOfChunks);
+
     return axios({
         method: 'POST',
         url: url,
         headers: {
             'Content-Type': 'multipart/form-data',
             id,
+            chunk_id,
         },
         data: formData,
     })
@@ -91,34 +88,33 @@ export const uploadClip = async (
 };
 
 export const uploadChunk = async (
-    blob: Blob,
-    demographics: UserDemographics
+    chunk: AudioChunk,
+    demographics?: UserDemographics
 ): Promise<void> => {
-    let pathname = window.location.href;
-    if (pathname.includes('localhost')) {
-        pathname = pathname.replace('3000', '3030');
-    }
+    const url = getIDApiUrl('api/chunk');
 
-    const parts = pathname.split('/');
-    parts.splice(parts.length - 1, 0, 'api');
-    const url = parts.join('/');
-
-    const id = uuid(); // Generate new id as fallback
-
-    const jsonString = JSON.stringify({
-        age: demographics.age,
-        gender: demographics.gender,
-        session_id: id.replace(/_client_[a|b]/, ''),
-        reference: demographics.reference,
-    });
-
-    const metadata = new Blob([jsonString], {
-        type: 'text/plain',
-    });
+    const id = chunk.id || uuid(); // Generate new id as fallback
 
     const formData: FormData = new FormData();
-    formData.append('audio', blob as Blob);
-    formData.append('metadata', metadata);
+    formData.append('audio', chunk.blob as Blob);
+
+    if (demographics) {
+        const jsonString = JSON.stringify({
+            age: demographics.age,
+            gender: demographics.gender,
+            session_id: id.replace(/_client_[a|b]/, ''),
+            reference: demographics.reference,
+            chunkNumber: chunk.chunkNumber,
+        });
+
+        const metadata = new Blob([jsonString], {
+            type: 'text/plain',
+        });
+
+        formData.append('metadata', metadata);
+    }
+
+    const chunk_id: string = numberToPaddedString(chunk.chunkNumber);
 
     return axios({
         method: 'POST',
@@ -126,6 +122,7 @@ export const uploadChunk = async (
         headers: {
             'Content-Type': 'multipart/form-data',
             id,
+            chunk_id,
         },
         data: formData,
     })
@@ -136,4 +133,46 @@ export const uploadChunk = async (
             console.error(error.message);
             return Promise.reject(error.code);
         });
+};
+
+export const verifyChunks = async (
+    id: string,
+    nbrOfChunks: number
+): Promise<number[]> => {
+    const apiUrl = getIDApiUrl('api/verifyChunks');
+
+    try {
+        const resp = await axios({
+            method: 'GET',
+            url: apiUrl,
+            headers: {
+                id,
+                nbr_of_chunks: nbrOfChunks,
+            },
+        });
+        return Promise.resolve(resp.data);
+    } catch (error) {
+        console.error(error.message);
+        return Promise.reject(error.code);
+    }
+};
+
+const getIDApiUrl = (APIPath: string = 'api') => {
+    let pathname = window.location.href;
+    if (pathname.includes('localhost')) {
+        pathname = pathname.replace('3000', '3030');
+    }
+
+    const parts = pathname.split('/');
+
+    // Add in api before session id
+    parts.splice(parts.length - 1, 0, APIPath);
+
+    const url = parts.join('/');
+    return url;
+};
+
+const numberStringSize = 4;
+const numberToPaddedString = (toPad: number): string => {
+    return toPad.toString().padStart(numberStringSize, '0');
 };
