@@ -1,4 +1,4 @@
-import { AudioInfo, AudioError } from '../types/audio';
+import { AudioInfo, AudioError, AudioChunk } from '../types/audio';
 
 import WavEncoder from '../worker';
 import { isRecordingSupported } from '../utilities/utils';
@@ -22,8 +22,10 @@ export default class Recorder {
     private gainNode!: GainNode;
     private sampleRate: number;
 
-    public onChunkReceived: ((blob: Blob) => void) | undefined;
+    public onChunkReceived: ((audioChunk: AudioChunk) => void) | undefined;
     private chunkInterval: number = 0;
+
+    private isRecording: boolean = false;
 
     constructor({ sampleRate, chunkInterval }: RecorderConfig) {
         this.sampleRate = sampleRate;
@@ -77,21 +79,20 @@ export default class Recorder {
 
         this.encoder.onmessage = async (event) => {
             const {
-                data: { blob },
+                data: { chunk },
                 data: { command },
             } = event;
 
             console.log(event);
 
             if (command === 'chunk-available') {
-                console.log(blob);
+                console.log(chunk);
                 //writeDataToLocalBase(data);
                 //this.idb.writeBlobToDb(blob);
                 //writeBlobToLocalForage(blob);
                 console.log('received chunk');
                 if (this.onChunkReceived) {
-                    console.log('found a chunkReceived function');
-                    this.onChunkReceived(blob);
+                    this.onChunkReceived(chunk);
                 }
             }
         };
@@ -109,6 +110,7 @@ export default class Recorder {
             this.startChunkRequesting();
         }
 
+        this.isRecording = true;
         return Promise.resolve();
     };
 
@@ -118,9 +120,11 @@ export default class Recorder {
 
     private requestChunk = () => {
         // if recording
-        this.encoder.postMessage({ command: 'get-blob' });
-        console.log('chunk requested, recorder.');
-        this.startChunkRequesting();
+        if (this.isRecording) {
+            this.encoder.postMessage({ command: 'get-chunk' });
+            console.log('chunk requested, recorder.');
+            this.startChunkRequesting();
+        }
     };
 
     // Now the desired sample rate of wave might not match the sample rate of
@@ -177,6 +181,7 @@ export default class Recorder {
     private stop = (): Promise<AudioInfo> => {
         if (!this.isReady()) {
             console.error('Cannot stop audio before microphone is ready.');
+
             return Promise.reject();
         }
 
@@ -185,16 +190,18 @@ export default class Recorder {
             this.sourceNode.disconnect();
             this.encoder.onmessage = async (event) => {
                 const {
-                    data: { blob },
-                } = event;
-                const url = URL.createObjectURL(blob);
+                    data: { chunk },
+                }: { data: { chunk: AudioChunk } } = event;
+                const url = URL.createObjectURL(chunk.blob);
                 try {
                     const duration = await this.getBlobDuration(url);
+                    this.isRecording = false;
                     resolve({
-                        blob,
+                        blob: chunk.blob,
                         duration,
                         url,
                         sampleRate: this.sampleRate,
+                        nbrOfChunks: chunk.chunkNumber,
                     });
                 } catch (error) {
                     reject('Audio has no duration');

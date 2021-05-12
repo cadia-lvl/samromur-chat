@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import { AudioInfo } from '../../types/audio';
+import { AudioChunk, AudioInfo } from '../../types/audio';
 import { UserClient } from '../../types/user';
 
 import Chat, {
@@ -19,6 +19,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import StatusMessages from './status-messages';
 
 import { RemoveWarningModal } from './remove-warning-modal';
+
+import * as api from '../../services/api';
 
 const ChatroomContainer = styled.div`
     position: relative;
@@ -177,6 +179,7 @@ const ErrorMessage = styled.div`
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
+    onChunkReceived: (chunk: AudioChunk) => void;
     userClient: UserClient;
 }
 
@@ -245,6 +248,8 @@ class Chatroom extends React.Component<Props, State> {
             this.setState({ recording });
         };
 
+        this.chat.onChunkReceived = this.handleOnChunkReceived;
+
         this.chat.onUpload = this.handleOnUpload;
 
         this.setState({ isChatroomOwner: this.chat.isOwner() });
@@ -256,6 +261,12 @@ class Chatroom extends React.Component<Props, State> {
     componentWillUnmount = async () => {
         window.removeEventListener('beforeunload', this.alertUser);
         window.removeEventListener('popstate', this.alertUserBack);
+    };
+
+    handleOnChunkReceived = (chunk: AudioChunk) => {
+        // Move api call here?
+        const { onChunkReceived } = this.props;
+        onChunkReceived(chunk);
     };
 
     // Alert user when recording is not sent in
@@ -432,8 +443,33 @@ class Chatroom extends React.Component<Props, State> {
         const { recording } = this.state;
         const { onUpload } = this.props;
         await this.chat.uploadOther();
+
+        // Upload last chunk
+        await this.uploadLastChunkAndVerify();
+
         onUpload(recording);
         this.chat.disconnect();
+    };
+
+    uploadLastChunkAndVerify = async () => {
+        const { recording } = this.state;
+
+        const chunk: AudioChunk = {
+            blob: recording.blob!,
+            chunkNumber: recording.nbrOfChunks,
+            id: recording.id,
+        };
+        await api.uploadChunk(chunk);
+
+        const missingChunks = await api.verifyChunks(
+            recording.id,
+            recording.nbrOfChunks
+        );
+
+        if (missingChunks.length !== 0) {
+            // TODO: get missing chunks and upload them
+            console.log(`These chunks are missing: ${missingChunks}`);
+        }
     };
 
     copyToClipBoard = async () => {
@@ -455,6 +491,9 @@ class Chatroom extends React.Component<Props, State> {
         const { recording } = this.state;
         const { onUpload } = this.props;
         if (recording) {
+            // Upload last chunk
+            await this.uploadLastChunkAndVerify();
+
             onUpload(recording);
             this.chat.disconnect();
         }

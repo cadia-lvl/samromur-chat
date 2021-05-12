@@ -8,7 +8,7 @@ import Layout from '../ui/layout';
 import Chatroom from '../chat/room';
 import DemographicForm from './demographics';
 import { UserClient, UserDemographics } from '../../types/user';
-import { AudioInfo } from '../../types/audio';
+import { AudioChunk, AudioInfo } from '../../types/audio';
 import * as api from '../../services/api';
 
 const SetupContainer = styled.div`
@@ -72,6 +72,13 @@ class Setup extends React.Component<Props, State> {
         history.push('/takk');
     };
 
+    onChunkReceived = async (chunk: AudioChunk) => {
+        const { demographics } = this.state;
+        chunk.chunkNumber === 1
+            ? await api.uploadChunk(chunk, demographics) // include demo in first chunk
+            : await api.uploadChunk(chunk);
+    };
+
     render() {
         const { demographics, userClient } = this.state;
         const isReady = !(!demographics || !userClient);
@@ -84,6 +91,7 @@ class Setup extends React.Component<Props, State> {
                         <Chatroom
                             onUpload={this.onUpload}
                             userClient={userClient}
+                            onChunkReceived={this.onChunkReceived}
                         />
                     )}
                 </SetupContainer>

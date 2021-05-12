@@ -1,3 +1,5 @@
+import { AudioChunk } from '../types/audio';
+
 class WavEncoder {
     private sampleRate: number;
     private numSamples: number;
@@ -32,7 +34,7 @@ class WavEncoder {
      * Returns a blob with the current recorded data with a wav header
      * @returns blob with data
      */
-    getChunkBlob = async (): Promise<Blob> => {
+    getChunk = async (): Promise<AudioChunk> => {
         const dataViews = [...this.dataViews];
         const view = this.generateWaveHeader();
         dataViews.unshift(view);
@@ -41,8 +43,15 @@ class WavEncoder {
         this.chunks.push(dataViews);
         this.reset();
 
+        const chunkNumber = this.chunks.length;
+
+        const chunk: AudioChunk = {
+            blob: new Blob(dataViews, { type: 'audio/wav' }),
+            chunkNumber,
+        };
+
         // return the current chunk
-        return Promise.resolve(new Blob(dataViews, { type: 'audio/wav' }));
+        return Promise.resolve(chunk);
     };
 
     writeString = (view: DataView, offset: number, string: string) => {
@@ -57,10 +66,8 @@ class WavEncoder {
     };
 
     // Prepend wav header
-    finish = (): Promise<Blob> => {
-        const view = this.generateWaveHeader();
-        this.dataViews.unshift(view);
-        return Promise.resolve(new Blob(this.dataViews, { type: 'audio/wav' }));
+    finish = (): Promise<AudioChunk> => {
+        return this.getChunk();
     };
 
     // Create wav header
@@ -90,20 +97,20 @@ const encoder = new WavEncoder(16000);
 export const ctx: Worker = self as any;
 
 const finish = async () => {
-    const blob = await encoder.finish();
+    const chunk = await encoder.finish();
     encoder.reset();
     ctx.postMessage({
         command: 'finish',
-        blob,
+        chunk: chunk,
     });
 };
 
 /**
  * Requests the current data in the recorder
  */
-const getAndPostBlob = async () => {
-    const blob = await encoder.getChunkBlob();
-    ctx.postMessage({ command: 'chunk-available', blob });
+const getAndPostChunk = async () => {
+    const chunk = await encoder.getChunk();
+    ctx.postMessage({ command: 'chunk-available', chunk: chunk });
 };
 
 ctx.onmessage = (event) => {
@@ -112,8 +119,8 @@ ctx.onmessage = (event) => {
         case 'encode':
             encoder.encode(data.buffer);
             break;
-        case 'get-blob':
-            getAndPostBlob();
+        case 'get-chunk':
+            getAndPostChunk();
             break;
         case 'finish':
             finish();

@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 import Recorder from './recorder';
-import { AudioInfo } from '../types/audio';
+import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
 //import { saveSessionId, clearSessionId } from '../utilities/local-storage';
 
@@ -44,7 +44,7 @@ export default class Chat {
     onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
-    onChunkReceived!: (blob: Blob) => void;
+    onChunkReceived!: (chunk: AudioChunk) => void;
     onChatStateChanged!: (state: ChatState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
@@ -103,10 +103,14 @@ export default class Chat {
         this.init();
     }
 
-    private handleChunkReceived = (blob: Blob): void => {
-        console.log('chat received blob', blob);
+    private handleChunkReceived = (chunk: AudioChunk): void => {
+        console.log('chat received blob', chunk);
+
         if (this.onChunkReceived !== undefined) {
-            this.onChunkReceived(blob);
+            // Inject session id to chunk
+            const audioChunk = { ...chunk };
+            audioChunk.id = this.sessionId;
+            this.onChunkReceived(audioChunk);
         }
     };
 
@@ -198,6 +202,15 @@ export default class Chat {
                         candidate: event.candidate,
                     });
                 }
+            };
+
+            // Setup logging for ice candidate errors
+            connection.onicecandidateerror = (
+                event: RTCPeerConnectionIceErrorEvent
+            ) => {
+                console.log(
+                    `Ice candidate errorCode: ${event.errorCode}, errorText: ${event.errorText}`
+                );
             };
 
             // Setup stream listening
