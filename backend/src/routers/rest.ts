@@ -5,6 +5,7 @@ import Bucket from '../database/bucket';
 import {
     getLocalSessions,
     downloadLocalSession,
+    checkForMissingChunks,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -18,8 +19,9 @@ const createRestRouter = (isProduction: boolean) => {
         },
         filename: (req, file, cb) => {
             const id = decodeURIComponent(req.headers.id as string);
+            const chunkId = decodeURIComponent(req.headers.chunk_id as string);
             if (file.fieldname == 'audio') {
-                cb(null, id + '.wav');
+                cb(null, `${id}_${chunkId}.wav`);
             } else if (file.fieldname == 'metadata') {
                 cb(null, id + '.json');
             }
@@ -38,6 +40,30 @@ const createRestRouter = (isProduction: boolean) => {
         }
 
         return res.status(200).send('Success');
+    });
+
+    restRouter.post('/chunk/:id', upload, (req, res) => {
+        return res.status(200).send('Success');
+    });
+
+    restRouter.get('/verifyChunks/:id', async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        const nbrOfChunks = parseInt(req.headers.nbr_of_chunks as string);
+        console.log(`id: ${id} requested verification for ${nbrOfChunks}`);
+
+        try {
+            const missingChunks = await checkForMissingChunks(id, nbrOfChunks);
+            if (missingChunks.length !== 0) {
+                // Chunks missing, return an array with the missing chunks numbers
+                return res.status(200).json(missingChunks);
+            }
+
+            // No chunks missing, combine and upload?
+            return res.status(200).send(missingChunks);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send(error.code);
+        }
     });
 
     restRouter.get('/sessions', async (req, res) => {

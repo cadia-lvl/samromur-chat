@@ -9,7 +9,7 @@ export const saveDemographics = async (
     gender: string,
     id: string
 ) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         const obj = JSON.stringify({
             age,
             gender,
@@ -133,4 +133,44 @@ export const downloadLocalSession = async (
     // 'close', 'end' or 'finish' may be fired right after calling this method
     // so register to them beforehand
     archive.finalize();
+};
+
+export const checkForMissingChunks = (
+    id: string,
+    nbrOfChunks: number
+): number[] => {
+    const folderPath = '../uploads/';
+
+    // get all existing chunks for this client and id
+    const Contents = fs
+        .readdirSync(folderPath)
+        .filter((value) => value.includes(id))
+        .filter((value) => value.endsWith('.wav'));
+
+    if (Contents.length === nbrOfChunks) {
+        return [];
+    }
+
+    console.log(nbrOfChunks);
+    // Generate empty array of nbrOfChunks length
+    const chunks: number[] = new Array<number>(nbrOfChunks).fill(0);
+
+    // Mark all found values with one
+    Contents.forEach((content) => {
+        const numberString = content.split(`${id}_`).pop()?.split('.wav')[0]; // remove id and file ending from string
+        const chunk: number = parseInt(numberString as string);
+        console.log(`chunk found: ${chunk}`);
+        chunks[chunk - 1] = 1;
+    });
+
+    const missingChunks: number[] = [];
+    console.log(`chunks: ${chunks}`);
+    // Loop over the array to find missing chunks
+    for (let i = 0; i < chunks.length; i++) {
+        if (chunks[i] === 0) {
+            missingChunks.push(i + 1);
+        }
+    }
+
+    return missingChunks;
 };
