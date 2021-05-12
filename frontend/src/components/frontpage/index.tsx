@@ -12,7 +12,7 @@ import NewTabLink from '../setup/new-tab-link';
 const FrontPageContainer = styled.div`
     display: flex;
     flex-direction: column;
-    width: 30rem;
+    width: 40rem;
     max-width: 100%;
     gap: 1.5rem;
 `;
@@ -24,10 +24,12 @@ const SubmitButton = styled.button`
     align-items: center;
     justify-content: center;
     background-color: #60c197;
-    border: none;
+    border: 0;
     color: white;
     cursor: pointer;
     font-size: 2rem;
+    flex: 1 1 0px;
+    max-height: 25%;
 
     :active {
         transform: translateY(2px);
@@ -39,13 +41,39 @@ const SubmitButton = styled.button`
 `;
 
 const JoinContainer = styled.form`
-    width: 100%;
+    width: 66%;
     display: flex;
     gap: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 `;
 
 const UrlInput = styled(TextInput)`
     gap: 0.5rem;
+    flex: 1 1 0px;
+    max-height: 25%;
+`;
+
+const RobotAndJoinContainer = styled.div`
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-items: center;
+    width: 50rem;
+    max-width: 100%;
+`;
+
+const MarsContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
+
+const Mars = styled.div`
+    content: url(/images/mars.svg);
+    display: block;
+    width: 8rem;
 `;
 
 const WelcomeTextContainer = styled.div``;
@@ -83,15 +111,20 @@ class FrontPage extends React.Component<Props, State> {
             return (
                 <Layout>
                     <FrontPageContainer>
-                        <JoinContainer onClick={this.handleJoin}>
-                            <UrlInput
-                                label={'Opna spjall'}
-                                value={this.state.userUrl}
-                                placeholder={'Spjallkóði'}
-                                onChange={this.onUrlChange}
-                            />
-                            <SubmitButton>Opna</SubmitButton>
-                        </JoinContainer>
+                        <RobotAndJoinContainer>
+                            <MarsContainer>
+                                <Mars />
+                            </MarsContainer>
+                            <JoinContainer onClick={this.handleJoin}>
+                                <UrlInput
+                                    label={'Opna spjall'}
+                                    value={this.state.userUrl}
+                                    placeholder={'Spjallkóði'}
+                                    onChange={this.onUrlChange}
+                                />
+                                <SubmitButton>Opna</SubmitButton>
+                            </JoinContainer>
+                        </RobotAndJoinContainer>
                         <WelcomeTextContainer>
                             <h3>Kæri þátttakandi,</h3>
                             <p>
@@ -100,11 +133,16 @@ class FrontPage extends React.Component<Props, State> {
                                 mínútur. Samtölin munu í kjölfarið vera rituð
                                 niður. Afurð þessa verkefnis er opið og
                                 aðgengilegt gagnasafn af samræðum á íslensku.
-                                Slík gögn koma til nota við þróun máltæknilausna
-                                og eru mikilvægur þáttur í að vernda íslenskuna
-                                á stafrænum tímum. Þátttakendur verða ekki
-                                nafngreindir en kyn og aldur þátttakenda mun
-                                fylgja með í gagnasafninu.
+                                Þetta gagnasafn er partur Samróms gagnasafninum,
+                                hérna má{' '}
+                                <NewTabLink href={'https://samromur.is/um'}>
+                                    lesa meira
+                                </NewTabLink>{' '}
+                                um það. Slík gögn koma til nota við þróun
+                                máltæknilausna og eru mikilvægur þáttur í að
+                                vernda íslenskuna á stafrænum tímum.
+                                Þátttakendur verða ekki nafngreindir en kyn og
+                                aldur þátttakenda mun fylgja með í gagnasafninu.
                             </p>
                             <h4>Um hvað má spjalla?</h4>
                             <p>
