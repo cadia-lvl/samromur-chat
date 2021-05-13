@@ -102,15 +102,17 @@ class AdminPage extends React.Component<Props, State> {
 
             for (const ref of leaderBoard) {
                 if (
+                    client_a &&
                     ref.person === client_a.reference &&
                     client_a.duration_seconds !== null &&
                     (this.state.showPartial
                         ? true
-                        : client_b.duration_seconds !== null)
+                        : client_b && client_b.duration_seconds !== null)
                 ) {
                     ref.collected += client_a.duration_seconds;
                     break;
                 } else if (
+                    client_b &&
                     ref.person === client_b.reference &&
                     this.state.showPartial
                 ) {

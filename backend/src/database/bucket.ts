@@ -27,8 +27,8 @@ export interface ClientMetadata {
 
 export interface SessionMetadata {
     session_id: string;
-    client_a: ClientMetadata;
-    client_b: ClientMetadata;
+    client_a?: ClientMetadata;
+    client_b?: ClientMetadata;
 }
 
 export default class Bucket {
@@ -123,14 +123,25 @@ export default class Bucket {
                 val.id == 'b' &&
                 (showPartial ? true : val.data.duration_seconds !== null)
         );
-        if (!client_a || !client_b) {
-            return Promise.reject();
-        } else {
+
+        if (client_a && client_b) {
             return Promise.resolve({
                 session_id: client_a.data.session_id,
                 client_a: client_a.data,
                 client_b: client_b.data,
             });
+        } else if (client_b && showPartial) {
+            return Promise.resolve({
+                session_id: client_b.data.session_id,
+                client_b: client_b.data,
+            });
+        } else if (client_a && showPartial) {
+            return Promise.resolve({
+                session_id: client_a.data.session_id,
+                client_a: client_a.data,
+            });
+        } else {
+            return Promise.reject();
         }
     };
 

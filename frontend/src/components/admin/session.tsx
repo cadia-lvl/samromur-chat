@@ -91,13 +91,12 @@ export const Session: React.FunctionComponent<Props> = ({
         api.downloadSession(id).catch((error) => console.error(error));
     };
 
-    const a_time = getHumanReadableTime(
-        splitSeconds(client_a.duration_seconds)
-    );
-    const b_time = getHumanReadableTime(
-        splitSeconds(client_b.duration_seconds)
-    );
-
+    const a_time = client_a
+        ? getHumanReadableTime(splitSeconds(client_a.duration_seconds))
+        : '0 mín.';
+    const b_time = client_b
+        ? getHumanReadableTime(splitSeconds(client_b.duration_seconds))
+        : '0 mín.';
     /**
      * Fetches the reference person of the session
      * @returns the reference of client A, or null if not found in the list of references
@@ -113,28 +112,32 @@ export const Session: React.FunctionComponent<Props> = ({
         <SessionContainer>
             <TitleContainer>{session.session_id}</TitleContainer>
             <Clients>
-                <ClientContainer>
-                    <Subtitle>{participantA}</Subtitle>
-                    <span>{getGender(client_a.gender)}</span>
-                    <span>
-                        {getAge(client_a.age)} {yearsOld}
-                    </span>
-                    <span>
-                        {client_a.sample_rate} {sampleRateMeasurement}
-                    </span>
-                    <span>{a_time}</span>
-                </ClientContainer>
-                <ClientContainer>
-                    <Subtitle>{participantB}</Subtitle>
-                    <span>{getGender(client_b.gender)}</span>
-                    <span>
-                        {getAge(client_b.age)} {yearsOld}
-                    </span>
-                    <span>
-                        {client_b.sample_rate} {sampleRateMeasurement}
-                    </span>
-                    <span>{b_time}</span>
-                </ClientContainer>
+                {client_a && (
+                    <ClientContainer>
+                        <Subtitle>{participantA}</Subtitle>
+                        <span>{getGender(client_a.gender)}</span>
+                        <span>
+                            {getAge(client_a.age)} {yearsOld}
+                        </span>
+                        <span>
+                            {client_a.sample_rate} {sampleRateMeasurement}
+                        </span>
+                        <span>{a_time}</span>
+                    </ClientContainer>
+                )}
+                {client_b && (
+                    <ClientContainer>
+                        <Subtitle>{participantB}</Subtitle>
+                        <span>{getGender(client_b.gender)}</span>
+                        <span>
+                            {getAge(client_b.age)} {yearsOld}
+                        </span>
+                        <span>
+                            {client_b.sample_rate} {sampleRateMeasurement}
+                        </span>
+                        <span>{b_time}</span>
+                    </ClientContainer>
+                )}
                 {getReference() && (
                     <ClientContainer>
                         <ReferenceText>
