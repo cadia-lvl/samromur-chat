@@ -62,8 +62,12 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
         return { id, data };
     });
 
-    const clientaMetas = clientMetas.filter((user) => user.id == 'a');
-    const clientbMetas = clientMetas.filter((user) => user.id == 'b');
+    const clientaMetas = clientMetas.filter(
+        (user) => user.id == 'a' && user.data.duration_seconds !== null
+    );
+    const clientbMetas = clientMetas.filter(
+        (user) => user.id == 'b' && user.data.duration_seconds !== null
+    );
     // Populate the clientSessions
     clientaMetas.forEach(function (client_a) {
         const client_b = clientbMetas.find(
