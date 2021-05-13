@@ -40,7 +40,9 @@ export interface SessionMetadata {
     client_b: ClientMetadata;
 }
 
-export const getLocalSessions = (): Array<SessionMetadata> => {
+export const getLocalSessions = (
+    showPartial: boolean
+): Array<SessionMetadata> => {
     const folderPath = '../uploads/';
     const clientSessions: Array<SessionMetadata> = [];
 
@@ -63,10 +65,14 @@ export const getLocalSessions = (): Array<SessionMetadata> => {
     });
 
     const clientaMetas = clientMetas.filter(
-        (user) => user.id == 'a' && user.data.duration_seconds !== null
+        (user) =>
+            user.id == 'a' &&
+            (showPartial ? true : user.data.duration_seconds !== null)
     );
     const clientbMetas = clientMetas.filter(
-        (user) => user.id == 'b' && user.data.duration_seconds !== null
+        (user) =>
+            user.id == 'b' &&
+            (showPartial ? true : user.data.duration_seconds !== null)
     );
     // Populate the clientSessions
     clientaMetas.forEach(function (client_a) {

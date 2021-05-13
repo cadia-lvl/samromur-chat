@@ -59,6 +59,7 @@ type Props = RouteComponentProps;
 interface State {
     sessions: SessionMetadata[];
     leaderBoard: Reference[];
+    showPartial: boolean;
 }
 
 class AdminPage extends React.Component<Props, State> {
@@ -68,6 +69,7 @@ class AdminPage extends React.Component<Props, State> {
         this.state = {
             sessions: [],
             leaderBoard: [],
+            showPartial: true,
         };
     }
 
@@ -80,7 +82,14 @@ class AdminPage extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
-        const sessions = await api.getSessions();
+        // Show partial recordings if partial=true is in the url
+        const URLPartial = new URLSearchParams(window.location.search).get(
+            'partial'
+        );
+        const showPartial =
+            URLPartial !== null && URLPartial === 'true' ? true : false;
+        this.setState({ showPartial });
+        const sessions = await api.getSessions(showPartial);
         const leaderBoard = this.calculateLeaderBoard(sessions);
         this.setState({ sessions });
         this.setState({ leaderBoard });
@@ -95,9 +104,18 @@ class AdminPage extends React.Component<Props, State> {
                 if (
                     ref.person === client_a.reference &&
                     client_a.duration_seconds !== null &&
-                    client_b.duration_seconds !== null
+                    (this.state.showPartial
+                        ? true
+                        : client_b.duration_seconds !== null)
                 ) {
                     ref.collected += client_a.duration_seconds;
+                    break;
+                } else if (
+                    ref.person === client_b.reference &&
+                    this.state.showPartial
+                ) {
+                    ref.collected += client_b.duration_seconds;
+                    break;
                 }
             }
         }

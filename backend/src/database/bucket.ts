@@ -65,7 +65,7 @@ export default class Bucket {
      * Get all folders in s3
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getSessions = async (): Promise<any> => {
+    getSessions = async (showPartial: boolean): Promise<any> => {
         const { CommonPrefixes } = await this.s3
             .listObjectsV2({
                 Bucket: this.bucketName,
@@ -82,7 +82,9 @@ export default class Bucket {
             );
             const filtered = filePaths.filter((value) => value.length == 4);
             return Promise.all(
-                filtered.map((paths: string[]) => this.getSession(paths))
+                filtered.map((paths: string[]) =>
+                    this.getSession(paths, showPartial)
+                )
             );
         } else {
             return Promise.reject();
@@ -103,16 +105,23 @@ export default class Bucket {
         return Promise.resolve(filePaths);
     };
 
-    getSession = async (filePaths: string[]): Promise<SessionMetadata> => {
+    getSession = async (
+        filePaths: string[],
+        showPartial: boolean
+    ): Promise<SessionMetadata> => {
         const jsonPaths = filePaths.filter((value) => value.endsWith('.json'));
         const metadata = await Promise.all(
             jsonPaths.map((path: string) => this.downloadJson(path))
         );
         const client_a = metadata.find(
-            (val) => val.id == 'a' && val.data.duration_seconds !== null
+            (val) =>
+                val.id == 'a' &&
+                (showPartial ? true : val.data.duration_seconds !== null)
         );
         const client_b = metadata.find(
-            (val) => val.id == 'b' && val.data.duration_seconds !== null
+            (val) =>
+                val.id == 'b' &&
+                (showPartial ? true : val.data.duration_seconds !== null)
         );
         if (!client_a || !client_b) {
             return Promise.reject();
