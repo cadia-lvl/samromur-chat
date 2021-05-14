@@ -87,7 +87,7 @@ Second send in a report with the following details:
 * Did you both reach the thank you page?
 * Check the browser web dev tools Console tab for any red error messages.
     Screenshot them or copy and paste them.
-* Describe the problem in detail:
+* Describe the problem in detail.
 
 ## Admin Page Errors
 
