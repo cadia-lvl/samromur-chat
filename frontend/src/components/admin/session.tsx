@@ -105,7 +105,8 @@ export const Session: React.FunctionComponent<Props> = ({
      */
     const getReference = (): string => {
         const reference = references.find(
-            (val) => val.id === client_a?.reference
+            (val) =>
+                val.id === client_a?.reference || val.id === client_b?.reference
         );
         return reference ? reference.name : '';
     };
