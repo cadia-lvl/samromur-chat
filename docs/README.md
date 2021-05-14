@@ -75,5 +75,9 @@ cd docs
 bundle exec jekyll serve --skip-initial-build -o
 ```
 
+## Credit
+Robot logo is made by [common-voice](https://github.com/common-voice/common-voice) which is licensed under the [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
+Headset icons are made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](http://www.flaticon.com/).
+
 ## License
 [MIT License](/LICENSE)
