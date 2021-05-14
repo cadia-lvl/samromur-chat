@@ -72,8 +72,8 @@ export const getLocalSessions = (
             (session) =>
                 session.client_a !== undefined &&
                 session.client_b !== undefined &&
-                session.client_a.duration_seconds !== null &&
-                session.client_b.duration_seconds !== null
+                session.client_a.duration_seconds &&
+                session.client_b.duration_seconds
         );
     } else {
         return Object.values(clientSessions);

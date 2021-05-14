@@ -116,12 +116,12 @@ export default class Bucket {
         const client_a = metadata.find(
             (val) =>
                 val.id == 'a' &&
-                (showPartial ? true : val.data.duration_seconds !== null)
+                (showPartial ? true : val.data.duration_seconds)
         );
         const client_b = metadata.find(
             (val) =>
                 val.id == 'b' &&
-                (showPartial ? true : val.data.duration_seconds !== null)
+                (showPartial ? true : val.data.duration_seconds)
         );
 
         if (client_a && client_b) {
