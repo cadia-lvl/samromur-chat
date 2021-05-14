@@ -64,11 +64,13 @@ const Button = styled.button`
 
 interface Props {
     session: SessionMetadata;
+    showPartial: boolean;
 }
 
 export const Session: React.FunctionComponent<Props> = ({
     session,
     session: { client_a, client_b },
+    showPartial,
 }) => {
     const participantA = 'Viðmælandi a';
     const participantB = 'Viðmælandi b';
@@ -110,43 +112,50 @@ export const Session: React.FunctionComponent<Props> = ({
 
     return (
         <SessionContainer>
-            <TitleContainer>{session.session_id}</TitleContainer>
-            <Clients>
-                {client_a && (
-                    <ClientContainer>
-                        <Subtitle>{participantA}</Subtitle>
-                        <span>{getGender(client_a.gender)}</span>
-                        <span>
-                            {getAge(client_a.age)} {yearsOld}
-                        </span>
-                        <span>
-                            {client_a.sample_rate} {sampleRateMeasurement}
-                        </span>
-                        <span>{a_time}</span>
-                    </ClientContainer>
-                )}
-                {client_b && (
-                    <ClientContainer>
-                        <Subtitle>{participantB}</Subtitle>
-                        <span>{getGender(client_b.gender)}</span>
-                        <span>
-                            {getAge(client_b.age)} {yearsOld}
-                        </span>
-                        <span>
-                            {client_b.sample_rate} {sampleRateMeasurement}
-                        </span>
-                        <span>{b_time}</span>
-                    </ClientContainer>
-                )}
-                {getReference() && (
-                    <ClientContainer>
-                        <ReferenceText>
-                            {reference} {getReference()}
-                        </ReferenceText>
-                    </ClientContainer>
-                )}
-            </Clients>
-            <Button onClick={handleClick}>Sækja</Button>
+            {(showPartial ||
+                (client_a?.duration_seconds && client_b?.duration_seconds)) && (
+                <div>
+                    <TitleContainer>{session.session_id}</TitleContainer>
+                    <Clients>
+                        {client_a && (
+                            <ClientContainer>
+                                <Subtitle>{participantA}</Subtitle>
+                                <span>{getGender(client_a.gender)}</span>
+                                <span>
+                                    {getAge(client_a.age)} {yearsOld}
+                                </span>
+                                <span>
+                                    {client_a.sample_rate}{' '}
+                                    {sampleRateMeasurement}
+                                </span>
+                                <span>{a_time}</span>
+                            </ClientContainer>
+                        )}
+                        {client_b && (
+                            <ClientContainer>
+                                <Subtitle>{participantB}</Subtitle>
+                                <span>{getGender(client_b.gender)}</span>
+                                <span>
+                                    {getAge(client_b.age)} {yearsOld}
+                                </span>
+                                <span>
+                                    {client_b.sample_rate}{' '}
+                                    {sampleRateMeasurement}
+                                </span>
+                                <span>{b_time}</span>
+                            </ClientContainer>
+                        )}
+                        {getReference() && (
+                            <ClientContainer>
+                                <ReferenceText>
+                                    {reference} {getReference()}
+                                </ReferenceText>
+                            </ClientContainer>
+                        )}
+                    </Clients>
+                    <Button onClick={handleClick}>Sækja</Button>
+                </div>
+            )}
         </SessionContainer>
     );
 };

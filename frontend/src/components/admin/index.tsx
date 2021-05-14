@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Switch from 'react-switch';
 
 import Layout from '../ui/layout';
 import Session from './session';
@@ -71,6 +72,9 @@ class AdminPage extends React.Component<Props, State> {
             leaderBoard: [],
             showPartial: true,
         };
+        this.handlePartialToggleChange = this.handlePartialToggleChange.bind(
+            this
+        );
     }
 
     getInitialLeaderBoard = (): Reference[] => {
@@ -88,14 +92,41 @@ class AdminPage extends React.Component<Props, State> {
         );
         const showPartial =
             URLPartial !== null && URLPartial === 'true' ? true : false;
-        this.setState({ showPartial });
-        const sessions = await api.getSessions(showPartial);
-        const leaderBoard = this.calculateLeaderBoard(sessions);
+        // Always fetch the partial recordings because it's one less network
+        // call and easier to show them once we have them
+        const sessions = await api.getSessions(this.state.showPartial);
+        this.handlePartialToggleChange(showPartial);
         this.setState({ sessions });
+        this.handleLeaderBoardChange(sessions, showPartial);
+    };
+
+    /**
+     * Indicate whether partial recordings are shown
+     */
+    handlePartialToggleChange = (showPartial: boolean) => {
+        const updatedURL =
+            '//' +
+            window.location.host +
+            window.location.pathname +
+            '?partial=' +
+            showPartial;
+        this.setState({ showPartial });
+        window.history.pushState(null, 'Spjall - mamma', updatedURL);
+        this.handleLeaderBoardChange(this.state.sessions, showPartial);
+    };
+
+    /**
+     * Update leaderBoard
+     */
+    handleLeaderBoardChange = (sessions, showPartial) => {
+        const leaderBoard = this.calculateLeaderBoard(sessions, showPartial);
         this.setState({ leaderBoard });
     };
 
-    calculateLeaderBoard = (sessions: SessionMetadata[]): Reference[] => {
+    calculateLeaderBoard = (
+        sessions: SessionMetadata[],
+        showPartial
+    ): Reference[] => {
         const leaderBoard = this.getInitialLeaderBoard();
         for (const session of sessions) {
             const { client_a, client_b } = session;
@@ -105,16 +136,14 @@ class AdminPage extends React.Component<Props, State> {
                     client_a &&
                     ref.person === client_a.reference &&
                     client_a.duration_seconds &&
-                    (this.state.showPartial
-                        ? true
-                        : client_b && client_b.duration_seconds)
+                    (showPartial ? true : client_b && client_b.duration_seconds)
                 ) {
                     ref.collected += client_a.duration_seconds;
                     break;
                 } else if (
                     client_b &&
                     ref.person === client_b.reference &&
-                    this.state.showPartial
+                    showPartial
                 ) {
                     ref.collected += client_b.duration_seconds;
                     break;
@@ -139,10 +168,17 @@ class AdminPage extends React.Component<Props, State> {
     };
 
     render() {
-        const { sessions, leaderBoard } = this.state;
+        const { sessions, leaderBoard, showPartial } = this.state;
         return (
             <Layout>
                 <AdminPageContainer>
+                    <label>
+                        <span>Ófullkomin samtöl </span>
+                        <Switch
+                            onChange={this.handlePartialToggleChange}
+                            checked={showPartial}
+                        />
+                    </label>
                     <LeaderBoardContainer>
                         {leaderBoard.map((ref: Reference, i: number) => {
                             return (
@@ -162,7 +198,13 @@ class AdminPage extends React.Component<Props, State> {
                     </LeaderBoardContainer>
                     <SessionsContainer>
                         {sessions.map((session: SessionMetadata, i: number) => {
-                            return <Session key={i} session={session} />;
+                            return (
+                                <Session
+                                    key={i}
+                                    session={session}
+                                    showPartial={showPartial}
+                                />
+                            );
                         })}
                     </SessionsContainer>
                 </AdminPageContainer>
