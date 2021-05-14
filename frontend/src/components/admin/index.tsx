@@ -8,6 +8,7 @@ import Session from './session';
 import * as api from '../../services/api';
 import { SessionMetadata } from '../../types/sessions';
 import { references } from '../../constants/demographics';
+import { Stats } from './stats';
 
 const AdminPageContainer = styled.div`
     display: flex;
@@ -121,6 +122,7 @@ class AdminPage extends React.Component<Props, State> {
         return (
             <Layout>
                 <AdminPageContainer>
+                    <Stats sessions={sessions} />
                     <LeaderBoardContainer>
                         {leaderBoard.map((ref: Reference, i: number) => {
                             return (
