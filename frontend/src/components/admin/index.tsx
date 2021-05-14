@@ -89,13 +89,15 @@ class AdminPage extends React.Component<Props, State> {
     calculateLeaderBoard = (sessions: SessionMetadata[]): Reference[] => {
         const leaderBoard = this.getInitialLeaderBoard();
         for (const session of sessions) {
-            const {
-                client_a: { reference, duration_seconds },
-            } = session;
+            const { client_a, client_b } = session;
 
             for (const ref of leaderBoard) {
-                if (ref.person === reference) {
-                    ref.collected += duration_seconds;
+                if (
+                    ref.person === client_a.reference &&
+                    client_a.duration_seconds &&
+                    client_b.duration_seconds
+                ) {
+                    ref.collected += client_a.duration_seconds;
                 }
             }
         }
