@@ -109,10 +109,10 @@ export default class Bucket {
             jsonPaths.map((path: string) => this.downloadJson(path))
         );
         const client_a = metadata.find(
-            (val) => val.id == 'a' && val.data.duration_seconds !== null
+            (val) => val.id == 'a' && val.data.duration_seconds
         );
         const client_b = metadata.find(
-            (val) => val.id == 'b' && val.data.duration_seconds !== null
+            (val) => val.id == 'b' && val.data.duration_seconds
         );
         if (!client_a || !client_b) {
             return Promise.reject();
