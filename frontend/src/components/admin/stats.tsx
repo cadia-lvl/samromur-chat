@@ -41,7 +41,8 @@ export const Stats: React.FunctionComponent<Props> = (props) => {
                 numberOfHalfRecordings++;
             }
         } else {
-            // Don't show partial. Demand both that client a and be should exist and that their duration is greater than zero.
+            // Hide partial.
+            // Demand both that client a and b should exist and that their duration is greater than zero.
             if (
                 client_a &&
                 client_b &&
