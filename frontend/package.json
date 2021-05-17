@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
@@ -53,6 +53,7 @@
     "react-h5-audio-player": "^3.5.0",
     "react-modal": "^3.12.1",
     "react-router-dom": "^5.2.0",
+    "react-switch": "^6.0.0",
     "react-toastify": "^6.2.0",
     "resolve": "1.15.0",
     "resolve-url-loader": "3.1.1",

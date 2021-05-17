@@ -14,13 +14,16 @@ export const downloadSession = async (id: string): Promise<any> => {
     window.location.replace(endpointurl);
 };
 
-export const getSessions = async (): Promise<SessionMetadata[]> => {
+export const getSessions = async (
+    partial?: boolean
+): Promise<SessionMetadata[]> => {
     let endpoint = window.location.protocol + '//' + window.location.host;
     if (endpoint.includes('localhost')) {
         endpoint = endpoint.replace('3000', '3030');
     }
 
-    const url = endpoint + '/api/sessions';
+    const url =
+        endpoint + '/api/sessions' + (partial ? '?partial=' + partial : '');
 
     return axios({
         method: 'GET',
