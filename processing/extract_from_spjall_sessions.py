@@ -7,7 +7,8 @@
 '''
 
 import json
-import urllib.request
+import urllib
+import requests
 import sys
 import datetime
 
@@ -48,8 +49,9 @@ def main():
 
     '''
     sessions_url = 'https://spjall.samromur.is/api/sessions'
-    data = urllib.request.urlopen(sessions_url).read().decode()
-    sessions = json.loads(data)
+    PARAMS = {'partial': 'true'}
+    data = requests.get(url=sessions_url, params=PARAMS)
+    sessions = data.json()
     total_seconds = 0
     total_partial_seconds = 0
     total_valid_seconds = 0
