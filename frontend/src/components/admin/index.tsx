@@ -18,6 +18,12 @@ const AdminPageContainer = styled.div`
     gap: 1.5rem;
 `;
 
+const SwitchContainer = styled.label`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+`;
+
 const LeaderBoardContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -172,13 +178,13 @@ class AdminPage extends React.Component<Props, State> {
         return (
             <Layout>
                 <AdminPageContainer>
-                    <label>
+                    <SwitchContainer>
                         <span>Ófullkomin samtöl </span>
                         <Switch
                             onChange={this.handlePartialToggleChange}
                             checked={showPartial}
                         />
-                    </label>
+                    </SwitchContainer>
                     <LeaderBoardContainer>
                         {leaderBoard.map((ref: Reference, i: number) => {
                             return (
