@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Runbook
+title: Spjall in Debug Mode
 permalink: /runbook/debug
 ---
 
