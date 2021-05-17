@@ -49,7 +49,7 @@ def main():
 
     '''
     sessions_url = 'https://spjall.samromur.is/api/sessions'
-    PARAMS = {'partial': 'true'}
+    PARAMS = {'partial': 'false'}
     data = requests.get(url=sessions_url, params=PARAMS)
     sessions = data.json()
     total_seconds = 0
@@ -70,6 +70,7 @@ def main():
                       'b107d272-73c7-45d2-af9e-9ded79697fd3',
                       'ccd0f1a6-1619-42ab-a80a-d2496dfcb346',
                       'de3b604f-f3a5-4400-9f47-1872f8907a2c',
+                      'e1e7765a-ebcd-41d6-8799-71a48dba9323',
                       'e25bc38d-26bc-42e0-9d81-13ccedfe6072']
     partial_sessions = ['3ac74ae1-0fd0-40ae-b85b-ca4456122004',
                         '334c8c37-90d7-4269-a164-a7bf762a09f5',
@@ -83,6 +84,7 @@ def main():
                         '198f2863-88e6-40e9-89bd-381e15a93739',
                         '7f09cd67-785d-463f-928f-34c7ef5fc07d',
                         'b6ad9f96-1e34-4a6f-b2db-06c86d2b202d',
+                        'fff9cd3d-6175-4980-8229-78d7389bb8cd',
                         'f123a375-79ac-4748-928a-20f754ccca66']
     invalid_sessions = ['2474fff6-929b-4642-88ae-b79f2fda6be4',
                         '319735f1-f2bc-41db-908d-00023eeea23a',
@@ -107,34 +109,35 @@ def main():
         for session in sessions:
             # When client recording has a duration of null then assign it as a
             # partial recording
-            if session['session_id'] in partial_sessions or \
-              session['client_a']['duration_seconds'] is None or \
-              session['client_b']['duration_seconds'] is None:
-                print(session['session_id'] + ',P,', file=recorded_sessions)
-                if session['client_b']['duration_seconds']:
-                    client_duration = session['client_b']['duration_seconds']
-                elif session['client_a']['duration_seconds']:
-                    client_duration = session['client_a']['duration_seconds']
+            if session is not None:
+                if session['session_id'] in partial_sessions or \
+                  session['client_a']['duration_seconds'] is None or \
+                  session['client_b']['duration_seconds'] is None:
+                    print(session['session_id'] + ',P,', file=recorded_sessions)
+                    if session['client_b']['duration_seconds']:
+                        client_duration = session['client_b']['duration_seconds']
+                    elif session['client_a']['duration_seconds']:
+                        client_duration = session['client_a']['duration_seconds']
+                    else:
+                        client_duration = 0
+                    total_partial_seconds += client_duration
+                    total_seconds += client_duration
+                elif session['session_id'] in valid_sessions:
+                    print(session['session_id'] + ',Y,', file=recorded_sessions)
+                    total_valid_seconds += session['client_a']['duration_seconds']
+                    total_seconds += session['client_a']['duration_seconds']
+                elif session['session_id'] in invalid_sessions:
+                    print(session['session_id'] + ',N,', file=recorded_sessions)
+                # Exclude sessions where an age or gender is not provided
+                elif (session['client_a']['age'] and session['client_b']['age']
+                      != ''):
+                    print(session['session_id'] + ',Y,', file=recorded_sessions)
+                    total_valid_seconds += session['client_a']['duration_seconds']
+                    total_seconds += session['client_a']['duration_seconds']
+                    download_url(sessions_url + '/' + session['session_id'],
+                                 session['session_id'])
                 else:
-                    client_duration = 0
-                total_partial_seconds += client_duration
-                total_seconds += client_duration
-            elif session['session_id'] in valid_sessions:
-                print(session['session_id'] + ',Y,', file=recorded_sessions)
-                total_valid_seconds += session['client_a']['duration_seconds']
-                total_seconds += session['client_a']['duration_seconds']
-            elif session['session_id'] in invalid_sessions:
-                print(session['session_id'] + ',N,', file=recorded_sessions)
-            # Exclude sessions where an age or gender is not provided
-            elif (session['client_a']['age'] and session['client_b']['age']
-                  != ''):
-                print(session['session_id'] + ',Y,', file=recorded_sessions)
-                total_valid_seconds += session['client_a']['duration_seconds']
-                total_seconds += session['client_a']['duration_seconds']
-                download_url(sessions_url + '/' + session['session_id'],
-                             session['session_id'])
-            else:
-                print(session['session_id'] + ',N,', file=recorded_sessions)
+                    print(session['session_id'] + ',N,', file=recorded_sessions)
         print('30509101-ed6a-4153-b58c-085cea60f079 ,P,,not \
             on mamma karl tvitugt', file=recorded_sessions)
         client_a_duration = 10*60+1
