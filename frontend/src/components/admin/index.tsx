@@ -10,6 +10,7 @@ import * as api from '../../services/api';
 import { SessionMetadata } from '../../types/sessions';
 import { references } from '../../constants/demographics';
 import { Stats } from './stats';
+import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
 const AdminPageContainer = styled.div`
     display: flex;
@@ -173,7 +174,6 @@ class AdminPage extends React.Component<Props, State> {
         return (
             <Layout>
                 <AdminPageContainer>
-                    <Stats sessions={sessions} />
                     <label>
                         <span>Ófullkomin samtöl </span>
                         <Switch
@@ -181,6 +181,7 @@ class AdminPage extends React.Component<Props, State> {
                             checked={showPartial}
                         />
                     </label>
+                    <Stats sessions={sessions} partial={showPartial} />
                     <LeaderBoardContainer>
                         {leaderBoard.map((ref: Reference, i: number) => {
                             return (
@@ -191,9 +192,11 @@ class AdminPage extends React.Component<Props, State> {
                                             (ref.collected * 100) /
                                             leaderBoard[0].collected
                                         }
-                                    >{`${(ref.collected / 60).toFixed(
-                                        2
-                                    )} mín`}</LeaderBoardBar>
+                                    >
+                                        {getHumanReadableTime(
+                                            splitSeconds(ref.collected)
+                                        )}
+                                    </LeaderBoardBar>
                                 </LeaderBoardItem>
                             );
                         })}
