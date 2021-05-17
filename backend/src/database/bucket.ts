@@ -80,14 +80,17 @@ export default class Bucket {
             const filePaths = await Promise.all(
                 folders.map((folder: string) => this.getFilepaths(folder))
             );
-            const filtered = filePaths.filter((value) => value.length == 4);
+            // Only look through folders which have 4 files
+            const filtered = showPartial
+                ? filePaths
+                : filePaths.filter((value) => value.length == 4);
             return Promise.all(
                 filtered.map((paths: string[]) =>
                     this.getSession(paths, showPartial)
                 )
             );
         } else {
-            return Promise.reject();
+            return Promise.reject('Sessions list error');
         }
     };
 
@@ -108,7 +111,7 @@ export default class Bucket {
     getSession = async (
         filePaths: string[],
         showPartial: boolean
-    ): Promise<SessionMetadata> => {
+    ): Promise<SessionMetadata | void> => {
         const jsonPaths = filePaths.filter((value) => value.endsWith('.json'));
         const metadata = await Promise.all(
             jsonPaths.map((path: string) => this.downloadJson(path))
@@ -140,9 +143,8 @@ export default class Bucket {
                 session_id: client_a.data.session_id,
                 client_a: client_a.data,
             });
-        } else {
-            return Promise.reject();
         }
+        // If partial but don't show partial then don't do anything
     };
 
     downloadJson = async (
