@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Request, Response } from 'express';
 import archiver from 'archiver';
+import ffmpeg from 'fluent-ffmpeg';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const saveDemographics = async (
@@ -173,4 +174,51 @@ export const checkForMissingChunks = (
     }
 
     return missingChunks;
+};
+
+export const combineChunks = (id: string): boolean => {
+    const folderPath = '../uploads/';
+    let result = false;
+    try {
+        // get all existing chunks for this client and id
+        const Contents = fs
+            .readdirSync(folderPath)
+            .filter((value) => value.includes(id))
+            .filter((value) => value.endsWith('.wav'));
+
+        const listFileName = `${folderPath}${id}_list.txt`;
+        let fileNames = '';
+
+        // generate list file with "file chunkPath.wav newline" for each chunk
+        Contents.forEach((chunk) => {
+            fileNames += `file ${folderPath}${chunk} \n`;
+        });
+
+        fs.writeFileSync(listFileName, fileNames);
+
+        const merge = ffmpeg();
+        merge
+            .input(listFileName)
+            .inputOptions(['-f concat', '-safe 0'])
+            .outputOptions('-c copy')
+            .save(`${folderPath}${id}.wav`)
+            .on('end', () => {
+                // Delete all chunks
+                Contents.forEach((chunk) => {
+                    fs.unlinkSync(`${folderPath}${chunk}`);
+                });
+                // Delete list file
+                fs.unlinkSync(listFileName);
+
+                result = true;
+            })
+            .on('error', (err) => {
+                console.log(err);
+            });
+
+        return result;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 };

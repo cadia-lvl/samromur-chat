@@ -6,6 +6,7 @@ import {
     getLocalSessions,
     downloadLocalSession,
     checkForMissingChunks,
+    combineChunks,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -52,7 +53,7 @@ const createRestRouter = (isProduction: boolean) => {
         console.log(`id: ${id} requested verification for ${nbrOfChunks}`);
 
         try {
-            const missingChunks = await checkForMissingChunks(id, nbrOfChunks);
+            const missingChunks = checkForMissingChunks(id, nbrOfChunks);
             if (missingChunks.length !== 0) {
                 // Chunks missing, return an array with the missing chunks numbers
                 return res.status(200).json(missingChunks);
@@ -64,6 +65,18 @@ const createRestRouter = (isProduction: boolean) => {
             console.log(error);
             return res.status(500).send(error.code);
         }
+    });
+
+    restRouter.put('/recordingFinished/:id', async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        const combineSuccess = combineChunks(id);
+        if (combineSuccess) {
+
+            if (bucket) {
+                bucket.uploadRecording(id);
+            }
+        }
+
     });
 
     restRouter.get('/sessions', async (req, res) => {

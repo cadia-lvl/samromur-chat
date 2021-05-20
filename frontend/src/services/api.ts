@@ -157,6 +157,24 @@ export const verifyChunks = async (
     }
 };
 
+export const recordingFinished = async (id: string) => {
+    const apiUrl = getIDApiUrl('api/recordingFinished');
+
+    try {
+        const resp = await axios({
+            method: 'PUT',
+            url: apiUrl,
+            headers: {
+                id,
+            },
+        });
+        return Promise.resolve(resp.data);
+    } catch (error) {
+        console.error(error.message);
+        return Promise.reject(error.code);
+    }
+};
+
 const getIDApiUrl = (APIPath: string = 'api') => {
     let pathname = window.location.href;
     if (pathname.includes('localhost')) {

@@ -1,10 +1,16 @@
 import { AudioChunk } from '../types/audio';
 
+interface Chunk {
+    dataViews: DataView[];
+    header: DataView;
+    samples: number;
+}
+
 class WavEncoder {
     private sampleRate: number;
     private numSamples: number;
     private dataViews: DataView[];
-    private chunks: Array<DataView[]>;
+    private chunks: Array<Chunk>;
 
     constructor(sampleRate: number) {
         this.sampleRate = sampleRate;
@@ -36,19 +42,24 @@ class WavEncoder {
      */
     getChunk = async (): Promise<AudioChunk> => {
         const dataViews = [...this.dataViews];
-        const view = this.generateWaveHeader();
-        dataViews.unshift(view);
+        const header = this.generateWaveHeader(this.numSamples);
+        const samples = this.numSamples;
 
-        // move dataview into chunks array, and clear current dataview
-        this.chunks.push(dataViews);
-        this.reset();
+        // push chunk into the chunk array
+        this.chunks.push({ dataViews, header, samples });
+
+        // move header into the dataviews for the chunk
+        const blobViews = [header, ...dataViews];
 
         const chunkNumber = this.chunks.length;
 
         const chunk: AudioChunk = {
-            blob: new Blob(dataViews, { type: 'audio/wav' }),
+            blob: new Blob(blobViews, { type: 'audio/wav' }),
             chunkNumber,
         };
+
+        // reset numSamples and dataViews
+        this.reset();
 
         // return the current chunk
         return Promise.resolve(chunk);
@@ -66,13 +77,29 @@ class WavEncoder {
     };
 
     // Prepend wav header
-    finish = (): Promise<AudioChunk> => {
-        return this.getChunk();
+    finish = (): Promise<Blob> => {
+        if (this.dataViews.length !== 0) {
+            this.getChunk();
+        }
+
+        const dataViews: DataView[] = [];
+        let totalSamples: number = 0;
+        this.chunks.forEach((chunk) => {
+            dataViews.push(...chunk.dataViews);
+            totalSamples += chunk.samples;
+        });
+
+        const header = this.generateWaveHeader(totalSamples);
+        dataViews.unshift(header);
+
+        const blob = new Blob(dataViews, { type: 'audio/wav' });
+
+        return Promise.resolve(blob);
     };
 
     // Create wav header
-    private generateWaveHeader = (): DataView => {
-        const dataSize = this.numSamples * 2;
+    private generateWaveHeader = (numSamples: number): DataView => {
+        const dataSize = numSamples * 2;
         const view = new DataView(new ArrayBuffer(44));
         this.writeString(view, 0, 'RIFF');
         view.setUint32(4, 36 + dataSize, true);
@@ -90,6 +117,10 @@ class WavEncoder {
         view.setUint32(40, dataSize, true);
         return view;
     };
+
+    getNumberOfChunks = (): number => {
+        return this.chunks.length;
+    };
 }
 
 const encoder = new WavEncoder(16000);
@@ -97,11 +128,15 @@ const encoder = new WavEncoder(16000);
 export const ctx: Worker = self as any;
 
 const finish = async () => {
-    const chunk = await encoder.finish();
+    await getAndPostChunk();
+
+    const blob = await encoder.finish();
+    const nbrOfChunks = encoder.getNumberOfChunks();
     encoder.reset();
     ctx.postMessage({
         command: 'finish',
-        chunk: chunk,
+        blob,
+        nbrOfChunks,
     });
 };
 

@@ -79,17 +79,13 @@ export default class Recorder {
 
         this.encoder.onmessage = async (event) => {
             const {
-                data: { chunk },
-                data: { command },
+                data: { chunk, command },
             } = event;
 
             console.log(event);
 
             if (command === 'chunk-available') {
                 console.log(chunk);
-                //writeDataToLocalBase(data);
-                //this.idb.writeBlobToDb(blob);
-                //writeBlobToLocalForage(blob);
                 console.log('received chunk');
                 if (this.onChunkReceived) {
                     this.onChunkReceived(chunk);
@@ -185,26 +181,43 @@ export default class Recorder {
             return Promise.reject();
         }
 
+        // Then return full recording (or at least what is present in recorder,
+        // this might be less than the full recording if a user has refreshed the page)
         return new Promise((resolve, reject) => {
             this.processorNode.disconnect();
             this.sourceNode.disconnect();
             this.encoder.onmessage = async (event) => {
                 const {
-                    data: { chunk },
-                }: { data: { chunk: AudioChunk } } = event;
-                const url = URL.createObjectURL(chunk.blob);
-                try {
-                    const duration = await this.getBlobDuration(url);
-                    this.isRecording = false;
-                    resolve({
-                        blob: chunk.blob,
-                        duration,
-                        url,
-                        sampleRate: this.sampleRate,
-                        nbrOfChunks: chunk.chunkNumber,
-                    });
-                } catch (error) {
-                    reject('Audio has no duration');
+                    data: { blob, nbrOfChunks, command },
+                } = event;
+                if (command === 'finish') {
+                    console.log('IN FINISH');
+                    const url = URL.createObjectURL(blob);
+                    try {
+                        const duration = await this.getBlobDuration(url);
+                        this.isRecording = false;
+                        resolve({
+                            blob,
+                            duration,
+                            url,
+                            sampleRate: this.sampleRate,
+                            nbrOfChunks,
+                        });
+                    } catch (error) {
+                        reject('Audio has no duration');
+                    }
+                }
+
+                // To handle the last chunk
+                if (command === 'chunk-available') {
+                    const {
+                        data: { chunk },
+                    } = event;
+                    console.log(chunk);
+                    console.log('received chunk');
+                    if (this.onChunkReceived) {
+                        this.onChunkReceived(chunk);
+                    }
                 }
             };
             this.encoder.postMessage({

@@ -441,25 +441,26 @@ class Chatroom extends React.Component<Props, State> {
 
     onSubmit = async () => {
         const { recording } = this.state;
-        const { onUpload } = this.props;
+        //const { onUpload } = this.props;
         await this.chat.uploadOther();
 
         // Upload last chunk
-        await this.uploadLastChunkAndVerify();
+        await this.verifyChunks();
 
-        onUpload(recording);
+        //onUpload(recording);
+
+        // Send complete singal
+        await api.recordingFinished(recording.id);
         this.chat.disconnect();
     };
 
-    uploadLastChunkAndVerify = async () => {
+    onTest = async () => {
         const { recording } = this.state;
+        await api.recordingFinished(recording.id);
+    };
 
-        const chunk: AudioChunk = {
-            blob: recording.blob!,
-            chunkNumber: recording.nbrOfChunks,
-            id: recording.id,
-        };
-        await api.uploadChunk(chunk);
+    verifyChunks = async () => {
+        const { recording } = this.state;
 
         const missingChunks = await api.verifyChunks(
             recording.id,
@@ -492,7 +493,7 @@ class Chatroom extends React.Component<Props, State> {
         const { onUpload } = this.props;
         if (recording) {
             // Upload last chunk
-            await this.uploadLastChunkAndVerify();
+            await this.verifyChunks();
 
             onUpload(recording);
             this.chat.disconnect();
@@ -619,6 +620,7 @@ class Chatroom extends React.Component<Props, State> {
                     pauseOnHover={false}
                     transition={Slide}
                 />
+                <button onClick={this.onTest}>TEST COMBINE</button>
             </ChatroomContainer>
         );
     }
