@@ -121,6 +121,11 @@ class WavEncoder {
     getNumberOfChunks = (): number => {
         return this.chunks.length;
     };
+
+    clear = (): void => {
+        this.reset();
+        this.chunks = [];
+    };
 }
 
 const encoder = new WavEncoder(16000);
@@ -148,6 +153,10 @@ const getAndPostChunk = async () => {
     ctx.postMessage({ command: 'chunk-available', chunk: chunk });
 };
 
+const clear = async () => {
+    await encoder.clear();
+};
+
 ctx.onmessage = (event) => {
     const data = event.data;
     switch (data.command) {
@@ -159,6 +168,9 @@ ctx.onmessage = (event) => {
             break;
         case 'finish':
             finish();
+            break;
+        case 'clear':
+            clear();
             break;
         default:
             console.log('Unknow command sent to encoder.');

@@ -694,4 +694,8 @@ export default class Chat {
         this.socket.close();
         this.rtcConnection.close();
     };
+
+    public clearRecording = () => {
+        this.recorder.clearRecording();
+    };
 }

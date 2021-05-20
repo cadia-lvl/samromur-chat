@@ -7,6 +7,7 @@ import {
     downloadLocalSession,
     checkForMissingChunks,
     combineChunks,
+    deleteRecording,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -67,9 +68,9 @@ const createRestRouter = (isProduction: boolean) => {
         }
     });
 
-    restRouter.put('/recordingFinished/:id', async (req, res) => {
+    restRouter.post('/recordingFinished/:id', upload, async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
-        const combineSuccess = combineChunks(id);
+        const combineSuccess = await combineChunks(id);
         if (!combineSuccess) {
             return res
                 .status(500)
@@ -83,6 +84,7 @@ const createRestRouter = (isProduction: boolean) => {
                 return res.status(500).send(error.code);
             }
         }
+        return res.status(200).send('Success');
     });
 
     restRouter.get('/sessions', async (req, res) => {
@@ -114,6 +116,13 @@ const createRestRouter = (isProduction: boolean) => {
         } else {
             return downloadLocalSession(req, res);
         }
+    });
+
+    restRouter.delete('/delete/:id', async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        const deleted = deleteRecording(id);
+
+        res.status(200).send(deleted);
     });
 
     return restRouter;

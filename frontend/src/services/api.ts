@@ -157,16 +157,40 @@ export const verifyChunks = async (
     }
 };
 
-export const recordingFinished = async (id: string) => {
+export const recordingFinished = async (
+    recording: AudioInfo,
+    demographics: UserDemographics
+) => {
     const apiUrl = getIDApiUrl('api/recordingFinished');
+
+    const id = recording.id || uuid(); // Generate new id as fallback
+
+    const jsonString = JSON.stringify({
+        age: demographics.age,
+        duration_seconds: recording.duration,
+        gender: demographics.gender,
+        sample_rate: recording.sampleRate,
+        session_id: id.replace(/_client_[a|b]/, ''),
+        reference: demographics.reference,
+        nbrOfChunks: recording.nbrOfChunks,
+    });
+
+    const metadata = new Blob([jsonString], {
+        type: 'text/plain',
+    });
+
+    const formData: FormData = new FormData();
+    formData.append('metadata', metadata);
 
     try {
         const resp = await axios({
-            method: 'PUT',
+            method: 'POST',
             url: apiUrl,
             headers: {
+                'Content-Type': 'multipart/form-data',
                 id,
             },
+            data: formData,
         });
         return Promise.resolve(resp.data);
     } catch (error) {
@@ -193,4 +217,21 @@ const getIDApiUrl = (APIPath: string = 'api') => {
 const numberStringSize = 4;
 const numberToPaddedString = (toPad: number): string => {
     return toPad.toString().padStart(numberStringSize, '0');
+};
+
+export const removeRecording = async (id: string) => {
+    const apiUrl = getIDApiUrl('api/delete');
+
+    try {
+        const resp = await axios({
+            method: 'DELETE',
+            url: apiUrl,
+            headers: {
+                id,
+            },
+        });
+        return Promise.resolve(resp.data);
+    } catch (err) {
+        return Promise.reject(err);
+    }
 };

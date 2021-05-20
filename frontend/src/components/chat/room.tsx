@@ -329,8 +329,11 @@ class Chatroom extends React.Component<Props, State> {
         );
     };
 
-    removeRecording = () => {
+    removeRecording = async () => {
+        const { recording } = this.state;
+        await api.removeRecording(recording.id);
         this.setState({ recording: undefined });
+        this.chat.clearRecording();
     };
 
     isCountingDown = () => this.interval && this.timeout;
@@ -441,13 +444,15 @@ class Chatroom extends React.Component<Props, State> {
 
     onSubmit = async () => {
         const { recording } = this.state;
+        const { onUpload } = this.props;
         await this.chat.uploadOther();
 
         // Verify chunks
         await this.verifyChunks();
 
-        // Send complete singal
-        await api.recordingFinished(recording.id);
+        // Send complete singal and upload
+
+        onUpload(recording);
         this.chat.disconnect();
     };
 
@@ -459,8 +464,8 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     onTest = async () => {
-        const { recording } = this.state;
-        await api.recordingFinished(recording.id);
+        //const { recording } = this.state;
+        //await api.recordingFinished(recording.id);
     };
 
     verifyChunks = async () => {

@@ -10,6 +10,7 @@ import DemographicForm from './demographics';
 import { UserClient, UserDemographics } from '../../types/user';
 import { AudioChunk, AudioInfo } from '../../types/audio';
 import * as api from '../../services/api';
+//import demographics from './demographics';
 
 const SetupContainer = styled.div`
     width: 100%;
@@ -66,7 +67,8 @@ class Setup extends React.Component<Props, State> {
 
     onUpload = async (recording: AudioInfo) => {
         const { demographics } = this.state;
-        await api.uploadClip(recording, demographics);
+        // await api.uploadClip(recording, demographics);
+        await api.recordingFinished(recording, demographics);
         // Push to thanks page
         const { history } = this.props;
         history.push('/takk');

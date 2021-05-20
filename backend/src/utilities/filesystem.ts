@@ -41,8 +41,9 @@ export interface SessionMetadata {
     client_b: ClientMetadata;
 }
 
+const folderPath = '../uploads/';
+
 export const getLocalSessions = (): Array<SessionMetadata> => {
-    const folderPath = '../uploads/';
     const clientSessions: Array<SessionMetadata> = [];
 
     // Get all the json files in the folder
@@ -92,7 +93,6 @@ export const downloadLocalSession = async (
     const {
         params: { id },
     } = req;
-    const folderPath = '../uploads/';
 
     // Get all the associated files
     const Contents = fs
@@ -140,8 +140,6 @@ export const checkForMissingChunks = (
     id: string,
     nbrOfChunks: number
 ): number[] => {
-    const folderPath = '../uploads/';
-
     // get all existing chunks for this client and id
     const Contents = fs
         .readdirSync(folderPath)
@@ -176,8 +174,7 @@ export const checkForMissingChunks = (
     return missingChunks;
 };
 
-export const combineChunks = (id: string): boolean => {
-    const folderPath = '../uploads/';
+export const combineChunks = async (id: string): Promise<boolean> => {
     let result = false;
     try {
         // get all existing chunks for this client and id
@@ -197,29 +194,31 @@ export const combineChunks = (id: string): boolean => {
         fs.writeFileSync(listFileName, fileNames);
 
         const merge = ffmpeg();
-        merge
-            .input(listFileName)
-            .inputOptions(['-f concat', '-safe 0'])
-            .outputOptions('-c copy')
-            .save(`${folderPath}${id}.wav`)
-            .on('end', () => {
-                // Delete all chunks
-                Contents.forEach((chunk) => {
-                    fs.unlinkSync(`${folderPath}${chunk}`);
+        return new Promise((resolve, reject) => {
+            merge
+                .input(listFileName)
+                .inputOptions(['-f concat', '-safe 0'])
+                .outputOptions('-c copy')
+                .save(`${folderPath}${id}.wav`)
+                .on('end', () => {
+                    // Delete all chunks
+                    Contents.forEach((chunk) => {
+                        fs.unlinkSync(`${folderPath}${chunk}`);
+                    });
+                    // Delete list file
+                    fs.unlinkSync(listFileName);
+
+                    result = true;
+                    return resolve(result);
+                })
+                .on('error', (err) => {
+                    console.log(err);
+                    return resolve(result);
                 });
-                // Delete list file
-                fs.unlinkSync(listFileName);
-
-                result = true;
-            })
-            .on('error', (err) => {
-                console.log(err);
-            });
-
-        return result;
+        });
     } catch (error) {
         console.error(error);
-        return false;
+        return Promise.reject(result);
     }
 };
 
@@ -232,8 +231,6 @@ export const getMetadataPath = (id: string): string | undefined => {
 };
 
 const findUploadFile = (file: string): string | undefined => {
-    const folderPath = '../uploads/';
-
     try {
         const Contents = fs
             .readdirSync(folderPath)
@@ -246,5 +243,36 @@ const findUploadFile = (file: string): string | undefined => {
         return folderPath + Contents[0];
     } catch (err) {
         console.log(err);
+    }
+};
+
+/**
+ * Deletes the recording of the specified id, all chunks and metadata
+ * @param id the id of the recording to be deleted min 45 chars
+ * @returns true if successfully deleted, otherwise false
+ */
+export const deleteRecording = (id: string): boolean => {
+    const minSize = 45; // length of uuid v4 (36) plus _client_x (9)
+
+    // If too short return false, no files deleted
+    if (id.length < minSize) {
+        return false;
+    }
+
+    try {
+        // Find all files matching id
+        const Contents = fs
+            .readdirSync(folderPath)
+            .filter((value) => value.includes(id));
+
+        // Delete all files found
+        Contents.forEach((file) => fs.unlinkSync(folderPath + file));
+
+        // Success return true
+        return true;
+    } catch (err) {
+        // Log error and return false
+        console.log(err);
+        return false;
     }
 };

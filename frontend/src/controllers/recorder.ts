@@ -301,4 +301,8 @@ export default class Recorder {
 
         this.microphone = undefined;
     };
+
+    clearRecording = () => {
+        this.encoder.postMessage({ command: 'clear' });
+    };
 }
