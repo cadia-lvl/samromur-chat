@@ -70,13 +70,19 @@ const createRestRouter = (isProduction: boolean) => {
     restRouter.put('/recordingFinished/:id', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
         const combineSuccess = combineChunks(id);
-        if (combineSuccess) {
-
-            if (bucket) {
+        if (!combineSuccess) {
+            return res
+                .status(500)
+                .send('Server was unable to combine audio chunks.');
+        }
+        if (bucket) {
+            try {
                 bucket.uploadRecording(id);
+                return res.status(200).send('Success');
+            } catch (error) {
+                return res.status(500).send(error.code);
             }
         }
-
     });
 
     restRouter.get('/sessions', async (req, res) => {

@@ -2,6 +2,7 @@ import { config, S3 } from 'aws-sdk';
 import { getConfig } from '../utilities/config-helper';
 import { Request, Response } from 'express';
 import fs from 'fs';
+import { getAudioPath, getMetadataPath } from '../utilities/filesystem';
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const s3Zip = require('s3-zip');
@@ -202,6 +203,45 @@ export default class Bucket {
                 })
                 .promise();
             fs.unlinkSync(metadata.path);
+
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    };
+
+    uploadRecording = async (id: string): Promise<void> => {
+        try {
+            // Get paths to local files
+            const audioPath = getAudioPath(id);
+            const metadataPath = getMetadataPath(id);
+            if (!audioPath || !metadataPath) {
+                throw new Error('metadata or audio files are missing');
+            }
+
+            // S3 bucket names
+            const folder = id.replace(/_client_[a|b]/, '') + '/';
+            const clipFilename = folder + id + '.wav';
+            const metdataFilename = folder + id + '.json';
+
+            await this.s3
+                .upload({
+                    Bucket: this.bucketName,
+                    Key: clipFilename,
+                    Body: fs.createReadStream(audioPath),
+                    ContentType: 'audio/wav',
+                })
+                .promise();
+            fs.unlinkSync(audioPath);
+
+            await this.s3
+                .upload({
+                    Bucket: this.bucketName,
+                    Key: metdataFilename,
+                    Body: fs.createReadStream(metadataPath),
+                })
+                .promise();
+            fs.unlinkSync(metadataPath);
 
             return Promise.resolve();
         } catch (error) {

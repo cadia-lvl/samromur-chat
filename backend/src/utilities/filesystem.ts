@@ -222,3 +222,29 @@ export const combineChunks = (id: string): boolean => {
         return false;
     }
 };
+
+export const getAudioPath = (id: string): string | undefined => {
+    return findUploadFile(id + '.wav');
+};
+
+export const getMetadataPath = (id: string): string | undefined => {
+    return findUploadFile(id + '.json');
+};
+
+const findUploadFile = (file: string): string | undefined => {
+    const folderPath = '../uploads/';
+
+    try {
+        const Contents = fs
+            .readdirSync(folderPath)
+            .filter((value) => value.includes(file));
+
+        if (Contents.length !== 1) {
+            throw new Error('Too many matches when uploading to s3 bucket.');
+        }
+
+        return Contents[0];
+    } catch (err) {
+        console.log(err);
+    }
+};
