@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Switch from 'react-switch';
 
 import Layout from '../ui/layout';
 import Session from './session';
@@ -8,6 +9,8 @@ import Session from './session';
 import * as api from '../../services/api';
 import { SessionMetadata } from '../../types/sessions';
 import { references } from '../../constants/demographics';
+import { Stats } from './stats';
+import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
 const AdminPageContainer = styled.div`
     display: flex;
@@ -15,6 +18,12 @@ const AdminPageContainer = styled.div`
     width: 30rem;
     max-width: 100%;
     gap: 1.5rem;
+`;
+
+const SwitchContainer = styled.label`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 `;
 
 const LeaderBoardContainer = styled.div`
@@ -59,6 +68,7 @@ type Props = RouteComponentProps;
 interface State {
     sessions: SessionMetadata[];
     leaderBoard: Reference[];
+    showPartial: boolean;
 }
 
 class AdminPage extends React.Component<Props, State> {
@@ -68,7 +78,11 @@ class AdminPage extends React.Component<Props, State> {
         this.state = {
             sessions: [],
             leaderBoard: [],
+            showPartial: true,
         };
+        this.handlePartialToggleChange = this.handlePartialToggleChange.bind(
+            this
+        );
     }
 
     getInitialLeaderBoard = (): Reference[] => {
@@ -80,22 +94,67 @@ class AdminPage extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
-        const sessions = await api.getSessions();
-        const leaderBoard = this.calculateLeaderBoard(sessions);
+        // Show partial recordings if partial=true is in the url
+        const URLPartial = new URLSearchParams(window.location.search).get(
+            'partial'
+        );
+        const showPartial =
+            URLPartial !== null && URLPartial === 'true' ? true : false;
+        // Always fetch the partial recordings because it's one less network
+        // call and easier to show them once we have them
+        const sessions = await api.getSessions(this.state.showPartial);
+        this.handlePartialToggleChange(showPartial);
         this.setState({ sessions });
+        this.handleLeaderBoardChange(sessions, showPartial);
+    };
+
+    /**
+     * Indicate whether partial recordings are shown
+     */
+    handlePartialToggleChange = (showPartial: boolean) => {
+        const updatedURL =
+            '//' +
+            window.location.host +
+            window.location.pathname +
+            '?partial=' +
+            showPartial;
+        this.setState({ showPartial });
+        window.history.pushState(null, 'Spjall - mamma', updatedURL);
+        this.handleLeaderBoardChange(this.state.sessions, showPartial);
+    };
+
+    /**
+     * Update leaderBoard
+     */
+    handleLeaderBoardChange = (sessions, showPartial) => {
+        const leaderBoard = this.calculateLeaderBoard(sessions, showPartial);
         this.setState({ leaderBoard });
     };
 
-    calculateLeaderBoard = (sessions: SessionMetadata[]): Reference[] => {
+    calculateLeaderBoard = (
+        sessions: SessionMetadata[],
+        showPartial
+    ): Reference[] => {
         const leaderBoard = this.getInitialLeaderBoard();
         for (const session of sessions) {
-            const {
-                client_a: { reference, duration_seconds },
-            } = session;
+            const { client_a, client_b } = session;
 
             for (const ref of leaderBoard) {
-                if (ref.person === reference) {
-                    ref.collected += duration_seconds;
+                if (
+                    client_a &&
+                    ref.person === client_a.reference &&
+                    client_a.duration_seconds &&
+                    (showPartial ? true : client_b && client_b.duration_seconds)
+                ) {
+                    ref.collected += client_a.duration_seconds;
+                    break;
+                } else if (
+                    client_b &&
+                    ref.person === client_b.reference &&
+                    showPartial
+                ) {
+                    ref.collected += client_b.duration_seconds;
+                    break;
                 }
             }
         }
@@ -117,10 +176,18 @@ class AdminPage extends React.Component<Props, State> {
     };
 
     render() {
-        const { sessions, leaderBoard } = this.state;
+        const { sessions, leaderBoard, showPartial } = this.state;
         return (
             <Layout>
                 <AdminPageContainer>
+                    <SwitchContainer>
+                        <span>Ófullkomin samtöl </span>
+                        <Switch
+                            onChange={this.handlePartialToggleChange}
+                            checked={showPartial}
+                        />
+                    </SwitchContainer>
+                    <Stats sessions={sessions} partial={showPartial} />
                     <LeaderBoardContainer>
                         {leaderBoard.map((ref: Reference, i: number) => {
                             return (
@@ -131,16 +198,24 @@ class AdminPage extends React.Component<Props, State> {
                                             (ref.collected * 100) /
                                             leaderBoard[0].collected
                                         }
-                                    >{`${(ref.collected / 60).toFixed(
-                                        2
-                                    )} mín`}</LeaderBoardBar>
+                                    >
+                                        {getHumanReadableTime(
+                                            splitSeconds(ref.collected)
+                                        )}
+                                    </LeaderBoardBar>
                                 </LeaderBoardItem>
                             );
                         })}
                     </LeaderBoardContainer>
                     <SessionsContainer>
                         {sessions.map((session: SessionMetadata, i: number) => {
-                            return <Session key={i} session={session} />;
+                            return (
+                                <Session
+                                    key={i}
+                                    session={session}
+                                    showPartial={showPartial}
+                                />
+                            );
                         })}
                     </SessionsContainer>
                 </AdminPageContainer>

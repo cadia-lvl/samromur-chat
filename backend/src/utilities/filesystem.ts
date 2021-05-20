@@ -37,52 +37,48 @@ export interface ClientMetadata {
 
 export interface SessionMetadata {
     session_id: string;
-    client_a: ClientMetadata;
-    client_b: ClientMetadata;
+    client_a?: ClientMetadata;
+    client_b?: ClientMetadata;
 }
 
 const folderPath = '../uploads/';
-
-export const getLocalSessions = (): Array<SessionMetadata> => {
-    const clientSessions: Array<SessionMetadata> = [];
+export const getLocalSessions = (
+    showPartial: boolean
+): Array<SessionMetadata> => {
+    const clientSessions: { [key: string]: SessionMetadata } = {};
 
     // Get all the json files in the folder
-    const conversationsList = fs
+    const jsonList = fs
         .readdirSync(folderPath)
         .map((fileName) => {
             return path.join(folderPath, fileName);
         })
         .filter((value) => value.endsWith('.json'));
 
-    // Read json into ClientMetadata array
-    const clientMetas = conversationsList.map((fileName) => {
+    jsonList.forEach((filename) => {
         // synchronously reads json contents
         const data = JSON.parse(
-            fs.readFileSync(fileName, 'utf8')
+            fs.readFileSync(filename, 'utf8')
         ) as ClientMetadata;
-        const id = fileName.includes('client_a') ? 'a' : 'b';
-        return { id, data };
+        const clientType = filename.includes('client_a')
+            ? 'client_a'
+            : 'client_b';
+        clientSessions[data.session_id] = clientSessions[data.session_id] || {};
+        clientSessions[data.session_id].session_id = data.session_id;
+        clientSessions[data.session_id][clientType] = data;
     });
 
-    const clientaMetas = clientMetas.filter((user) => user.id == 'a');
-    const clientbMetas = clientMetas.filter((user) => user.id == 'b');
-    // Populate the clientSessions
-    clientaMetas.forEach(function (client_a) {
-        const client_b = clientbMetas.find(
-            (match) => match.data.session_id == client_a.data.session_id
+    if (!showPartial) {
+        return Object.values(clientSessions).filter(
+            (session) =>
+                session.client_a !== undefined &&
+                session.client_b !== undefined &&
+                session.client_a.duration_seconds &&
+                session.client_b.duration_seconds
         );
-        // If a matching client b exists then create session metadata
-        if (client_b) {
-            // append session meta to sessions array
-            clientSessions.push({
-                session_id: client_a.data.session_id,
-                client_a: client_a.data,
-                client_b: client_b.data,
-            });
-        }
-    });
-
-    return clientSessions;
+    } else {
+        return Object.values(clientSessions);
+    }
 };
 
 export const downloadLocalSession = async (

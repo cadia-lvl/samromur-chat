@@ -28,8 +28,8 @@ export interface ClientMetadata {
 
 export interface SessionMetadata {
     session_id: string;
-    client_a: ClientMetadata;
-    client_b: ClientMetadata;
+    client_a?: ClientMetadata;
+    client_b?: ClientMetadata;
 }
 
 export default class Bucket {
@@ -66,7 +66,7 @@ export default class Bucket {
      * Get all folders in s3
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getSessions = async (): Promise<any> => {
+    getSessions = async (showPartial: boolean): Promise<any> => {
         const { CommonPrefixes } = await this.s3
             .listObjectsV2({
                 Bucket: this.bucketName,
@@ -81,12 +81,17 @@ export default class Bucket {
             const filePaths = await Promise.all(
                 folders.map((folder: string) => this.getFilepaths(folder))
             );
-            const filtered = filePaths.filter((value) => value.length == 4);
+            // Only look through folders which have 4 files
+            const filtered = showPartial
+                ? filePaths
+                : filePaths.filter((value) => value.length == 4);
             return Promise.all(
-                filtered.map((paths: string[]) => this.getSession(paths))
+                filtered.map((paths: string[]) =>
+                    this.getSession(paths, showPartial)
+                )
             );
         } else {
-            return Promise.reject();
+            return Promise.reject('Sessions list error');
         }
     };
 
@@ -104,22 +109,43 @@ export default class Bucket {
         return Promise.resolve(filePaths);
     };
 
-    getSession = async (filePaths: string[]): Promise<SessionMetadata> => {
+    getSession = async (
+        filePaths: string[],
+        showPartial: boolean
+    ): Promise<SessionMetadata | void> => {
         const jsonPaths = filePaths.filter((value) => value.endsWith('.json'));
         const metadata = await Promise.all(
             jsonPaths.map((path: string) => this.downloadJson(path))
         );
-        const client_a = metadata.find((val) => val.id == 'a');
-        const client_b = metadata.find((val) => val.id == 'b');
-        if (!client_a || !client_b) {
-            return Promise.reject();
-        } else {
+        const client_a = metadata.find(
+            (val) =>
+                val.id == 'a' &&
+                (showPartial ? true : val.data.duration_seconds)
+        );
+        const client_b = metadata.find(
+            (val) =>
+                val.id == 'b' &&
+                (showPartial ? true : val.data.duration_seconds)
+        );
+
+        if (client_a && client_b) {
             return Promise.resolve({
                 session_id: client_a.data.session_id,
                 client_a: client_a.data,
                 client_b: client_b.data,
             });
+        } else if (client_b && showPartial) {
+            return Promise.resolve({
+                session_id: client_b.data.session_id,
+                client_b: client_b.data,
+            });
+        } else if (client_a && showPartial) {
+            return Promise.resolve({
+                session_id: client_a.data.session_id,
+                client_a: client_a.data,
+            });
         }
+        // If partial but don't show partial then don't do anything
     };
 
     downloadJson = async (

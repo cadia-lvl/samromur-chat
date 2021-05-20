@@ -88,16 +88,18 @@ const createRestRouter = (isProduction: boolean) => {
     });
 
     restRouter.get('/sessions', async (req, res) => {
+        const showPartial =
+            req.query.partial && req.query.partial === 'true' ? true : false;
         if (bucket) {
             try {
-                const sessions = await bucket.getSessions();
+                const sessions = await bucket.getSessions(showPartial);
                 return res.status(200).json(sessions);
             } catch (error) {
                 return res.status(500).send(error);
             }
         } else {
             try {
-                const sessions = getLocalSessions();
+                const sessions = getLocalSessions(showPartial);
                 return res.status(200).json(sessions);
             } catch (error) {
                 return res
