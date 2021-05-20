@@ -3,7 +3,6 @@ import { v4 as uuid } from 'uuid';
 import Recorder from './recorder';
 import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
-//import { saveSessionId, clearSessionId } from '../utilities/local-storage';
 
 export enum ChatState {
     CONNECTED = 'CONNECTED',
@@ -200,15 +199,6 @@ export default class Chat {
                         candidate: event.candidate,
                     });
                 }
-            };
-
-            // Setup logging for ice candidate errors
-            connection.onicecandidateerror = (
-                event: RTCPeerConnectionIceErrorEvent
-            ) => {
-                console.log(
-                    `Ice candidate errorCode: ${event.errorCode}, errorText: ${event.errorText}`
-                );
             };
 
             // Setup stream listening

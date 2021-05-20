@@ -463,11 +463,6 @@ class Chatroom extends React.Component<Props, State> {
         this.onSubmit();
     };
 
-    onTest = async () => {
-        //const { recording } = this.state;
-        //await api.recordingFinished(recording.id);
-    };
-
     verifyChunks = async () => {
         const { recording } = this.state;
 
@@ -617,7 +612,6 @@ class Chatroom extends React.Component<Props, State> {
                     pauseOnHover={false}
                     transition={Slide}
                 />
-                <button onClick={this.onTest}>TEST COMBINE</button>
             </ChatroomContainer>
         );
     }

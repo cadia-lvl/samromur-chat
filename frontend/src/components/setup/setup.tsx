@@ -10,7 +10,6 @@ import DemographicForm from './demographics';
 import { UserClient, UserDemographics } from '../../types/user';
 import { AudioChunk, AudioInfo } from '../../types/audio';
 import * as api from '../../services/api';
-//import demographics from './demographics';
 
 const SetupContainer = styled.div`
     width: 100%;

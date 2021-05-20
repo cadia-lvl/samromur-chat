@@ -3,12 +3,8 @@ import { AudioInfo, AudioError, AudioChunk } from '../types/audio';
 import WavEncoder from '../worker';
 import { isRecordingSupported } from '../utilities/utils';
 
-// import IndexedDB from '../utilities/indexed-db';
-//import { writeBlobToLocalForage } from '../utilities/local-storage';
-
 interface RecorderConfig {
     sampleRate: number;
-    //onChunkAvailable: () => void;
     chunkInterval: number;
 }
 
