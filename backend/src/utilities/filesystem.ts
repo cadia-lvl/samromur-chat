@@ -136,10 +136,10 @@ export const downloadLocalSession = async (
     archive.finalize();
 };
 
-export const checkForMissingChunks = (
+export const checkForMissingChunks = async (
     id: string,
     nbrOfChunks: number
-): number[] => {
+): Promise<number[]> => {
     // get all existing chunks for this client and id
     const Contents = fs
         .readdirSync(folderPath)
@@ -192,7 +192,7 @@ export const combineChunks = async (id: string): Promise<boolean> => {
         fs.writeFileSync(listFileName, fileNames);
 
         const merge = ffmpeg();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             merge
                 .input(listFileName)
                 .inputOptions(['-f concat', '-safe 0'])

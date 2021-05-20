@@ -443,24 +443,29 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     onSubmit = async () => {
-        const { recording } = this.state;
-        const { onUpload } = this.props;
         await this.chat.uploadOther();
 
-        // Verify chunks
-        await this.verifyChunks();
-
-        // Send complete singal and upload
-
-        onUpload(recording);
-        this.chat.disconnect();
+        await this.submit();
     };
 
     // The function that is called when the
     // chat receives the Upload command from the web socket
     // should behave exactly like onSubmit
     handleOnUpload = async () => {
-        this.onSubmit();
+        this.submit();
+    };
+
+    submit = async () => {
+        const { recording } = this.state;
+        const { onUpload } = this.props;
+
+        // Verify chunks
+        await this.verifyChunks();
+
+        // Send complete singal and upload
+
+        await onUpload(recording);
+        this.chat.disconnect();
     };
 
     verifyChunks = async () => {
