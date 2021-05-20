@@ -54,7 +54,7 @@ const createRestRouter = (isProduction: boolean) => {
         console.log(`id: ${id} requested verification for ${nbrOfChunks}`);
 
         try {
-            const missingChunks = checkForMissingChunks(id, nbrOfChunks);
+            const missingChunks = await checkForMissingChunks(id, nbrOfChunks);
             if (missingChunks.length !== 0) {
                 // Chunks missing, return an array with the missing chunks numbers
                 return res.status(200).json(missingChunks);
