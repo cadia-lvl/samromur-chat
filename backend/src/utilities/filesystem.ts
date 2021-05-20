@@ -150,7 +150,6 @@ export const checkForMissingChunks = (
         return [];
     }
 
-    console.log(nbrOfChunks);
     // Generate empty array of nbrOfChunks length
     const chunks: number[] = new Array<number>(nbrOfChunks).fill(0);
 
@@ -163,7 +162,6 @@ export const checkForMissingChunks = (
     });
 
     const missingChunks: number[] = [];
-    console.log(`chunks: ${chunks}`);
     // Loop over the array to find missing chunks
     for (let i = 0; i < chunks.length; i++) {
         if (chunks[i] === 0) {

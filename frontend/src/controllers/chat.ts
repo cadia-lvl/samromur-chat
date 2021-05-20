@@ -104,8 +104,6 @@ export default class Chat {
     }
 
     private handleChunkReceived = (chunk: AudioChunk): void => {
-        console.log('chat received blob', chunk);
-
         if (this.onChunkReceived !== undefined) {
             // Inject session id to chunk
             const audioChunk = { ...chunk };

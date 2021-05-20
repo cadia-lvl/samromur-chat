@@ -82,11 +82,8 @@ export default class Recorder {
                 data: { chunk, command },
             } = event;
 
-            console.log(event);
-
+            // On chunk available forward to listener
             if (command === 'chunk-available') {
-                console.log(chunk);
-                console.log('received chunk');
                 if (this.onChunkReceived) {
                     this.onChunkReceived(chunk);
                 }
@@ -99,7 +96,6 @@ export default class Recorder {
                 command: 'encode',
                 buffer: downsampled,
             });
-            //this.encoder.postMessage({ command: 'getData' });
         };
 
         if (this.chunkInterval > 0) {
@@ -115,10 +111,9 @@ export default class Recorder {
     };
 
     private requestChunk = () => {
-        // if recording
+        // if recording ask for chunk
         if (this.isRecording) {
             this.encoder.postMessage({ command: 'get-chunk' });
-            console.log('chunk requested, recorder.');
             this.startChunkRequesting();
         }
     };
@@ -191,7 +186,6 @@ export default class Recorder {
                     data: { blob, nbrOfChunks, command },
                 } = event;
                 if (command === 'finish') {
-                    console.log('IN FINISH');
                     const url = URL.createObjectURL(blob);
                     try {
                         const duration = await this.getBlobDuration(url);
@@ -213,8 +207,6 @@ export default class Recorder {
                     const {
                         data: { chunk },
                     } = event;
-                    console.log(chunk);
-                    console.log('received chunk');
                     if (this.onChunkReceived) {
                         this.onChunkReceived(chunk);
                     }
