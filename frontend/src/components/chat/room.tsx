@@ -441,17 +441,21 @@ class Chatroom extends React.Component<Props, State> {
 
     onSubmit = async () => {
         const { recording } = this.state;
-        //const { onUpload } = this.props;
         await this.chat.uploadOther();
 
-        // Upload last chunk
+        // Verify chunks
         await this.verifyChunks();
-
-        //onUpload(recording);
 
         // Send complete singal
         await api.recordingFinished(recording.id);
         this.chat.disconnect();
+    };
+
+    // The function that is called when the
+    // chat receives the Upload command from the web socket
+    // should behave exactly like onSubmit
+    handleOnUpload = async () => {
+        this.onSubmit();
     };
 
     onTest = async () => {
@@ -485,18 +489,6 @@ class Chatroom extends React.Component<Props, State> {
             toast.error('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
                 toastId: 'toast-error',
             });
-        }
-    };
-
-    handleOnUpload = async () => {
-        const { recording } = this.state;
-        const { onUpload } = this.props;
-        if (recording) {
-            // Upload last chunk
-            await this.verifyChunks();
-
-            onUpload(recording);
-            this.chat.disconnect();
         }
     };
 
