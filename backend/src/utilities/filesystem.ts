@@ -243,7 +243,7 @@ const findUploadFile = (file: string): string | undefined => {
             throw new Error('Too many matches when uploading to s3 bucket.');
         }
 
-        return Contents[0];
+        return folderPath + Contents[0];
     } catch (err) {
         console.log(err);
     }
