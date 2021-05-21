@@ -115,7 +115,7 @@ class FrontPage extends React.Component<Props, State> {
                             <MarsContainer>
                                 <Mars />
                             </MarsContainer>
-                            <JoinContainer onClick={this.handleJoin}>
+                            <JoinContainer onSubmit={this.handleJoin}>
                                 <UrlInput
                                     label={'Opna spjall'}
                                     value={this.state.userUrl}
