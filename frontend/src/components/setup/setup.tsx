@@ -66,7 +66,6 @@ class Setup extends React.Component<Props, State> {
 
     onUpload = async (recording: AudioInfo) => {
         const { demographics } = this.state;
-        // await api.uploadClip(recording, demographics);
         await api.recordingFinished(recording, demographics);
         // Push to thanks page
         const { history } = this.props;

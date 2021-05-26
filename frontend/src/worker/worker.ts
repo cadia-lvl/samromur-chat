@@ -42,7 +42,7 @@ class WavEncoder {
      */
     getChunk = async (): Promise<AudioChunk> => {
         const dataViews = [...this.dataViews];
-        const header = this.generateWaveHeader(this.numSamples);
+        const header = this.generateWavHeader(this.numSamples);
         const samples = this.numSamples;
 
         // push chunk into the chunk array
@@ -89,7 +89,7 @@ class WavEncoder {
             totalSamples += chunk.samples;
         });
 
-        const header = this.generateWaveHeader(totalSamples);
+        const header = this.generateWavHeader(totalSamples);
         dataViews.unshift(header);
 
         const blob = new Blob(dataViews, { type: 'audio/wav' });
@@ -98,7 +98,7 @@ class WavEncoder {
     };
 
     // Create wav header
-    private generateWaveHeader = (numSamples: number): DataView => {
+    private generateWavHeader = (numSamples: number): DataView => {
         const dataSize = numSamples * 2;
         const view = new DataView(new ArrayBuffer(44));
         this.writeString(view, 0, 'RIFF');
@@ -146,7 +146,9 @@ const finish = async () => {
 };
 
 /**
- * Requests the current data in the recorder
+ * Gets the current chunk of audio from the encoder
+ * and returns it as an AudioChunk via posting the 'chunk-available' message
+ * To access the data a listener needs to be setup to listen for the event.
  */
 const getAndPostChunk = async () => {
     const chunk = await encoder.getChunk();

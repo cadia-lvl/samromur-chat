@@ -168,7 +168,6 @@ export default class Recorder {
     private stop = (): Promise<AudioInfo> => {
         if (!this.isReady()) {
             console.error('Cannot stop audio before microphone is ready.');
-
             return Promise.reject();
         }
 
