@@ -62,7 +62,6 @@ const createRestRouter = (isProduction: boolean) => {
                 return res.status(200).json(missingChunks);
             }
 
-            // No chunks missing, combine and upload?
             return res.status(200).send(missingChunks);
         } catch (error) {
             console.log(error);
@@ -124,9 +123,12 @@ const createRestRouter = (isProduction: boolean) => {
 
     restRouter.delete('/delete/:id', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
-        const deleted = deleteRecording(id);
-
-        res.status(200).send(deleted);
+        try {
+            const deleted = deleteRecording(id);
+            res.status(200).send(deleted);
+        } catch (error) {
+            res.status(500).send(error);
+        }
     });
 
     return restRouter;
