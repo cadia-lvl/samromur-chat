@@ -242,14 +242,15 @@ const findUploadFile = (file: string): string | undefined => {
 
 /**
  * Deletes the recording of the specified id, all chunks and metadata
- * @param id the id of the recording to be deleted min 45 chars
+ * @param id the id of the recording to be deleted min 36 chars
  * @returns true if successfully deleted, otherwise false
  */
 export const deleteRecording = (id: string): boolean => {
-    const minSize = 45; // length of uuid v4 (36) plus _client_x (9)
+    const minSize = 36; // length of uuid v4 (36)
+    const sessionId = id.replace(/_client_[a|b]/, ''); // remove _client_x (9)
 
     // If too short return false, no files deleted
-    if (id.length < minSize) {
+    if (sessionId.length < minSize) {
         return false;
     }
 
@@ -257,7 +258,7 @@ export const deleteRecording = (id: string): boolean => {
         // Find all files matching id
         const Contents = fs
             .readdirSync(folderPath)
-            .filter((value) => value.includes(id));
+            .filter((value) => value.includes(sessionId));
 
         // Delete all files found
         Contents.forEach((file) => fs.unlinkSync(folderPath + file));
