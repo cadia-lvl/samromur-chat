@@ -8,6 +8,7 @@ import {
     checkForMissingChunks,
     combineChunks,
     deleteRecording,
+    getChunkFileName,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -22,8 +23,9 @@ const createRestRouter = (isProduction: boolean) => {
         filename: (req, file, cb) => {
             const id = decodeURIComponent(req.headers.id as string);
             const chunkId = decodeURIComponent(req.headers.chunk_id as string);
+            const chunkFileName = getChunkFileName(id, chunkId);
             if (file.fieldname == 'audio') {
-                cb(null, `${id}_${chunkId}.wav`);
+                cb(null, `${chunkFileName}.wav`);
             } else if (file.fieldname == 'metadata') {
                 cb(null, id + '.json');
             }

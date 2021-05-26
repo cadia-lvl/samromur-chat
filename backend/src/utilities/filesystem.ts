@@ -270,3 +270,41 @@ export const deleteRecording = (id: string): boolean => {
         return false;
     }
 };
+
+/**
+ * Takes in a session id and chunk id. If the number of chunks on the server is higher
+ * than the chunk id, then then chunkfilename will be the largest chunk found plus one.
+ * Otherwiser return the chunk filename as usual.
+ * @param id the session id
+ * @param chunkId id of the chunk that want to be added
+ * @returns the filename for the chunk
+ */
+export const getChunkFileName = (id: string, chunkId: string): string => {
+    const Contents = fs
+        .readdirSync(folderPath)
+        .filter((value) => value.includes(id) && value.includes('.wav'));
+    if (Contents.length > parseInt(chunkId)) {
+        // Get the largest chunknumber
+        const largest = findLargestChunkNumber(Contents, id);
+        const newChunkId = (largest + 1).toString().padStart(4, '0');
+        return `${id}_${newChunkId}`;
+    }
+    return `${id}_${chunkId}`;
+};
+
+/**
+ * A private helper funtion to get the largest chunk for the asked id
+ * @param list list of all chunks for the session
+ * @param id the id of the session
+ * @returns the largest chunk found as a number
+ */
+const findLargestChunkNumber = (list: string[], id: string): number => {
+    const numbers: number[] = [];
+    for (const item of list) {
+        const chunkNumber = parseInt(
+            item.split(`${id}_`).pop()?.split('.wav')[0] as string
+        );
+        numbers.push(chunkNumber);
+    }
+    return Math.max(...numbers);
+};
