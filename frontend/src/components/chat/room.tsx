@@ -339,7 +339,6 @@ class Chatroom extends React.Component<Props, State> {
         const { recording } = this.state;
         await api.removeRecording(recording.id);
         this.setState({ recording: undefined });
-        this.chat.clearRecording();
     };
 
     isCountingDown = () => this.interval && this.timeout;

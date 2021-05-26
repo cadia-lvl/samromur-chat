@@ -274,6 +274,8 @@ export default class Recorder {
             console.error('NO_PROCESSOR_NODE');
             return Promise.reject('NO_PROCESSOR_NODE');
         }
+        // Clear out current encoder data
+        this.clearRecording();
         return this.start();
     };
 
