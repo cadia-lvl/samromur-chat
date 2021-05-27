@@ -178,7 +178,7 @@ export default class Recorder {
             this.sourceNode.disconnect();
             this.encoder.onmessage = async (event) => {
                 const {
-                    data: { blob, nbrOfChunks, command },
+                    data: { blob, chunkCount, command },
                 } = event;
                 if (command === 'finish') {
                     const url = URL.createObjectURL(blob);
@@ -190,7 +190,7 @@ export default class Recorder {
                             duration,
                             url,
                             sampleRate: this.sampleRate,
-                            nbrOfChunks,
+                            chunkCount,
                         });
                     } catch (error) {
                         reject('Audio has no duration');

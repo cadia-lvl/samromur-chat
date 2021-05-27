@@ -42,7 +42,7 @@ export const uploadClip = async (
     clip: AudioInfo,
     demographics: UserDemographics
 ): Promise<void> => {
-    const url = getIDApiUrl();
+    const url = getIdApiUrl();
 
     const { blob } = clip;
     if (!blob) {
@@ -58,7 +58,7 @@ export const uploadClip = async (
         sample_rate: clip.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
         reference: demographics.reference,
-        nbrOfChunks: clip.nbrOfChunks,
+        chunk_count: clip.chunkCount,
     });
 
     const metadata = new Blob([jsonString], {
@@ -69,7 +69,7 @@ export const uploadClip = async (
     formData.append('audio', blob as Blob);
     formData.append('metadata', metadata);
 
-    const chunk_id: string = numberToPaddedString(clip.nbrOfChunks);
+    const chunk_id: string = numberToPaddedString(clip.chunkCount);
 
     return axios({
         method: 'POST',
@@ -94,7 +94,7 @@ export const uploadChunk = async (
     chunk: AudioChunk,
     demographics?: UserDemographics
 ): Promise<void> => {
-    const url = getIDApiUrl('api/chunk');
+    const url = getIdApiUrl('api/chunk');
 
     const id = chunk.id || uuid(); // Generate new id as fallback
 
@@ -140,9 +140,9 @@ export const uploadChunk = async (
 
 export const verifyChunks = async (
     id: string,
-    nbrOfChunks: number
+    chunkCount: number
 ): Promise<number[]> => {
-    const apiUrl = getIDApiUrl('api/verifyChunks');
+    const apiUrl = getIdApiUrl('api/verifyChunks');
 
     try {
         const resp = await axios({
@@ -150,7 +150,7 @@ export const verifyChunks = async (
             url: apiUrl,
             headers: {
                 id,
-                nbr_of_chunks: nbrOfChunks,
+                chunk_count: chunkCount,
             },
         });
         return Promise.resolve(resp.data);
@@ -164,7 +164,7 @@ export const recordingFinished = async (
     recording: AudioInfo,
     demographics: UserDemographics
 ) => {
-    const apiUrl = getIDApiUrl('api/recordingFinished');
+    const apiUrl = getIdApiUrl('api/recordingFinished');
 
     const id = recording.id || uuid(); // Generate new id as fallback
 
@@ -175,7 +175,7 @@ export const recordingFinished = async (
         sample_rate: recording.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
         reference: demographics.reference,
-        nbrOfChunks: recording.nbrOfChunks,
+        chunk_count: recording.chunkCount,
     });
 
     const metadata = new Blob([jsonString], {
@@ -202,7 +202,7 @@ export const recordingFinished = async (
     }
 };
 
-const getIDApiUrl = (APIPath: string = 'api') => {
+const getIdApiUrl = (APIPath: string = 'api') => {
     let pathname = window.location.href;
     if (pathname.includes('localhost')) {
         pathname = pathname.replace('3000', '3030');
@@ -223,7 +223,7 @@ const numberToPaddedString = (toPad: number): string => {
 };
 
 export const removeRecording = async (id: string) => {
-    const apiUrl = getIDApiUrl('api/delete');
+    const apiUrl = getIdApiUrl('api/delete');
 
     try {
         const resp = await axios({

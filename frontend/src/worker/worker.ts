@@ -118,7 +118,7 @@ class WavEncoder {
         return view;
     };
 
-    getNumberOfChunks = (): number => {
+    getChunkCount = (): number => {
         return this.chunks.length;
     };
 
@@ -136,12 +136,12 @@ const finish = async () => {
     await getAndPostChunk();
 
     const blob = await encoder.finish();
-    const nbrOfChunks = encoder.getNumberOfChunks();
+    const chunkCount = encoder.getChunkCount();
     encoder.reset();
     ctx.postMessage({
         command: 'finish',
         blob,
-        nbrOfChunks,
+        chunkCount,
     });
 };
 
@@ -175,7 +175,7 @@ ctx.onmessage = (event) => {
             clear();
             break;
         default:
-            console.log('Unknow command sent to encoder.');
+            console.log('Unknown command sent to encoder.');
     }
 };
 

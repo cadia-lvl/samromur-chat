@@ -52,11 +52,11 @@ const createRestRouter = (isProduction: boolean) => {
 
     restRouter.get('/verifyChunks/:id', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
-        const nbrOfChunks = parseInt(req.headers.nbr_of_chunks as string);
-        console.log(`id: ${id} requested verification for ${nbrOfChunks}`);
+        const chunk_count = parseInt(req.headers.chunk_count as string);
+        console.log(`id: ${id} requested verification for ${chunk_count}`);
 
         try {
-            const missingChunks = await checkForMissingChunks(id, nbrOfChunks);
+            const missingChunks = await checkForMissingChunks(id, chunk_count);
             if (missingChunks.length !== 0) {
                 // Chunks missing, return an array with the missing chunks numbers
                 return res.status(200).json(missingChunks);

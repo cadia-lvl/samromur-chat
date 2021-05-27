@@ -134,7 +134,7 @@ export const downloadLocalSession = async (
 
 export const checkForMissingChunks = async (
     id: string,
-    nbrOfChunks: number
+    chunkCount: number
 ): Promise<number[]> => {
     // get all existing chunks for this client and id
     const Contents = fs
@@ -142,18 +142,17 @@ export const checkForMissingChunks = async (
         .filter((value) => value.includes(id))
         .filter((value) => value.endsWith('.wav'));
 
-    if (Contents.length === nbrOfChunks) {
+    if (Contents.length === chunkCount) {
         return [];
     }
 
     // Generate empty array of nbrOfChunks length
-    const chunks: number[] = new Array<number>(nbrOfChunks).fill(0);
+    const chunks: number[] = new Array<number>(chunkCount).fill(0);
 
     // Mark all found values with one
     Contents.forEach((content) => {
         const numberString = content.split(`${id}_`).pop()?.split('.wav')[0]; // remove id and file ending from string
         const chunk: number = parseInt(numberString as string);
-        console.log(`chunk found: ${chunk}`);
         chunks[chunk - 1] = 1;
     });
 
@@ -286,8 +285,8 @@ export const getChunkFileName = (id: string, chunkId: string): string => {
         .filter((value) => value.includes(id) && value.includes('.wav'));
     if (Contents.length > parseInt(chunkId)) {
         // Get the largest chunknumber
-        const largest = findLargestChunkNumber(Contents, id);
-        const newChunkId = (largest + 1).toString().padStart(4, '0');
+        const maxChunkId = findMaxChunkNumber(Contents, id);
+        const newChunkId = (maxChunkId + 1).toString().padStart(4, '0');
         return `${id}_${newChunkId}`;
     }
     return `${id}_${chunkId}`;
@@ -299,7 +298,7 @@ export const getChunkFileName = (id: string, chunkId: string): string => {
  * @param id the id of the session
  * @returns the largest chunk found as a number
  */
-const findLargestChunkNumber = (list: string[], id: string): number => {
+const findMaxChunkNumber = (list: string[], id: string): number => {
     const numbers: number[] = [];
     for (const item of list) {
         const chunkNumber = parseInt(
