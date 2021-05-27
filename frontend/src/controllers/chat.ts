@@ -67,6 +67,7 @@ export default class Chat {
     private unsentMessages: Payload[];
     private isChatroomOwner: boolean;
     private isDisconnecting: boolean;
+    private joinedMidRecording: boolean;
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
@@ -87,6 +88,7 @@ export default class Chat {
         this.unsentMessages = [];
         this.isChatroomOwner = false;
         this.isDisconnecting = false;
+        this.joinedMidRecording = false;
 
         this.clients = [userClient];
 
@@ -149,6 +151,11 @@ export default class Chat {
             // start websocket ping pong to keep the connection alive
             this.startPingPong();
             this.setChatState(ChatState.CONNECTED);
+
+            // If we are joining a coversation during recording time restart recording
+            if (this.joinedMidRecording) {
+                this.startRecording();
+            }
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -372,6 +379,9 @@ export default class Chat {
             case 'pong':
                 this.handlePong();
                 break;
+            case 'start-mid-recording':
+                this.handleStartMidRecording(message.sessionId);
+                break;
             default:
                 console.error('Misunderstood, ', message);
         }
@@ -413,6 +423,13 @@ export default class Chat {
         if (!this.clients.some((client: UserClient) => client.id === user.id)) {
             this.clients.push(user);
             this.onClientsChanged(this.clients);
+
+            if (this.recordingState === RecordingState.RECORDING) {
+                this.sendMessage({
+                    type: 'start-mid-recording',
+                    sessionId: this.sessionId,
+                });
+            }
         }
     };
 
@@ -585,6 +602,17 @@ export default class Chat {
     private handleIsChatRoomOwner = () => {
         this.isChatroomOwner = true;
         this.onIsOwnerChanged(this.isChatroomOwner);
+    };
+
+    private handleStartMidRecording = async (sessionIdOther: string) => {
+        if (this.sessionId !== '') {
+            console.log('Overwriting existing session id.');
+        }
+        this.sessionId = sessionIdOther.includes('client_a')
+            ? sessionIdOther.replace('client_a', 'client_b')
+            : sessionIdOther.replace('client_b', 'client_a');
+        console.log(this.sessionId);
+        this.joinedMidRecording = true;
     };
 
     public isOwner = (): boolean => {

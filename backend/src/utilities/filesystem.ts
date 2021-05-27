@@ -274,7 +274,7 @@ export const deleteRecording = (id: string): boolean => {
 /**
  * Takes in a session id and chunk id. If the number of chunks on the server is higher
  * than the chunk id, then then chunkfilename will be the largest chunk found plus one.
- * Otherwiser return the chunk filename as usual.
+ * Otherwise return the chunk filename as usual.
  * @param id the session id
  * @param chunkId id of the chunk that want to be added
  * @returns the filename for the chunk
