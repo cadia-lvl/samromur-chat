@@ -20,6 +20,7 @@ export default class Recorder {
 
     public onChunkReceived: ((audioChunk: AudioChunk) => void) | undefined;
     private chunkInterval: number = 0;
+    private chunks: Array<AudioChunk> = [];
 
     private isRecording: boolean = false;
 
@@ -27,6 +28,7 @@ export default class Recorder {
         this.sampleRate = sampleRate;
         this.encoder = new WavEncoder();
         this.chunkInterval = chunkInterval;
+        this.chunks = [];
     }
 
     private isReady = (): boolean => !!this.microphone;
@@ -82,6 +84,7 @@ export default class Recorder {
             if (command === 'chunk-available') {
                 if (this.onChunkReceived) {
                     this.onChunkReceived(chunk);
+                    this.chunks.push(chunk);
                 }
             }
         };
@@ -293,5 +296,15 @@ export default class Recorder {
 
     clearRecording = () => {
         this.encoder.postMessage({ command: 'clear' });
+        this.chunks = [];
+    };
+
+    getMissingChunks = (missingChunks: number[]) => {
+        const foundMissingChunks: AudioChunk[] = [];
+        for (const missing of missingChunks) {
+            foundMissingChunks.push(this.chunks[missing - 1]);
+        }
+        console.log(`found missing: ${foundMissingChunks}`);
+        return foundMissingChunks;
     };
 }

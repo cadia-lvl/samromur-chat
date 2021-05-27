@@ -92,7 +92,8 @@ export const uploadClip = async (
 
 export const uploadChunk = async (
     chunk: AudioChunk,
-    demographics?: UserDemographics
+    demographics?: UserDemographics,
+    isMissing: boolean = false
 ): Promise<void> => {
     const url = getApiUrl('api/chunk');
 
@@ -126,6 +127,7 @@ export const uploadChunk = async (
             'Content-Type': 'multipart/form-data',
             id,
             chunk_id,
+            is_missing: isMissing,
         },
         data: formData,
     })
@@ -164,7 +166,7 @@ export const recordingFinished = async (
     recording: AudioInfo,
     demographics: UserDemographics
 ) => {
-    const apiUrl = getApiUrl('api/recording-finished');
+    const apiUrl = getApiUrl('api/recordingFinished');
 
     const id = recording.id || uuid(); // Generate new id as fallback
 
@@ -175,7 +177,6 @@ export const recordingFinished = async (
         sample_rate: recording.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
         reference: demographics.reference,
-        chunk_count: recording.chunkCount,
     });
 
     const metadata = new Blob([jsonString], {
@@ -231,4 +232,7 @@ export const removeRecording = async (id: string) => {
     } catch (err) {
         return Promise.reject(err);
     }
+};
+export const uploadMissingChunk = async (chunk: AudioChunk): Promise<void> => {
+    return await uploadChunk(chunk, undefined, true);
 };

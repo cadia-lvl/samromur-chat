@@ -142,6 +142,8 @@ export const checkForMissingChunks = async (
         .filter((value) => value.includes(id))
         .filter((value) => value.endsWith('.wav'));
 
+    // If more chunks on the server are more than on the client
+    // something has gone wrong
     if (Contents.length === chunkCount) {
         return [];
     }
@@ -277,13 +279,18 @@ export const deleteRecording = (id: string): boolean => {
  * Otherwise return the chunk filename as usual.
  * @param id the session id
  * @param chunkId id of the chunk that want to be added
+ * @param isMissing if the chunk is missing, it should be inserted with its chunk id
  * @returns the filename for the chunk
  */
-export const getChunkFileName = (id: string, chunkId: string): string => {
+export const getChunkFileName = (
+    id: string,
+    chunkId: string,
+    isMissing = false
+): string => {
     const Contents = fs
         .readdirSync(folderPath)
         .filter((value) => value.includes(id) && value.includes('.wav'));
-    if (Contents.length > parseInt(chunkId)) {
+    if (Contents.length > parseInt(chunkId) && !isMissing) {
         // Get the largest chunknumber
         const maxChunkId = findMaxChunkNumber(Contents, id);
         const newChunkId = (maxChunkId + 1).toString().padStart(4, '0');
@@ -307,4 +314,33 @@ const findMaxChunkNumber = (list: string[], id: string): number => {
         numbers.push(chunkNumber);
     }
     return Math.max(...numbers);
+};
+
+export const checkChunksMismatch = (
+    id: string,
+    chunkCount: number
+): boolean => {
+    const Contents = fs
+        .readdirSync(folderPath)
+        .filter((value) => value.includes(id) && value.includes('.wav'));
+    return Contents.length != chunkCount;
+};
+
+export const writeMissingChunksToMetadata = async (
+    id: string
+): Promise<void> => {
+    const chunksFiles = fs
+        .readdirSync(folderPath)
+        .filter((value) => value.includes(id) && value.includes('.wav'));
+    const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
+    const missingChunks = await checkForMissingChunks(id, maxChunkOnServer);
+    const filePath = folderPath + id + '.json';
+    const file = fs.readFileSync(filePath, 'utf-8');
+    console.log(file);
+    let json = JSON.parse(file);
+    json = { ...json, missing_chunks: missingChunks };
+    const ouputString = JSON.stringify(json);
+    console.log(ouputString);
+
+    fs.writeFileSync(filePath, ouputString);
 };

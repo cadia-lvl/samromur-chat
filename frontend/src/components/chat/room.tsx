@@ -488,7 +488,6 @@ class Chatroom extends React.Component<Props, State> {
         await this.verifyChunks();
 
         // Send complete signal and upload
-
         await onUpload(recording);
         this.chat.disconnect();
     };
@@ -504,6 +503,10 @@ class Chatroom extends React.Component<Props, State> {
         if (missingChunks.length !== 0) {
             // TODO: get missing chunks and upload them
             console.log(`These chunks are missing: ${missingChunks}`);
+            const chunks = this.chat.getMissingChunks(missingChunks);
+            for (const chunk of chunks) {
+                await api.uploadMissingChunk(chunk);
+            }
         }
     };
 

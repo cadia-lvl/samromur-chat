@@ -714,4 +714,13 @@ export default class Chat {
     public clearRecording = () => {
         this.recorder.clearRecording();
     };
+
+    public getMissingChunks = (missingChunks: number[]) => {
+        const chunks = this.recorder.getMissingChunks(missingChunks);
+        // insert session id
+        for (let i = 0; i < chunks.length; i++) {
+            chunks[i].id = this.sessionId;
+        }
+        return chunks;
+    };
 }
