@@ -42,7 +42,7 @@ export const uploadClip = async (
     clip: AudioInfo,
     demographics: UserDemographics
 ): Promise<void> => {
-    const url = getIdApiUrl();
+    const url = getApiUrl('api/clip');
 
     const { blob } = clip;
     if (!blob) {
@@ -94,7 +94,7 @@ export const uploadChunk = async (
     chunk: AudioChunk,
     demographics?: UserDemographics
 ): Promise<void> => {
-    const url = getIdApiUrl('api/chunk');
+    const url = getApiUrl('api/chunk');
 
     const id = chunk.id || uuid(); // Generate new id as fallback
 
@@ -142,7 +142,7 @@ export const verifyChunks = async (
     id: string,
     chunkCount: number
 ): Promise<number[]> => {
-    const apiUrl = getIdApiUrl('api/verifyChunks');
+    const apiUrl = getApiUrl('api/verifyChunks');
 
     try {
         const resp = await axios({
@@ -164,7 +164,7 @@ export const recordingFinished = async (
     recording: AudioInfo,
     demographics: UserDemographics
 ) => {
-    const apiUrl = getIdApiUrl('api/recordingFinished');
+    const apiUrl = getApiUrl('api/recording-finished');
 
     const id = recording.id || uuid(); // Generate new id as fallback
 
@@ -202,28 +202,22 @@ export const recordingFinished = async (
     }
 };
 
-const getIdApiUrl = (APIPath: string = 'api') => {
-    let pathname = window.location.href;
+const getApiUrl = (apiPath: string = 'api') => {
+    let pathname = window.location.origin;
     if (pathname.includes('localhost')) {
         pathname = pathname.replace('3000', '3030');
     }
 
-    const parts = pathname.split('/');
-
-    // Add in api before session id
-    parts.splice(parts.length - 1, 0, APIPath);
-
-    const url = parts.join('/');
-    return url;
+    return `${pathname}/${apiPath}`;
 };
 
-const numberStringSize = 4;
 const numberToPaddedString = (toPad: number): string => {
+    const numberStringSize = 4;
     return toPad.toString().padStart(numberStringSize, '0');
 };
 
 export const removeRecording = async (id: string) => {
-    const apiUrl = getIdApiUrl('api/delete');
+    const apiUrl = getApiUrl('api/delete');
 
     try {
         const resp = await axios({

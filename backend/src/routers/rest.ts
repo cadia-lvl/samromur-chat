@@ -23,8 +23,8 @@ const createRestRouter = (isProduction: boolean) => {
         filename: (req, file, cb) => {
             const id = decodeURIComponent(req.headers.id as string);
             const chunkId = decodeURIComponent(req.headers.chunk_id as string);
-            const chunkFileName = getChunkFileName(id, chunkId);
             if (file.fieldname == 'audio') {
+                const chunkFileName = getChunkFileName(id, chunkId);
                 cb(null, `${chunkFileName}.wav`);
             } else if (file.fieldname == 'metadata') {
                 cb(null, id + '.json');
@@ -37,7 +37,7 @@ const createRestRouter = (isProduction: boolean) => {
         { name: 'metadata' },
     ]);
 
-    restRouter.post('/:id', upload, (req, res) => {
+    restRouter.post('/clip', upload, (req, res) => {
         // If in production
         if (bucket) {
             bucket.uploadClip(req);
@@ -46,11 +46,12 @@ const createRestRouter = (isProduction: boolean) => {
         return res.status(200).send('Success');
     });
 
-    restRouter.post('/chunk/:id', upload, (req, res) => {
+    restRouter.post('/chunk', upload, (req, res) => {
+        console.log('chunk received');
         return res.status(200).send('Success');
     });
 
-    restRouter.get('/verifyChunks/:id', async (req, res) => {
+    restRouter.get('/verifyChunks', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
         const chunk_count = parseInt(req.headers.chunk_count as string);
         console.log(`id: ${id} requested verification for ${chunk_count}`);
@@ -69,7 +70,8 @@ const createRestRouter = (isProduction: boolean) => {
         }
     });
 
-    restRouter.post('/recordingFinished/:id', upload, async (req, res) => {
+    restRouter.post('/recording-finished', upload, async (req, res) => {
+        console.log('recording finished received');
         const id = decodeURIComponent(req.headers.id as string);
         const combineSuccess = await combineChunks(id);
         if (!combineSuccess) {
@@ -121,7 +123,7 @@ const createRestRouter = (isProduction: boolean) => {
         }
     });
 
-    restRouter.delete('/delete/:id', async (req, res) => {
+    restRouter.delete('/delete', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
         try {
             const deleted = deleteRecording(id);
