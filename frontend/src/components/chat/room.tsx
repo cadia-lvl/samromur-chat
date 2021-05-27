@@ -265,6 +265,8 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     componentWillUnmount = async () => {
+        //Unsubscribe from state changing functions
+        this.chat.onChatStateChanged = () => {};
         window.removeEventListener('beforeunload', this.alertUser);
         window.removeEventListener('popstate', this.alertUserBack);
     };

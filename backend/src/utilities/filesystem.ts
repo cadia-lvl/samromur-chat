@@ -329,18 +329,26 @@ export const checkChunksMismatch = (
 export const writeMissingChunksToMetadata = async (
     id: string
 ): Promise<void> => {
+    // Find all chunk files
     const chunksFiles = fs
         .readdirSync(folderPath)
         .filter((value) => value.includes(id) && value.includes('.wav'));
+    // Find the max chunk number on server
     const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
+    // Find missing chunks
     const missingChunks = await checkForMissingChunks(id, maxChunkOnServer);
-    const filePath = folderPath + id + '.json';
-    const file = fs.readFileSync(filePath, 'utf-8');
-    console.log(file);
-    let json = JSON.parse(file);
-    json = { ...json, missing_chunks: missingChunks };
-    const ouputString = JSON.stringify(json);
-    console.log(ouputString);
 
-    fs.writeFileSync(filePath, ouputString);
+    // If we have any missing chunks, write them to the metadata file
+    if (missingChunks.length > 0) {
+        // Create file path
+        const filePath = folderPath + id + '.json';
+        const file = fs.readFileSync(filePath, 'utf-8');
+        console.log(file);
+        let json = JSON.parse(file);
+        json = { ...json, missing_chunks: missingChunks };
+        const ouputString = JSON.stringify(json);
+        console.log(ouputString);
+
+        fs.writeFileSync(filePath, ouputString);
+    }
 };
