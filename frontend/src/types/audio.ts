@@ -6,7 +6,7 @@ export interface AudioInfo {
     id?: string;
     url: string;
     sampleRate: number;
-    nbrOfChunks: number;
+    chunkCount: number;
 }
 
 export interface AudioChunk {

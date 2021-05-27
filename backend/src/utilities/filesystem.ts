@@ -146,7 +146,7 @@ export const checkForMissingChunks = async (
         return [];
     }
 
-    // Generate empty array of nbrOfChunks length
+    // Generate empty array of chunkCount length
     const chunks: number[] = new Array<number>(chunkCount).fill(0);
 
     // Mark all found values with one
