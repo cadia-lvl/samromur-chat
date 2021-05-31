@@ -48,12 +48,17 @@ export const getLocalSessions = (
     const clientSessions: { [key: string]: SessionMetadata } = {};
 
     // Get all the json files in the folder
+    // Filter out chunk wav files
     const jsonList = fs
         .readdirSync(folderPath)
         .map((fileName) => {
             return path.join(folderPath, fileName);
         })
-        .filter((value) => value.endsWith('.json'));
+        .filter(
+            (value) =>
+                value.endsWith('.json') &&
+                fs.existsSync(value.replace('.json', '.wav'))
+        );
 
     jsonList.forEach((filename) => {
         // synchronously reads json contents
@@ -137,10 +142,7 @@ export const checkForMissingChunks = async (
     chunkCount: number
 ): Promise<number[]> => {
     // get all existing chunks for this client and id
-    const Contents = fs
-        .readdirSync(folderPath)
-        .filter((value) => value.includes(id))
-        .filter((value) => value.endsWith('.wav'));
+    const Contents = getChunkFiles(id);
 
     // If more chunks on the server are more than on the client
     // something has gone wrong
@@ -173,10 +175,7 @@ export const combineChunks = async (id: string): Promise<boolean> => {
     let result = false;
     try {
         // get all existing chunks for this client and id
-        const Contents = fs
-            .readdirSync(folderPath)
-            .filter((value) => value.includes(id))
-            .filter((value) => value.endsWith('.wav'));
+        const Contents = getChunkFiles(id);
 
         const listFileName = `${folderPath}${id}_list.txt`;
         let fileNames = '';
@@ -274,6 +273,7 @@ export const deleteRecording = (id: string): boolean => {
 };
 
 /**
+ * Returns the proper name for a chunk that is about to be added.
  * Takes in a session id and chunk id. If the number of chunks on the server is higher
  * than the chunk id, then then chunkfilename will be the largest chunk found plus one.
  * Otherwise return the chunk filename as usual.
@@ -316,6 +316,12 @@ const findMaxChunkNumber = (list: string[], id: string): number => {
     return Math.max(...numbers);
 };
 
+/**
+ * Checks if there is a chunk mismatch between client and server
+ * @param id the session id
+ * @param chunkCount amout of expected chunks
+ * @returns true if the amount of chunks on the server is not the same as on the client
+ */
 export const checkChunksMismatch = (
     id: string,
     chunkCount: number
@@ -326,29 +332,65 @@ export const checkChunksMismatch = (
     return Contents.length != chunkCount;
 };
 
+/**
+ * If there are chunks missing, then add that information to the metadata file
+ * Appends a misssing_chunk array of missing chunks to the json file matching the id
+ * @param id the session id
+ */
 export const writeMissingChunksToMetadata = async (
     id: string
 ): Promise<void> => {
-    // Find all chunk files
-    const chunksFiles = fs
-        .readdirSync(folderPath)
-        .filter((value) => value.includes(id) && value.includes('.wav'));
-    // Find the max chunk number on server
-    const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
     // Find missing chunks
-    const missingChunks = await checkForMissingChunks(id, maxChunkOnServer);
+    const missingChunks = await getMissingChunks(id);
 
     // If we have any missing chunks, write them to the metadata file
     if (missingChunks.length > 0) {
         // Create file path
         const filePath = folderPath + id + '.json';
-        const file = fs.readFileSync(filePath, 'utf-8');
-        console.log(file);
-        let json = JSON.parse(file);
-        json = { ...json, missing_chunks: missingChunks };
-        const ouputString = JSON.stringify(json);
-        console.log(ouputString);
-
-        fs.writeFileSync(filePath, ouputString);
+        let data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        // Append missing chunks data to metadata
+        data = { ...data, missing_chunks: missingChunks };
+        fs.writeFileSync(filePath, JSON.stringify(data));
     }
+};
+
+/**
+ * Finds the missing chunks on the server and
+ * returns an array of the missing chunk numbers.
+ * @param id the session id
+ * @returns returns the chunknumbers missing for the session
+ */
+const getMissingChunks = async (id: string): Promise<number[]> => {
+    // Find all chunk files
+    const chunksFiles = getChunkFiles(id);
+    // Find the max chunk number on server
+    const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
+    // Find missing chunks
+    const missingChunks = await checkForMissingChunks(id, maxChunkOnServer);
+
+    return missingChunks;
+};
+
+/**
+ * Finds all audio files matching the input id
+ * @param id the session id
+ * @returns an array of string of audio file paths for the id
+ */
+const getChunkFiles = (id: string): string[] => {
+    const chunksFiles = fs
+        .readdirSync(folderPath)
+        .filter((value) => value.includes(id) && value.includes('.wav'));
+    return chunksFiles;
+};
+
+/**
+ * Checks if the server is missing audio chunks for the input id.
+ * @param id the session id
+ * @returns true if the server has audio chunks missing, false otherwise.
+ */
+export const isChunksMissing = (id: string): boolean => {
+    const chunksFiles = getChunkFiles(id);
+    const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
+
+    return chunksFiles.length != maxChunkOnServer;
 };
