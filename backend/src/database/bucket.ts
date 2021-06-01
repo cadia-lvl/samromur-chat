@@ -208,7 +208,7 @@ export default class Bucket {
         await this.assertFolder(folder + '/');
 
         const clipFilename = folder + id + '.wav';
-        const metdataFilename = folder + id + '.json';
+        const metadataFilename = folder + id + '.json';
 
         try {
             await this.s3
@@ -224,7 +224,7 @@ export default class Bucket {
             await this.s3
                 .upload({
                     Bucket: this.bucketName,
-                    Key: metdataFilename,
+                    Key: metadataFilename,
                     Body: fs.createReadStream(metadata.path),
                 })
                 .promise();
@@ -248,7 +248,7 @@ export default class Bucket {
             // S3 bucket names
             const folder = id.replace(/_client_[a|b]/, '') + '/';
             const clipFilename = folder + id + '.wav';
-            const metdataFilename = folder + id + '.json';
+            const metadataFilename = folder + id + '.json';
 
             await this.s3
                 .upload({
@@ -263,7 +263,7 @@ export default class Bucket {
             await this.s3
                 .upload({
                     Bucket: this.bucketName,
-                    Key: metdataFilename,
+                    Key: metadataFilename,
                     Body: fs.createReadStream(metadataPath),
                 })
                 .promise();

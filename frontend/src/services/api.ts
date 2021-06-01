@@ -152,7 +152,7 @@ export const uploadChunk = async (
  * @param id the session id to verify
  * @param chunkCount the number of chunks on the client
  * @returns a vector containing the ids of the missing chunks on the server.
- * An empty arrary if all chunks exists.
+ * An empty array if all chunks exists.
  */
 export const verifyChunks = async (
     id: string,
@@ -182,7 +182,7 @@ export const verifyChunks = async (
  * The server will then upload the recording to the s3 bucket.
  * @param recording the recording that is finished
  * @param demographics the demographics of the recording
- * @returns Success if successfull an error code or message otherwise
+ * @returns Success if successful an error code or message otherwise
  */
 export const recordingFinished = async (
     recording: AudioInfo,

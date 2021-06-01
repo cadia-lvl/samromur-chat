@@ -137,6 +137,13 @@ export const downloadLocalSession = async (
     archive.finalize();
 };
 
+/**
+ * Check for the chunks related to the input id and expected number of chunks 
+ * chunkCount and returns an array of the missing chunk numbers.
+ * @param id the session id to check for missing chunks on
+ * @param chunkCount the expected chunk count
+ * @returns an array with the missing chunk numbers, empty if no chunks missing
+ */
 export const checkForMissingChunks = async (
     id: string,
     chunkCount: number
@@ -171,6 +178,12 @@ export const checkForMissingChunks = async (
     return missingChunks;
 };
 
+/**
+ * Combines all chunks for the session id (1 client) and 
+ * returns true if successful false otherwise
+ * @param id the session id
+ * @returns boolean result
+ */
 export const combineChunks = async (id: string): Promise<boolean> => {
     let result = false;
     try {
@@ -216,14 +229,30 @@ export const combineChunks = async (id: string): Promise<boolean> => {
     }
 };
 
+/**
+ * Returns the filepath for the audio file
+ * @param id the session id
+ * @returns the file path for the audio file
+ */
 export const getAudioPath = (id: string): string | undefined => {
     return findUploadFile(id + '.wav');
 };
 
+/**
+ * Returns the filepath for the metadata file
+ * @param id the session id
+ * @returns the file path for the metadata file
+ */
 export const getMetadataPath = (id: string): string | undefined => {
     return findUploadFile(id + '.json');
 };
 
+/**
+ * Helper function to make sure that a file about to be uploaded 
+ * is unique
+ * @param file the filename that should be uploaded
+ * @returns the filepath of the file
+ */
 const findUploadFile = (file: string): string | undefined => {
     try {
         const Contents = fs
@@ -241,7 +270,8 @@ const findUploadFile = (file: string): string | undefined => {
 };
 
 /**
- * Deletes the recording of the specified id, all chunks and metadata for both clients
+ * Deletes the recording of the specified id, 
+ * including all chunks and metadata for both clients
  * @param id the id of the recording to be deleted min 36 chars
  * @returns true if successfully deleted, otherwise false
  */
@@ -275,7 +305,7 @@ export const deleteRecording = (id: string): boolean => {
 /**
  * Returns the proper name for a chunk that is about to be added.
  * Takes in a session id and chunk id. If the number of chunks on the server is higher
- * than the chunk id, then then chunkfilename will be the largest chunk found plus one.
+ * than the chunk id, then chunkfilename will be the largest chunk found plus one.
  * Otherwise return the chunk filename as usual.
  * @param id the session id
  * @param chunkId id of the chunk that want to be added
@@ -291,7 +321,7 @@ export const getChunkFileName = (
         .readdirSync(folderPath)
         .filter((value) => value.includes(id) && value.includes('.wav'));
     if (Contents.length > parseInt(chunkId) && !isMissing) {
-        // Get the largest chunknumber
+        // Get the largest chunk number
         const maxChunkId = findMaxChunkNumber(Contents, id);
         const newChunkId = (maxChunkId + 1).toString().padStart(4, '0');
         return `${id}_${newChunkId}`;
@@ -300,7 +330,7 @@ export const getChunkFileName = (
 };
 
 /**
- * A private helper funtion to get the largest chunk for the asked id
+ * A private helper function to get the largest chunk for the asked id
  * @param list list of all chunks for the session
  * @param id the id of the session
  * @returns the largest chunk found as a number
@@ -319,7 +349,7 @@ const findMaxChunkNumber = (list: string[], id: string): number => {
 /**
  * Checks if there is a chunk mismatch between client and server
  * @param id the session id
- * @param chunkCount amout of expected chunks
+ * @param chunkCount expected chunk count
  * @returns true if the amount of chunks on the server is not the same as on the client
  */
 export const checkChunksMismatch = (
@@ -334,7 +364,7 @@ export const checkChunksMismatch = (
 
 /**
  * If there are chunks missing, then add that information to the metadata file
- * Appends a misssing_chunk array of missing chunks to the json file matching the id
+ * Appends a missing_chunk array of missing chunks to the json file matching the id
  * @param id the session id
  */
 export const writeMissingChunksToMetadata = async (
@@ -358,7 +388,7 @@ export const writeMissingChunksToMetadata = async (
  * Finds the missing chunks on the server and
  * returns an array of the missing chunk numbers.
  * @param id the session id
- * @returns returns the chunknumbers missing for the session
+ * @returns returns the chunk numbers missing for the session
  */
 const getMissingChunks = async (id: string): Promise<number[]> => {
     // Find all chunk files

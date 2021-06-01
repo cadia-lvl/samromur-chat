@@ -152,7 +152,7 @@ export default class Chat {
             this.startPingPong();
             this.setChatState(ChatState.CONNECTED);
 
-            // If we are joining a coversation during recording time restart recording
+            // If we are joining a conversation during recording time restart recording
             if (this.joinedMidRecording) {
                 this.startRecording();
             }
@@ -295,7 +295,7 @@ export default class Chat {
                 await this.reconnect();
             }, this.timeout);
         }
-        // Succefully reconnected
+        // Successfully reconnected
         // Send all the stored messages and client name
         if (!this.reconnecting) {
             this.setUsername(this.userClient.username);
@@ -395,7 +395,7 @@ export default class Chat {
     };
 
     private handleSessionId = (id: string) => {
-        // _client_b is appended for the user recieving recording
+        // _client_b is appended for the user receiving recording
         this.sessionId = id + '_client_b';
     };
 
@@ -501,7 +501,7 @@ export default class Chat {
             this.setRecordingState(RecordingState.NOT_RECORDING);
             const recording = await this.recorder.stopRecording();
 
-            // Inject sessionid
+            // Inject session id
             recording.id = this.sessionId;
             this.onRecordingStopped(recording);
         } catch (error) {
@@ -677,7 +677,7 @@ export default class Chat {
             this.sendMessage({ type: 'stop_recording' });
             const recording = await this.recorder.stopRecording();
 
-            // Inject sessionid
+            // Inject session id
             recording.id = this.sessionId;
 
             this.onRecordingStopped(recording);
