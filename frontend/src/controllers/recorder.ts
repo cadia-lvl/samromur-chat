@@ -207,6 +207,7 @@ export default class Recorder {
                     } = event;
                     if (this.onChunkReceived) {
                         this.onChunkReceived(chunk);
+                        this.chunks.push(chunk);
                     }
                 }
             };
