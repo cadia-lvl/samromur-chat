@@ -90,6 +90,12 @@ export const uploadClip = async (
         });
 };
 
+/**
+ * Uploads an audio chunk to the server
+ * @param chunk the audio chunk to upload
+ * @param demographics optional demographics parameter
+ * @param isMissing set to true if the chunk is missing on the server
+ */
 export const uploadChunk = async (
     chunk: AudioChunk,
     demographics?: UserDemographics,
@@ -140,6 +146,14 @@ export const uploadChunk = async (
         });
 };
 
+/**
+ * Sends a request to the server to verify that
+ * the server and clients have matching chunks
+ * @param id the session id to verify
+ * @param chunkCount the number of chunks on the client
+ * @returns a vector containing the ids of the missing chunks on the server.
+ * An empty arrary if all chunks exists.
+ */
 export const verifyChunks = async (
     id: string,
     chunkCount: number
@@ -162,6 +176,14 @@ export const verifyChunks = async (
     }
 };
 
+/**
+ * Posts the recording finished command to the server
+ * together with the final metadata.
+ * The server will then upload the recording to the s3 bucket.
+ * @param recording the recording that is finished
+ * @param demographics the demographics of the recording
+ * @returns Success if successfull an error code or message otherwise
+ */
 export const recordingFinished = async (
     recording: AudioInfo,
     demographics: UserDemographics
@@ -217,6 +239,11 @@ const numberToPaddedString = (toPad: number): string => {
     return toPad.toString().padStart(numberStringSize, '0');
 };
 
+/**
+ * Sends a request to the server to delete the recording
+ * @param id the id of the recording to delete
+ * @returns true if deleted false if not
+ */
 export const removeRecording = async (id: string) => {
     const apiUrl = getApiUrl('api/delete');
 
@@ -233,6 +260,11 @@ export const removeRecording = async (id: string) => {
         return Promise.reject(err);
     }
 };
+
+/**
+ * Uploads a chunk that the server is missing
+ * @param chunk the audio chunk to upload
+ */
 export const uploadMissingChunk = async (chunk: AudioChunk): Promise<void> => {
     return await uploadChunk(chunk, undefined, true);
 };

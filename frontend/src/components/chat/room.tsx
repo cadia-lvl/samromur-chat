@@ -477,7 +477,6 @@ class Chatroom extends React.Component<Props, State> {
 
     // The function that is called when the
     // chat receives the Upload command from the web socket
-    // should behave exactly like onSubmit
     handleOnUpload = async () => {
         this.submit();
     };
@@ -494,6 +493,12 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.disconnect();
     };
 
+    /**
+     * Sends the verify request to the server.
+     * Verifies that the server has all the chunks
+     * existing on the client and sends the missing chunks
+     * if not.
+     */
     verifyChunks = async () => {
         const { recording } = this.state;
 
@@ -503,8 +508,6 @@ class Chatroom extends React.Component<Props, State> {
         );
 
         if (missingChunks.length !== 0) {
-            // TODO: get missing chunks and upload them
-            console.log(`These chunks are missing: ${missingChunks}`);
             const chunks = this.chat.getMissingChunks(missingChunks);
             for (const chunk of chunks) {
                 await api.uploadMissingChunk(chunk);

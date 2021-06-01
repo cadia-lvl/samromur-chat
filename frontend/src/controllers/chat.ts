@@ -604,6 +604,12 @@ export default class Chat {
         this.onIsOwnerChanged(this.isChatroomOwner);
     };
 
+    /**
+     * Updates the session id to the one of the other clients
+     * First updates the client identifier to be a or b depending on
+     * the other client.
+     * @param sessionIdOther the other clients id (includes client_a/b)
+     */
     private handleStartMidRecording = async (sessionIdOther: string) => {
         if (this.sessionId !== '') {
             console.log('Overwriting existing session id.');

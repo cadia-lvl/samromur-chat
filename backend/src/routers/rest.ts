@@ -82,8 +82,8 @@ const createRestRouter = (isProduction: boolean) => {
     restRouter.post('/recordingFinished', upload, async (req, res) => {
         console.log('recording finished received');
         const id = decodeURIComponent(req.headers.id as string);
-        const minIdLenght = 45; // length of uuid v4 (36) + _client_x (9)
-        if (id.length < minIdLenght) {
+        const minIdLength = 45; // length of uuid v4 (36) + _client_x (9)
+        if (id.length < minIdLength) {
             return res.status(500).send(`Id: ${id} is too short.`);
         }
         if (isChunksMissing(id)) {
