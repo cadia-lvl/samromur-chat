@@ -66,10 +66,14 @@ class Setup extends React.Component<Props, State> {
 
     onUpload = async (recording: AudioInfo) => {
         const { demographics } = this.state;
-        await api.recordingFinished(recording, demographics);
-        // Push to thanks page
-        const { history } = this.props;
-        history.push('/takk');
+        try {
+            await api.recordingFinished(recording, demographics);
+            // Push to thanks page
+            const { history } = this.props;
+            history.push('/takk');
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     onChunkReceived = async (chunk: AudioChunk) => {
