@@ -138,7 +138,7 @@ export const downloadLocalSession = async (
 };
 
 /**
- * Check for the chunks related to the input id and expected number of chunks 
+ * Check for the chunks related to the input id and expected number of chunks
  * chunkCount and returns an array of the missing chunk numbers.
  * @param id the session id to check for missing chunks on
  * @param chunkCount the expected chunk count
@@ -179,7 +179,7 @@ export const checkForMissingChunks = async (
 };
 
 /**
- * Combines all chunks for the session id (1 client) and 
+ * Combines all chunks for the session id (1 client) and
  * returns true if successful false otherwise
  * @param id the session id
  * @returns boolean result
@@ -248,7 +248,7 @@ export const getMetadataPath = (id: string): string | undefined => {
 };
 
 /**
- * Helper function to make sure that a file about to be uploaded 
+ * Helper function to make sure that a file about to be uploaded
  * is unique
  * @param file the filename that should be uploaded
  * @returns the filepath of the file
@@ -270,7 +270,7 @@ const findUploadFile = (file: string): string | undefined => {
 };
 
 /**
- * Deletes the recording of the specified id, 
+ * Deletes the recording of the specified id,
  * including all chunks and metadata for both clients
  * @param id the id of the recording to be deleted min 36 chars
  * @returns true if successfully deleted, otherwise false
