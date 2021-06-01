@@ -329,7 +329,7 @@ export const checkChunksMismatch = (
     const Contents = fs
         .readdirSync(folderPath)
         .filter((value) => value.includes(id) && value.includes('.wav'));
-    return Contents.length != chunkCount;
+    return Contents.length > chunkCount;
 };
 
 /**

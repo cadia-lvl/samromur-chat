@@ -198,8 +198,8 @@ export default class Controls extends React.Component<Props, State> {
     };
 
     handleOnSubmit = () => {
-        //this.props.onSubmit();
         this.setState({ submitted: true });
+        this.props.onSubmit();
     };
 
     render() {
