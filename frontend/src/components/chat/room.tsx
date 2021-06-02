@@ -489,8 +489,10 @@ class Chatroom extends React.Component<Props, State> {
         await this.verifyChunks();
 
         // Send complete signal and upload
-        await onUpload(recording);
-        this.chat.disconnect();
+        if (recording.id) {
+            await onUpload(recording);
+            this.chat.disconnect();
+        }
     };
 
     /**
