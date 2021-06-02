@@ -78,8 +78,12 @@ const MarsContainer = styled.div`
 const Mars = styled.div`
     content: url(/images/mars.svg);
     display: block;
-    max-width: 8rem;
+    max-width: 5rem;
     margin-bottom: 1rem;
+
+    @media (min-width: 30em) {
+        max-width: 8rem;
+    }
 `;
 
 const WelcomeTextContainer = styled.div``;
