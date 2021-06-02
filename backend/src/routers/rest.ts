@@ -61,12 +61,11 @@ const createRestRouter = (isProduction: boolean) => {
 
     restRouter.get('/verifyChunks', async (req, res) => {
         const id = decodeURIComponent(req.headers.id as string);
-        const chunk_count = parseInt(req.headers.chunk_count as string);
-        console.log(`id: ${id} requested verification for ${chunk_count}`);
+        const chunkCount = parseInt(req.headers.chunk_count as string);
 
         try {
-            const chunkMismatch = checkChunksMismatch(id, chunk_count);
-            const missingChunks = await checkForMissingChunks(id, chunk_count);
+            const chunkMismatch = checkChunksMismatch(id, chunkCount);
+            const missingChunks = await checkForMissingChunks(id, chunkCount);
             if (chunkMismatch) {
                 // For now we pretend that this is ok and return an empty string = no chunks missing
                 // TODO: handle the chunk mismatch and request the proper chunks from the client.
@@ -74,17 +73,15 @@ const createRestRouter = (isProduction: boolean) => {
             }
             return res.status(200).send(missingChunks);
         } catch (error) {
-            console.log(error);
             return res.status(500).send(error.code);
         }
     });
 
     restRouter.post('/recordingFinished', upload, async (req, res) => {
-        console.log('recording finished received');
         const id = decodeURIComponent(req.headers.id as string);
         const minIdLength = 45; // length of uuid v4 (36) + _client_x (9)
         if (id.length < minIdLength) {
-            return res.status(500).send(`Id: ${id} is too short.`);
+            return res.status(400).send(`Id: ${id} is too short.`);
         }
         if (isChunksMissing(id)) {
             await writeMissingChunksToMetadata(id);
