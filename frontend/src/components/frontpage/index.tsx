@@ -28,8 +28,8 @@ const SubmitButton = styled.button`
     color: white;
     cursor: pointer;
     font-size: 2rem;
-    flex: 1 1 0px;
-    max-height: 25%;
+    height: 3.5rem;
+    margin: 1rem 0rem;
 
     :active {
         transform: translateY(2px);
@@ -41,39 +41,49 @@ const SubmitButton = styled.button`
 `;
 
 const JoinContainer = styled.form`
-    width: 66%;
     display: flex;
-    gap: 1rem;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
 `;
 
-const UrlInput = styled(TextInput)`
-    gap: 0.5rem;
-    flex: 1 1 0px;
-    max-height: 25%;
-`;
+const UrlInput = styled(TextInput)``;
 
 const RobotAndJoinContainer = styled.div`
-    display: grid;
-    grid-template-columns: 50% 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     width: 50rem;
     max-width: 100%;
+
+    @media (min-width: 30em) {
+        flex-direction: row;
+
+        > * {
+            flex-basis: 100%;
+        }
+
+        > * + * {
+            margin: 0 2rem;
+        }
+    }
 `;
 
 const MarsContainer = styled.div`
     display: flex;
-    flex-direction: row;
     justify-content: center;
 `;
 
 const Mars = styled.div`
     content: url(/images/mars.svg);
     display: block;
-    width: 8rem;
+    max-width: 5rem;
+    margin-bottom: 1rem;
+
+    @media (min-width: 30em) {
+        max-width: 8rem;
+    }
 `;
 
 const WelcomeTextContainer = styled.div``;
