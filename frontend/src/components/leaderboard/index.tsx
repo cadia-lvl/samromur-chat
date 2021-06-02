@@ -35,7 +35,7 @@ interface BarProps {
 
 const LeaderBoardBar = styled.div<BarProps>`
     width: ${({ percents }) => percents}%;
-    height: 3rem;
+    min-height: 3rem;
     background-color: #60c197;
     color: white;
     display: flex;
@@ -136,7 +136,7 @@ class LeaderBoard extends React.Component<Props, State> {
                                 <LeaderBoardItem key={i}>
                                     {`${ref.name}`}
                                     <LeaderBoardBar percents={percent}>
-                                        {percent > 11 &&
+                                        {percent > 15 &&
                                             getHumanReadableTime(
                                                 splitSeconds(ref.collected)
                                             )}
