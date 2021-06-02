@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Chat, { RecordingState, VoiceState } from '../../controllers/chat';
 import { AudioInfo } from '../../types/audio';
+import { LoadingSpinning } from '../ui/animated/spinner';
 import Swipe from '../ui/animated/swipe';
 import HeadSet from '../ui/icons/headset';
 import HeadSetMuted from '../ui/icons/headset-muted';
@@ -104,6 +105,12 @@ const SubmitButtonsContainer = styled.div`
     gap: 3rem;
 `;
 
+const SpinnerContainer = styled.div`
+    width: 100%;
+    display: grid;
+    justify-content: center;
+`;
+
 interface ButtonProps {
     green?: boolean;
     red?: boolean;
@@ -139,6 +146,7 @@ interface Props {
 
 interface State {
     confirm: boolean;
+    submitted: boolean;
 }
 
 export default class Controls extends React.Component<Props, State> {
@@ -148,6 +156,7 @@ export default class Controls extends React.Component<Props, State> {
 
         this.state = {
             confirm: false,
+            submitted: false,
         };
     }
 
@@ -188,16 +197,20 @@ export default class Controls extends React.Component<Props, State> {
         this.setState({ confirm: false });
     };
 
+    handleOnSubmit = () => {
+        this.setState({ submitted: true });
+        this.props.onSubmit();
+    };
+
     render() {
         const {
-            onSubmit,
             recording,
             recordingState,
             voiceState,
             chatRoomOwner,
         } = this.props;
 
-        const { confirm } = this.state;
+        const { confirm, submitted } = this.state;
 
         return (
             <ControlsContainer second={!!recording}>
@@ -243,23 +256,32 @@ export default class Controls extends React.Component<Props, State> {
                     )}
                 </ButtonsContainer>
                 {chatRoomOwner && (
-                    <SubmitButtons second={confirm}>
+                    <SubmitButtons second={confirm || submitted}>
                         <SubmitButtonsContainer>
                             <Button onClick={this.handleConfirm}>
                                 Byrja aftur
                             </Button>
-                            <Button onClick={onSubmit} green>
+                            <Button onClick={this.handleOnSubmit} green>
                                 Senda inn
                             </Button>
                         </SubmitButtonsContainer>
-                        <SubmitButtonsContainer>
-                            <Button onClick={this.handleConfirm}>
-                                Til baka
-                            </Button>
-                            <Button red onClick={this.handleRemove}>
-                                Eyða upptöku
-                            </Button>
-                        </SubmitButtonsContainer>
+                        {submitted ? (
+                            <SpinnerContainer>
+                                <LoadingSpinning
+                                    height={'3rem'}
+                                    width={'3rem'}
+                                />
+                            </SpinnerContainer>
+                        ) : (
+                            <SubmitButtonsContainer>
+                                <Button onClick={this.handleConfirm}>
+                                    Til baka
+                                </Button>
+                                <Button red onClick={this.handleRemove}>
+                                    Eyða upptöku
+                                </Button>
+                            </SubmitButtonsContainer>
+                        )}
                     </SubmitButtons>
                 )}
             </ControlsContainer>

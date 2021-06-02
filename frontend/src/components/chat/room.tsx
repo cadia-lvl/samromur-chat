@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-import { AudioInfo } from '../../types/audio';
+import { AudioChunk, AudioInfo } from '../../types/audio';
 import { UserClient } from '../../types/user';
 
 import Chat, {
@@ -19,6 +19,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import StatusMessages from './status-messages';
 
 import { RemoveWarningModal } from './remove-warning-modal';
+
+import * as api from '../../services/api';
 
 const ChatroomContainer = styled.div`
     position: relative;
@@ -178,6 +180,7 @@ const ErrorMessage = styled.div`
 
 interface ChatroomProps {
     onUpload: (recording: AudioInfo) => void;
+    onChunkReceived: (chunk: AudioChunk) => void;
     userClient: UserClient;
 }
 
@@ -251,6 +254,8 @@ class Chatroom extends React.Component<Props, State> {
             this.setState({ recording });
         };
 
+        this.chat.onChunkReceived = this.handleOnChunkReceived;
+
         this.chat.onUpload = this.handleOnUpload;
 
         this.setState({ isChatroomOwner: this.chat.isOwner() });
@@ -260,8 +265,16 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     componentWillUnmount = async () => {
+        //Unsubscribe from state changing functions
+        this.chat.onChatStateChanged = () => {};
         window.removeEventListener('beforeunload', this.alertUser);
         window.removeEventListener('popstate', this.alertUserBack);
+    };
+
+    handleOnChunkReceived = (chunk: AudioChunk) => {
+        // Move api call here?
+        const { onChunkReceived } = this.props;
+        onChunkReceived(chunk);
     };
 
     // Alert user when recording is not sent in
@@ -324,7 +337,9 @@ class Chatroom extends React.Component<Props, State> {
         );
     };
 
-    removeRecording = () => {
+    removeRecording = async () => {
+        const { recording } = this.state;
+        await api.removeRecording(recording.id);
         this.setState({ recording: undefined });
     };
 
@@ -455,11 +470,51 @@ class Chatroom extends React.Component<Props, State> {
     };
 
     onSubmit = async () => {
+        await this.chat.uploadOther();
+
+        await this.submit();
+    };
+
+    // The function that is called when the
+    // chat receives the Upload command from the web socket
+    handleOnUpload = async () => {
+        this.submit();
+    };
+
+    submit = async () => {
         const { recording } = this.state;
         const { onUpload } = this.props;
-        await this.chat.uploadOther();
-        onUpload(recording);
-        this.chat.disconnect();
+
+        // Verify chunks
+        await this.verifyChunks();
+
+        // Send complete signal and upload
+        if (recording.id) {
+            await onUpload(recording);
+            this.chat.disconnect();
+        }
+    };
+
+    /**
+     * Sends the verify request to the server.
+     * Verifies that the server has all the chunks
+     * existing on the client and sends the missing chunks
+     * if not.
+     */
+    verifyChunks = async () => {
+        const { recording } = this.state;
+
+        const missingChunks = await api.verifyChunks(
+            recording.id,
+            recording.chunkCount
+        );
+
+        if (missingChunks.length !== 0) {
+            const chunks = this.chat.getMissingChunks(missingChunks);
+            for (const chunk of chunks) {
+                await api.uploadMissingChunk(chunk);
+            }
+        }
     };
 
     copyToClipBoard = async () => {
@@ -475,15 +530,6 @@ class Chatroom extends React.Component<Props, State> {
             toast.error('Villa hefur komið upp. Afritaðu tengilinn handvirkt', {
                 toastId: 'toast-error',
             });
-        }
-    };
-
-    handleOnUpload = async () => {
-        const { recording } = this.state;
-        const { onUpload } = this.props;
-        if (recording) {
-            onUpload(recording);
-            this.chat.disconnect();
         }
     };
 

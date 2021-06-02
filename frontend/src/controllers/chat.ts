@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 import Recorder from './recorder';
-import { AudioInfo } from '../types/audio';
+import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
 
 export enum ChatState {
@@ -43,6 +43,7 @@ export default class Chat {
     onIsOwnerChanged!: (isOwner: boolean) => void;
     onRecordingStopped!: (recording: AudioInfo) => void;
     onRecordingStateChanged!: (state: RecordingState) => void;
+    onChunkReceived!: (chunk: AudioChunk) => void;
     onChatStateChanged!: (state: ChatState) => void;
     onVoiceStateChanged!: (state: VoiceState) => void;
     onUpload!: () => void;
@@ -66,11 +67,14 @@ export default class Chat {
     private unsentMessages: Payload[];
     private isChatroomOwner: boolean;
     private isDisconnecting: boolean;
+    private joinedMidRecording: boolean;
 
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
             sampleRate: 16000,
+            chunkInterval: 30,
         });
+        this.recorder.onChunkReceived = this.handleChunkReceived;
         this.socketUrl = socketUrl;
         this.userClient = userClient;
         this.callState = CallState.IDLE;
@@ -84,6 +88,7 @@ export default class Chat {
         this.unsentMessages = [];
         this.isChatroomOwner = false;
         this.isDisconnecting = false;
+        this.joinedMidRecording = false;
 
         this.clients = [userClient];
 
@@ -98,6 +103,15 @@ export default class Chat {
         console.log('initiate chat');
         this.init();
     }
+
+    private handleChunkReceived = (chunk: AudioChunk): void => {
+        if (this.onChunkReceived !== undefined) {
+            // Inject session id to chunk
+            const audioChunk = { ...chunk };
+            audioChunk.id = this.sessionId;
+            this.onChunkReceived(audioChunk);
+        }
+    };
 
     private setCallState = (state: CallState) => (this.callState = state);
 
@@ -137,6 +151,11 @@ export default class Chat {
             // start websocket ping pong to keep the connection alive
             this.startPingPong();
             this.setChatState(ChatState.CONNECTED);
+
+            // If we are joining a conversation during recording time restart recording
+            if (this.joinedMidRecording) {
+                this.startRecording();
+            }
         } catch (error) {
             console.error('Error initializing chat, ', error);
         }
@@ -276,7 +295,7 @@ export default class Chat {
                 await this.reconnect();
             }, this.timeout);
         }
-        // Succefully reconnected
+        // Successfully reconnected
         // Send all the stored messages and client name
         if (!this.reconnecting) {
             this.setUsername(this.userClient.username);
@@ -360,6 +379,9 @@ export default class Chat {
             case 'pong':
                 this.handlePong();
                 break;
+            case 'start-mid-recording':
+                this.handleStartMidRecording(message.sessionId);
+                break;
             default:
                 console.error('Misunderstood, ', message);
         }
@@ -373,7 +395,7 @@ export default class Chat {
     };
 
     private handleSessionId = (id: string) => {
-        // _client_b is appended for the user recieving recording
+        // _client_b is appended for the user receiving recording
         this.sessionId = id + '_client_b';
     };
 
@@ -401,6 +423,13 @@ export default class Chat {
         if (!this.clients.some((client: UserClient) => client.id === user.id)) {
             this.clients.push(user);
             this.onClientsChanged(this.clients);
+
+            if (this.recordingState === RecordingState.RECORDING) {
+                this.sendMessage({
+                    type: 'start-mid-recording',
+                    sessionId: this.sessionId,
+                });
+            }
         }
     };
 
@@ -472,7 +501,7 @@ export default class Chat {
             this.setRecordingState(RecordingState.NOT_RECORDING);
             const recording = await this.recorder.stopRecording();
 
-            // Inject sessionid
+            // Inject session id
             recording.id = this.sessionId;
             this.onRecordingStopped(recording);
         } catch (error) {
@@ -575,6 +604,23 @@ export default class Chat {
         this.onIsOwnerChanged(this.isChatroomOwner);
     };
 
+    /**
+     * Updates the session id to the one of the other clients
+     * First updates the client identifier to be a or b depending on
+     * the other client.
+     * @param sessionIdOther the other clients id (includes client_a/b)
+     */
+    private handleStartMidRecording = async (sessionIdOther: string) => {
+        if (this.sessionId !== '') {
+            console.log('Overwriting existing session id.');
+        }
+        this.sessionId = sessionIdOther.includes('client_a')
+            ? sessionIdOther.replace('client_a', 'client_b')
+            : sessionIdOther.replace('client_b', 'client_a');
+        console.log(this.sessionId);
+        this.joinedMidRecording = true;
+    };
+
     public isOwner = (): boolean => {
         return this.isChatroomOwner;
     };
@@ -631,7 +677,7 @@ export default class Chat {
             this.sendMessage({ type: 'stop_recording' });
             const recording = await this.recorder.stopRecording();
 
-            // Inject sessionid
+            // Inject session id
             recording.id = this.sessionId;
 
             this.onRecordingStopped(recording);
@@ -669,5 +715,18 @@ export default class Chat {
         this.isDisconnecting = true;
         this.socket.close();
         this.rtcConnection.close();
+    };
+
+    public clearRecording = () => {
+        this.recorder.clearRecording();
+    };
+
+    public getMissingChunks = (missingChunks: number[]) => {
+        const chunks = this.recorder.getMissingChunks(missingChunks);
+        // insert session id
+        for (let i = 0; i < chunks.length; i++) {
+            chunks[i].id = this.sessionId;
+        }
+        return chunks;
     };
 }

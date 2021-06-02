@@ -4,5 +4,4 @@ backend/build
 frontend/build
 backend/public
 backend/uploads
-uploads/*.wav
-uploads/*.json
+uploads

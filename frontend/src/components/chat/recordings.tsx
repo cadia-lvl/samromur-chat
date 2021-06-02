@@ -8,7 +8,7 @@ import { getTimestampString, splitSeconds } from '../../utilities/utils';
 import Swipe from '../ui/animated/swipe';
 import ProgressBar from './progress-bar';
 
-import AudioPlayer from 'react-h5-audio-player';
+import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 
 const RecordingsContainer = styled.div`
@@ -26,7 +26,7 @@ const StopwatchContainer = styled.div`
     max-width: 100%;
     font-size: 3rem;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     & > * {
         justify-self: center;
         align-self: center;
@@ -118,6 +118,12 @@ export default class Recording extends React.Component<Props, State> {
                     <AudioPlayer
                         autoPlayAfterSrcChange={false}
                         customAdditionalControls={[]}
+                        customControlsSection={[
+                            RHAP_UI.MAIN_CONTROLS,
+                            RHAP_UI.VOLUME_CONTROLS,
+                        ]}
+                        layout={'horizontal'}
+                        showJumpControls={false}
                         volume={0.5}
                         src={!!recording ? recording.url : ''} // eslint-disable-line no-extra-boolean-cast
                     />

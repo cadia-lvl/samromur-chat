@@ -5,6 +5,13 @@ import Bucket from '../database/bucket';
 import {
     getLocalSessions,
     downloadLocalSession,
+    checkForMissingChunks,
+    combineChunks,
+    deleteRecording,
+    getChunkFileName,
+    checkChunksMismatch,
+    writeMissingChunksToMetadata,
+    areChunksMissing,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -18,8 +25,16 @@ const createRestRouter = (isProduction: boolean) => {
         },
         filename: (req, file, cb) => {
             const id = decodeURIComponent(req.headers.id as string);
+            const chunkId = decodeURIComponent(req.headers.chunk_id as string);
+            const isMissingChunk =
+                decodeURIComponent(req.headers.is_missing as string) == 'true';
             if (file.fieldname == 'audio') {
-                cb(null, id + '.wav');
+                const chunkFileName = getChunkFileName(
+                    id,
+                    chunkId,
+                    isMissingChunk
+                );
+                cb(null, `${chunkFileName}.wav`);
             } else if (file.fieldname == 'metadata') {
                 cb(null, id + '.json');
             }
@@ -31,12 +46,61 @@ const createRestRouter = (isProduction: boolean) => {
         { name: 'metadata' },
     ]);
 
-    restRouter.post('/:id', upload, (req, res) => {
+    restRouter.post('/clip', upload, (req, res) => {
         // If in production
         if (bucket) {
             bucket.uploadClip(req);
         }
 
+        return res.status(200).send('Success');
+    });
+
+    restRouter.post('/chunk', upload, (req, res) => {
+        return res.status(200).send('Success');
+    });
+
+    restRouter.get('/verifyChunks', async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        const chunkCount = parseInt(req.headers.chunk_count as string);
+
+        try {
+            const chunkMismatch = checkChunksMismatch(id, chunkCount);
+            const missingChunks = await checkForMissingChunks(id, chunkCount);
+            if (chunkMismatch) {
+                // For now we pretend that this is ok and return an empty string = no chunks missing
+                // TODO: handle the chunk mismatch and request the proper chunks from the client.
+                return res.status(200).send([]);
+            }
+            return res.status(200).send(missingChunks);
+        } catch (error) {
+            return res.status(500).send(error.code);
+        }
+    });
+
+    restRouter.post('/recordingFinished', upload, async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        const minIdLength = 45; // length of uuid v4 (36) + _client_x (9)
+        if (id.length < minIdLength) {
+            return res.status(400).send(`Id: ${id} is too short.`);
+        }
+        if (areChunksMissing(id)) {
+            await writeMissingChunksToMetadata(id);
+        }
+        const combineSuccess = await combineChunks(id);
+
+        if (!combineSuccess) {
+            return res
+                .status(500)
+                .send('Server was unable to combine audio chunks.');
+        }
+        if (bucket) {
+            try {
+                bucket.uploadRecording(id);
+                return res.status(200).send('Success');
+            } catch (error) {
+                return res.status(500).send(error.code);
+            }
+        }
         return res.status(200).send('Success');
     });
 
@@ -70,6 +134,16 @@ const createRestRouter = (isProduction: boolean) => {
             return bucket.downloadSession(req, res);
         } else {
             return downloadLocalSession(req, res);
+        }
+    });
+
+    restRouter.delete('/delete', async (req, res) => {
+        const id = decodeURIComponent(req.headers.id as string);
+        try {
+            const deleted = deleteRecording(id);
+            res.status(200).send(deleted);
+        } catch (error) {
+            res.status(500).send(error);
         }
     });
 

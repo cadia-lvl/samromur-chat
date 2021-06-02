@@ -6,6 +6,13 @@ export interface AudioInfo {
     id?: string;
     url: string;
     sampleRate: number;
+    chunkCount: number;
+}
+
+export interface AudioChunk {
+    blob: Blob;
+    chunkNumber: number;
+    id?: string;
 }
 
 export interface BlobEvent extends Event {
