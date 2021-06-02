@@ -5,25 +5,16 @@ import { SessionMetadata } from '../types/sessions';
 import { v4 as uuid } from 'uuid';
 
 export const downloadSession = async (id: string): Promise<any> => {
-    let endpoint = window.location.protocol + '//' + window.location.host;
-    if (endpoint.includes('localhost')) {
-        endpoint = endpoint.replace('3000', '3030');
-    }
-
-    const endpointurl = endpoint + '/api/sessions/' + id;
+    const endpointurl = getApiUrl('api/sessions/' + id);
     window.location.replace(endpointurl);
 };
 
 export const getSessions = async (
     partial?: boolean
 ): Promise<SessionMetadata[]> => {
-    let endpoint = window.location.protocol + '//' + window.location.host;
-    if (endpoint.includes('localhost')) {
-        endpoint = endpoint.replace('3000', '3030');
-    }
-
-    const url =
-        endpoint + '/api/sessions' + (partial ? '?partial=' + partial : '');
+    const url = getApiUrl(
+        'api/sessions' + (partial ? '?partial=' + partial : '')
+    );
 
     return axios({
         method: 'GET',
@@ -58,7 +49,6 @@ export const uploadClip = async (
         sample_rate: clip.sampleRate,
         session_id: id.replace(/_client_[a|b]/, ''),
         reference: demographics.reference,
-        chunk_count: clip.chunkCount,
     });
 
     const metadata = new Blob([jsonString], {
@@ -114,7 +104,6 @@ export const uploadChunk = async (
             gender: demographics.gender,
             session_id: id.replace(/_client_[a|b]/, ''),
             reference: demographics.reference,
-            chunkNumber: chunk.chunkNumber,
         });
 
         const metadata = new Blob([jsonString], {
@@ -124,7 +113,7 @@ export const uploadChunk = async (
         formData.append('metadata', metadata);
     }
 
-    const chunk_id: string = numberToPaddedString(chunk.chunkNumber);
+    const chunkId: string = numberToPaddedString(chunk.chunkNumber);
 
     return axios({
         method: 'POST',
@@ -132,7 +121,7 @@ export const uploadChunk = async (
         headers: {
             'Content-Type': 'multipart/form-data',
             id,
-            chunk_id,
+            chunk_id: chunkId,
             is_missing: isMissing,
         },
         data: formData,
