@@ -72,7 +72,7 @@ export default class Chat {
     constructor(socketUrl: string, userClient: UserClient) {
         this.recorder = new Recorder({
             sampleRate: 16000,
-            chunkInterval: 5,
+            chunkInterval: 30,
         });
         this.recorder.onChunkReceived = this.handleChunkReceived;
         this.socketUrl = socketUrl;

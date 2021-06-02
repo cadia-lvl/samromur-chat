@@ -388,7 +388,8 @@ export const writeMissingChunksToMetadata = async (
  * Finds the missing chunks on the server and
  * returns an array of the missing chunk numbers.
  * @param id the session id
- * @returns returns the chunk numbers missing for the session
+ * @returns returns the chunk numbers missing for the session or an
+ * empty array if there are no chunks missing
  */
 const getMissingChunks = async (id: string): Promise<number[]> => {
     // Find all chunk files
@@ -418,7 +419,7 @@ const getChunkFiles = (id: string): string[] => {
  * @param id the session id
  * @returns true if the server has audio chunks missing, false otherwise.
  */
-export const isChunksMissing = (id: string): boolean => {
+export const areChunksMissing = (id: string): boolean => {
     const chunksFiles = getChunkFiles(id);
     const maxChunkOnServer = findMaxChunkNumber(chunksFiles, id);
 

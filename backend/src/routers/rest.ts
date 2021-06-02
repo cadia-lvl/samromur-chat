@@ -11,7 +11,7 @@ import {
     getChunkFileName,
     checkChunksMismatch,
     writeMissingChunksToMetadata,
-    isChunksMissing,
+    areChunksMissing,
 } from '../utilities/filesystem';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -83,7 +83,7 @@ const createRestRouter = (isProduction: boolean) => {
         if (id.length < minIdLength) {
             return res.status(400).send(`Id: ${id} is too short.`);
         }
-        if (isChunksMissing(id)) {
+        if (areChunksMissing(id)) {
             await writeMissingChunksToMetadata(id);
         }
         const combineSuccess = await combineChunks(id);
