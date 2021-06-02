@@ -73,6 +73,7 @@ const RobotAndJoinContainer = styled.div`
 const MarsContainer = styled.div`
     display: flex;
     justify-content: center;
+    align-items: center;
 `;
 
 const Mars = styled.div`
