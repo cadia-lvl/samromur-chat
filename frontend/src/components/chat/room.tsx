@@ -109,7 +109,7 @@ const Indicator = styled.div<{ connected: boolean }>`
     height: 0.5rem;
     width: 0.5rem;
     border-radius: 50%;
-    background-color: ${({ connected }) => (connected ? '#60C197' : 'gray')};
+    background-color: ${({ connected }) => (connected ? '#6062C1' : 'gray')};
 `;
 
 const ShareButton = styled.button<{ soloRecord: boolean }>`
