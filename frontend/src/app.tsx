@@ -6,6 +6,7 @@ import Thanks from './components/setup/thanks';
 import FrontPage from './components/frontpage';
 import AdminPage from './components/admin';
 import LegalDoc from './components/legal/legaldocument';
+import LeaderBoard from './components/leaderboard';
 import { terms } from './constants/terms';
 import { privacypol } from './constants/privacypolicy';
 
@@ -18,6 +19,9 @@ export const App: React.FunctionComponent = () => {
                 </Route>
                 <Route path="/mamma-er-best">
                     <AdminPage />
+                </Route>
+                <Route path="/leaderboard">
+                    <LeaderBoard />
                 </Route>
                 <Route path="/personuvernd">
                     <LegalDoc contents={privacypol} />
