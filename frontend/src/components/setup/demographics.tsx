@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Demographic, StoredDemographics } from '../../types/user';
-import { ages, genders, references } from '../../constants/demographics';
+import { ages, genders, students } from '../../constants/demographics';
 
 import Info from './information';
 import DropdownButton from '../ui/input/dropdown';
@@ -190,7 +190,7 @@ export default class DemographicForm extends React.Component<Props, State> {
      * @param value the new reference value
      */
     onReferenceSelect = (value: string) => {
-        const reference = references.find(
+        const reference = students.find(
             (val: Demographic) => val.name === value
         ) as Demographic;
 
@@ -244,7 +244,7 @@ export default class DemographicForm extends React.Component<Props, State> {
                         selected={gender.name}
                     />
                     <DropdownButton
-                        content={references.map(
+                        content={students.map(
                             (reference: Demographic) => reference.name
                         )}
                         label={'Tilvísun'}

@@ -27,3 +27,19 @@ export const references: Array<Demographic> = [
     { id: 'staffan', name: 'Staffan' },
     { id: 'other', name: 'Annað' },
 ];
+
+export const students: Array<Demographic> = [
+    { id: 'davido', name: 'Davíð Örn' },
+    { id: 'freyr', name: 'Freyr Luca' },
+    { id: 'gunnarh', name: 'Gunnar Hinrik' },
+    { id: 'gunnarm', name: 'Gunnar Már' },
+    { id: 'hartmann', name: 'Hartmann ' },
+    { id: 'lara', name: 'Lára Margrét Hólm' },
+    { id: 'magnus', name: 'Magnús Karl' },
+    { id: 'malfridur', name: 'Málfríður Anna' },
+    { id: 'runar', name: 'Rúnar Örn' },
+    { id: 'rannveig', name: 'Rannveig Sól ' },
+    { id: 'reynir', name: 'Reynir' },
+    { id: 'throstur', name: 'Þröstur' },
+    { id: 'other', name: 'Annað' },
+];
