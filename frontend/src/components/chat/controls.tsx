@@ -74,7 +74,7 @@ const Glow = styled.div<{ red?: boolean }>`
     opacity: 0.2;
     background: linear-gradient(
         to left,
-        ${({ red }) => (red ? '#FF99A1, #FF4F5E' : '#60C197, #A7DDC5')}
+        ${({ red }) => (red ? '#FF99A1, #FF4F5E' : '#6062C1, #A7BFDD')}
     );
     border-radius: 50%;
     filter: blur(6px);
