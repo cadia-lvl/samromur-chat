@@ -2,7 +2,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import * as api from '../../services/api';
-import { ages, genders, references } from '../../constants/demographics';
+import {
+    ages,
+    genders,
+    references,
+    students,
+} from '../../constants/demographics';
 import { SessionMetadata } from '../../types/sessions';
 import { getHumanReadableTime, splitSeconds } from '../../utilities/utils';
 
@@ -104,7 +109,8 @@ export const Session: React.FunctionComponent<Props> = ({
      * @returns the reference of client A, or null if not found in the list of references
      */
     const getReference = (): string => {
-        const reference = references.find(
+        const allReferences = [...references, ...students];
+        const reference = allReferences.find(
             (val) =>
                 val.id === client_a?.reference || val.id === client_b?.reference
         );
