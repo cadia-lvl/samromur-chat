@@ -210,6 +210,8 @@ class Chatroom extends React.Component<Props, State> {
     private timeout?: any;
     private clientsRequired = 2;
     private shareButtonRef;
+    // fake video too keep screen on
+    private video = document.createElement('video');
 
     constructor(props: Props) {
         super(props);
@@ -262,6 +264,12 @@ class Chatroom extends React.Component<Props, State> {
         window.addEventListener('beforeunload', this.alertUser);
         this.addPushState();
         window.addEventListener('popstate', this.alertUserBack);
+
+        // Fake video setup
+        this.setupFakeVideo();
+
+        // Fake video to keep screen on
+        document.body.addEventListener('touchend', this.playFakeVideo);
     };
 
     componentWillUnmount = async () => {
@@ -269,6 +277,52 @@ class Chatroom extends React.Component<Props, State> {
         this.chat.onChatStateChanged = () => {};
         window.removeEventListener('beforeunload', this.alertUser);
         window.removeEventListener('popstate', this.alertUserBack);
+    };
+
+    /**
+     * This setups the fake video element and adds it to the document.
+     * This allows us to prevent mobile devices from turning their screens off.
+     */
+    setupFakeVideo = () => {
+        this.video.setAttribute('loop', '');
+        this.video.setAttribute('style', 'position:fixed;');
+
+        const base64 = (mimeType: string, base64: string) => {
+            return 'data:' + mimeType + ';base64,' + base64;
+        };
+
+        // Help function to add video and audio to the video element
+        const addSourceToVideo = (
+            element: HTMLVideoElement,
+            type: string,
+            dataURI: string
+        ) => {
+            const source = document.createElement('source');
+            source.src = dataURI;
+            source.type = 'video/' + type;
+            element.appendChild(source);
+        };
+
+        // Add fake video and audio
+        addSourceToVideo(
+            this.video,
+            'webm',
+            base64('video/webm', 'cmFuZG9tVmlkZW9VUkk=')
+        );
+        addSourceToVideo(
+            this.video,
+            'mp4',
+            base64('video/mp4', 'cmFuZG9tQXVkaW9VUkk=')
+        );
+
+        // Add the fake video to the document
+        document.body.appendChild(this.video);
+    };
+
+    playFakeVideo = () => {
+        this.video.play();
+        document.body.removeEventListener('touchend', this.playFakeVideo);
+        console.log('started playing fake video');
     };
 
     handleOnChunkReceived = (chunk: AudioChunk) => {
