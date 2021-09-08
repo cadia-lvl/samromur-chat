@@ -9,7 +9,7 @@ import Session from './session';
 
 import * as api from '../../services/api';
 import { SessionMetadata } from '../../types/sessions';
-import { references } from '../../constants/demographics';
+import { members } from '../../constants/demographics';
 import { Stats } from './stats';
 
 const AdminPageContainer = styled.div`
@@ -95,7 +95,7 @@ class AdminPage extends React.Component<Props, State> {
                     <Stats sessions={sessions} partial={showPartial} />
                     <Board
                         sessions={sessions}
-                        participants={references}
+                        participants={members}
                         partial={showPartial}
                     />
                     <SessionsContainer>

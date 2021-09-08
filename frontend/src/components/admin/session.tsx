@@ -5,6 +5,7 @@ import * as api from '../../services/api';
 import {
     ages,
     genders,
+    members,
     references,
     students,
 } from '../../constants/demographics';
@@ -109,7 +110,7 @@ export const Session: React.FunctionComponent<Props> = ({
      * @returns the reference of client A, or null if not found in the list of references
      */
     const getReference = (): string => {
-        const allReferences = [...references, ...students];
+        const allReferences = [...references, ...students, ...members];
         const reference = allReferences.find(
             (val) =>
                 val.id === client_a?.reference || val.id === client_b?.reference

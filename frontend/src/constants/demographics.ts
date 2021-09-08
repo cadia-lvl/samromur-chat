@@ -28,6 +28,27 @@ export const references: Array<Demographic> = [
     { id: 'other', name: 'Annað' },
 ];
 
+export const members: Array<Demographic> = [
+    { id: 'jon', name: 'Jón' },
+    { id: 'gthor', name: 'Gunnar Thor' },
+    { id: 'hrafn', name: 'Hrafn' },
+    { id: 'hannes', name: 'Hannes' },
+    { id: 'solafsson', name: 'Stefán Ólafsson' },
+    { id: 'benedikt', name: 'Benedikt Geir' },
+    { id: 'vidar', name: 'Viðar Pétur' },
+    { id: 'asmundur', name: 'Ásmundur' },
+    { id: 'sgunnlaugur', name: 'Stefán Gunnlaugur' },
+    { id: 'bjarni', name: 'Bjarni' },
+    { id: 'jokull', name: 'Jökull' },
+    { id: 'gpalsson', name: 'Gunnar Pálsson' },
+    { id: 'thorsteinn', name: 'Þorsteinn' },
+    { id: 'breki', name: 'Breki' },
+    { id: 'ragnarp', name: 'Ragnar' },
+    { id: 'steinthor', name: 'Steinþór' },
+    { id: 'guolin', name: 'Guolin' },
+    { id: 'helga', name: 'Helga' },
+    { id: 'other', name: 'Annað' },
+];
 export const students: Array<Demographic> = [
     { id: 'davido', name: 'Davíð Örn' },
     { id: 'freyr', name: 'Freyr Luca' },
