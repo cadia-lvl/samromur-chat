@@ -19,4 +19,13 @@ export const talkingpoints = [
     'Trúir þú á álfa, tröll eða drauga?',
     'Hver er uppáhalds liturinn þinn og af hverju?',
     'Hvaða pláneta er mest þú í sólkerfinu okkar?',
+    'Hvað finnst þér gaman að gera?',
+    'Hvernig voru unglingsárin þín?',
+    'Er erfiðara að vera unglingur núna en áður?',
+    'Hvað fannst þér um Tokyo 2021 Ólympíuleikana?',
+    'Hvað finnst þér um rafhlaupahjól?',
+    'Hvað er best við jólin?',
+    'Hvað ætlar þú að gera í kvöld?',
+    'Finnst þér gaman að tefla?',
+    'Finnst þér gaman að dansa?',
 ];
