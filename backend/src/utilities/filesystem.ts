@@ -209,11 +209,11 @@ export const combineChunks = async (id: string): Promise<boolean> => {
                 .save(`${folderPath}${id}.wav`)
                 .on('end', () => {
                     // Delete all chunks
-                    Contents.forEach((chunk) => {
-                        fs.unlinkSync(`${folderPath}${chunk}`);
-                    });
-                    // Delete list file
-                    fs.unlinkSync(listFileName);
+                    // Contents.forEach((chunk) => {
+                    //     fs.unlinkSync(`${folderPath}${chunk}`);
+                    // });
+                    // // Delete list file
+                    // fs.unlinkSync(listFileName);
 
                     result = true;
                     return resolve(result);

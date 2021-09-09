@@ -219,7 +219,7 @@ export default class Bucket {
                     ContentType: 'audio/wav',
                 })
                 .promise();
-            fs.unlinkSync(audio.path);
+            //fs.unlinkSync(audio.path);
 
             await this.s3
                 .upload({
@@ -228,7 +228,7 @@ export default class Bucket {
                     Body: fs.createReadStream(metadata.path),
                 })
                 .promise();
-            fs.unlinkSync(metadata.path);
+            //fs.unlinkSync(metadata.path);
 
             return Promise.resolve();
         } catch (error) {
@@ -258,7 +258,7 @@ export default class Bucket {
                     ContentType: 'audio/wav',
                 })
                 .promise();
-            fs.unlinkSync(audioPath);
+            //fs.unlinkSync(audioPath);
 
             await this.s3
                 .upload({
@@ -267,7 +267,7 @@ export default class Bucket {
                     Body: fs.createReadStream(metadataPath),
                 })
                 .promise();
-            fs.unlinkSync(metadataPath);
+            //fs.unlinkSync(metadataPath);
 
             return Promise.resolve();
         } catch (error) {
