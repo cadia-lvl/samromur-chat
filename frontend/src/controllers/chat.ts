@@ -130,10 +130,30 @@ export default class Chat {
         this.onVoiceStateChanged(state);
     };
 
-    // TODO: when anything in init fails, the user should be given a toast
-    // message of what component is not work in order to establish a working
-    // chatroom such as an ice connection could not be established or the
-    // microphone is not accessible
+    /**
+     * Get the mic state
+     */
+    private getVoiceState = (): VoiceState => {
+        return this.voiceState;
+    };
+
+    /**
+     * Starts and connects to all the necessary underlying technology in a
+     * chatroom:
+     *
+     * * microphone - connect mic to chatroom to record and obtain audio
+     * * websockets - connect to the chatroom server
+     * * rtc connections - connect directly to the other user
+     * * pingpong - ping pong ws server to keep the connection alive
+     * * unMute - activate mic
+     * * setUsername
+     * * setChatState
+     *
+     * TODO: When anything in init fails, the user should be given a toast
+     * message of what component is not working in order to establish a working
+     * chatroom, such as an ice connection could not be established or the
+     * microphone is not accessible.
+     **/
     private init = async () => {
         try {
             this.socket = await this.openSocket(this.socketUrl);
@@ -189,6 +209,14 @@ export default class Chat {
         });
     };
 
+    /**
+     * Establish an rtcpeerconnection, but only finish if there is a microphone.
+     *
+     * In a normal chatroom, it would be ok to have a peer to peer connection
+     * where only one person has a working mic. But since our primary goal is
+     * data collection, we'll disable establishing a connection between
+     * users with non-functioning mics and just set the chatroom to idle.
+     */
     private openRTC = async (): Promise<RTCPeerConnection> => {
         try {
             const connection = new RTCPeerConnection(this.rtcConfiguration);
@@ -300,6 +328,10 @@ export default class Chat {
         if (!this.reconnecting) {
             this.setUsername(this.userClient.username);
             this.sendUnsentMessages();
+            // Make sure the browser's mic state matches the server's mic state
+            this.getVoiceState() === VoiceState.VOICE_CONNECTED
+                ? this.unMute()
+                : this.mute();
             console.info('Successfully reconnected to the server.');
             return Promise.resolve('Successfully reconnected to the server.');
         }
@@ -462,10 +494,24 @@ export default class Chat {
         return this.sendMessage({ type: 'set_username', value: username });
     };
 
+    /**
+     * With the incoming rtc offer, initiate the answer procedure. But only if
+     * the user has a working microphone.
+     *
+     * In a normal chatroom, it would be ok to have a peer to peer connection
+     * where only one person has a working mic. But since our primary goal is
+     * data collection, we'll disable establishing a connection between
+     * users with non-functioning mics and just set the chatroom to idle.
+     */
     private handleIncomingCall = async (message: any) => {
         this.incomingOffer = message.offer;
         this.setCallState(CallState.INCOMING_CALL);
-        await this.answer();
+        // Only answer calls if users have a working microphone
+        if (this.microphone) {
+            await this.answer();
+        } else {
+            this.setCallState(CallState.IDLE);
+        }
     };
 
     private handleIncomingAnswer = async (message: any) => {
@@ -481,7 +527,9 @@ export default class Chat {
     private handleIncomingCandidate = async (message: any) => {
         const candidate = new RTCIceCandidate(message.candidate);
         try {
-            this.rtcConnection.addIceCandidate(candidate);
+            if (this.rtcConnection) {
+                this.rtcConnection.addIceCandidate(candidate);
+            }
         } catch (error) {
             console.error('Error handling ice candidate');
         }
@@ -516,9 +564,11 @@ export default class Chat {
 
     private handleHangUp = async () => {
         try {
-            this.rtcConnection?.close();
-            this.rtcConnection = await this.openRTC();
-            this.setCallState(CallState.HUNG_UP);
+            if (this.microphone) {
+                this.rtcConnection?.close();
+                this.rtcConnection = await this.openRTC();
+                this.setCallState(CallState.HUNG_UP);
+            }
         } catch (error) {
             console.error('Error while hanging up, ', error);
         }
@@ -526,7 +576,7 @@ export default class Chat {
 
     public unMute = async () => {
         if (!this.microphone) {
-            this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
+            this.mute();
             console.log('no mic available');
             throw new Error('no mic available');
         } else {
@@ -553,8 +603,10 @@ export default class Chat {
 
     public mute = async () => {
         this.setVoiceState(VoiceState.VOICE_DISCONNECTED);
-        this.recorder.mute();
-        this.hangUp();
+        if (this.microphone) {
+            this.recorder.mute();
+            this.hangUp();
+        }
         this.handleClientChanged({
             id: this.userClient.id,
             parameter: 'set_voice',
@@ -582,6 +634,13 @@ export default class Chat {
 
     private answer = async (): Promise<void> => {
         try {
+            // Check for an rtcConnection because after a reconnect there
+            // sometimes isn't a established rtcConnection so then a chain of
+            // errors pop up.
+            // So try establishing one.
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             // Handle incoming offer
             const description = new RTCSessionDescription(this.incomingOffer);
             this.rtcConnection.setRemoteDescription(description);
