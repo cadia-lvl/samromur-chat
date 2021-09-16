@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Recorder from './recorder';
 import { AudioChunk, AudioInfo } from '../types/audio';
 import { UserClient } from '../types/user';
+import { MicError, RTCError } from '../types/errors';
 
 export enum ChatState {
     CONNECTED = 'CONNECTED',
@@ -50,7 +51,7 @@ export default class Chat {
     onError!: (message: any) => void;
 
     private recorder: Recorder;
-    private rtcConnection!: RTCPeerConnection;
+    private rtcConnection!: RTCPeerConnection | null;
     private rtcConfiguration: RTCConfiguration;
     private socket!: WebSocket;
     private socketUrl: string;
@@ -296,8 +297,13 @@ export default class Chat {
 
     /**
      * Reconnect will start a process to reconnect.
-     * The process will attempt to reconnect to the WebSocket server
-     * every timeout milliseconds
+     * The reconnecting flag is set.
+     * If the prior attempt was unsuccessful, the process will attempt to
+     * reconnect to the WebSocket server after the given timeout(milliseconds).
+     * If successful, call {@link setUsername} and {@link sendUnsentMessages}
+     * the corresponding mic method ({@link unMute} {@link mute}).
+     * If there is no rtcConnection then open one with {@link openRTC}.
+     * @return {Promise} returns a Promise about successful reconnection.
      */
     private reconnect = async () => {
         // If not reconnecting, set to reconnecting and reset timeout
@@ -311,7 +317,7 @@ export default class Chat {
         try {
             this.socket = await this.openSocket(this.socketUrl);
         } catch (error) {
-            console.error('Error reconnecting to the server.');
+            console.error('Error reconnecting to the server.', error);
         }
         this.reconnecting = !this.isWebSocketOpen();
         if (this.reconnecting) {
@@ -332,6 +338,10 @@ export default class Chat {
             this.getVoiceState() === VoiceState.VOICE_CONNECTED
                 ? this.unMute()
                 : this.mute();
+            if (this.microphone && !this.rtcConnection) {
+                this.rtcConnection = null;
+                this.rtcConnection = await this.openRTC();
+            }
             console.info('Successfully reconnected to the server.');
             return Promise.resolve('Successfully reconnected to the server.');
         }
@@ -360,7 +370,7 @@ export default class Chat {
             );
         } catch (error) {
             console.error('Error sending message, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -517,6 +527,9 @@ export default class Chat {
     private handleIncomingAnswer = async (message: any) => {
         try {
             const description = new RTCSessionDescription(message.answer);
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             await this.rtcConnection.setRemoteDescription(description);
         } catch (error) {
             // To-do error handling?
@@ -531,7 +544,7 @@ export default class Chat {
                 this.rtcConnection.addIceCandidate(candidate);
             }
         } catch (error) {
-            console.error('Error handling ice candidate');
+            console.error('Error handling ice candidate ', error);
         }
     };
 
@@ -566,6 +579,7 @@ export default class Chat {
         try {
             if (this.microphone) {
                 this.rtcConnection?.close();
+                this.rtcConnection = null;
                 this.rtcConnection = await this.openRTC();
                 this.setCallState(CallState.HUNG_UP);
             }
@@ -578,7 +592,11 @@ export default class Chat {
         if (!this.microphone) {
             this.mute();
             console.log('no mic available');
-            throw new Error('no mic available');
+            throw new MicError('no mic available');
+        } else if (!this.rtcConnection) {
+            this.mute();
+            console.log('Peer connection is unopened');
+            throw new RTCError('Peer connection is unopened');
         } else {
             this.setVoiceState(VoiceState.VOICE_CONNECTED);
             this.recorder.unMute();
@@ -621,6 +639,9 @@ export default class Chat {
 
     private call = async (): Promise<void> => {
         try {
+            if (!this.rtcConnection) {
+                this.rtcConnection = await this.openRTC();
+            }
             const offer: RTCSessionDescriptionInit = await this.rtcConnection.createOffer();
             await this.rtcConnection.setLocalDescription(offer);
             await this.sendMessage({ type: 'call', offer });
@@ -654,7 +675,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error answering, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -686,6 +707,7 @@ export default class Chat {
 
     public hangUp = async (): Promise<void> => {
         this.rtcConnection?.close();
+        this.rtcConnection = null;
         this.rtcConnection = await this.openRTC();
         //this.setCallState(CallState.HUNG_UP);
         return this.sendMessage({ type: 'hang_up' });
@@ -708,7 +730,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error starting recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -727,7 +749,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error requesting recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -744,7 +766,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error stopping recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -755,7 +777,7 @@ export default class Chat {
             return Promise.resolve();
         } catch (error) {
             console.error('Error cancelling recording, ', error);
-            return Promise.reject();
+            return Promise.reject(error);
         }
     };
 
@@ -773,7 +795,8 @@ export default class Chat {
         console.log('Disconnecting...');
         this.isDisconnecting = true;
         this.socket.close();
-        this.rtcConnection.close();
+        this.rtcConnection?.close();
+        this.rtcConnection = null;
     };
 
     public clearRecording = () => {
